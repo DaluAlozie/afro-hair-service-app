@@ -6,9 +6,12 @@
  * You can remove the `reset-project` script from package.json and safely delete this file after running it.
  */
 
+// eslint-disable-next-line no-undef
 const fs = require("fs");
+// eslint-disable-next-line no-undef
 const path = require("path");
 
+// eslint-disable-next-line no-undef
 const root = process.cwd();
 const oldDirs = ["app", "components", "hooks", "constants", "scripts"];
 const newDir = "app-example";
