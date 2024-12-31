@@ -1,11 +1,12 @@
 import AuthWrapper from '@/components/auth/AuthWrapper'
-import HomePage from '@/components/home/HomePage'
+import { ThemedView } from '@/components/utils'
 import React from 'react'
 
-export default function Home() {
+export default function Notifications() {
   return (
     <AuthWrapper>
-        <HomePage/>
+      <ThemedView>
+      </ThemedView>
     </AuthWrapper>
   )
 }

@@ -1,8 +1,10 @@
 import React from 'react'
 import { AnimatePresence, Button, Spinner, Theme, useTheme } from 'tamagui';
+import Pressable from '../Pressable';
+import { View } from 'react-native';
 
 type SubmitButtonProps = {
-    children: string;
+    children?: string;
     onPress: () => void;
     isSubmitting: boolean;
 }
@@ -11,22 +13,29 @@ export default function SubmitButton({ children, onPress, isSubmitting }: Submit
     const theme = useTheme({inverse:true})
     return (
         <Theme inverse>
-            <Button
-                flexDirection='row'
-                justifyContent='center'
-                disabled={isSubmitting}
+            <Pressable
                 onPress={onPress}
-                width="100%"
-                pressStyle= {{
-                    backgroundColor: theme.onPressStyle, // #bbb
-                    borderColor: theme.onPressStyle
+                disabled={isSubmitting}
+                activeOpacity={0.95}
+                style={{
+                    backgroundColor: theme.background.val,
+                    height: 45,
+                    flexDirection:'row',
+                    justifyContent:'center',
+                    alignSelf: "center",
+                    width: "100%",
+                    borderRadius: 7,
+                    // : theme.color.val
+                }}
+                pressedStyle={{
+                    backgroundColor: theme.onPressStyle.val,
                 }}
             >
-            { isSubmitting ?
-                (
+                <View style={{justifyContent: "center", width: "100%", height: "100%", alignItems: "center"}}>
+                { isSubmitting ?
                     <AnimatePresence>
                         <Spinner
-                            themeInverse
+                            // themeInverse
                             color="$color"
                             key="loading-spinner"
                             opacity={1}
@@ -41,10 +50,11 @@ export default function SubmitButton({ children, onPress, isSubmitting }: Submit
                                 scale: 0.5,
                             }}
                         />
-                </AnimatePresence>
-                ) : <Button.Text>{children}</Button.Text>
-            }
-            </Button>
+                    </AnimatePresence> :
+                    <Button.Text>{children}</Button.Text>
+                }
+                </View>
+            </Pressable>
         </Theme>
     )
 }

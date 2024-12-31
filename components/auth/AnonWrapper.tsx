@@ -10,7 +10,7 @@ export default function AnonWrapper({ children } : { children: React.ReactNode }
 
     useEffect(() => {
         if (!navigationContainerRef.isReady()) return;
-        if (isLoggedIn) router.replace("/");
+        if (isLoggedIn) router.replace("/(tabs)");
     },[rootNavigationState?.key])
     return (
         <>

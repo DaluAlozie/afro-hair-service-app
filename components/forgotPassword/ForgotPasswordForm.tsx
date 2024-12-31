@@ -13,12 +13,12 @@ import { useAuthStore } from '@/utils/stores/authStore';
 import DismissKeyboard from '../utils/DismissKeyboard';
 import { Input, InputError } from '../utils/form/inputs';
 import React, { useCallback } from 'react';
-import { Link } from 'expo-router';
 import SubmitButton from '../utils/form/SubmitButton';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useTheme } from 'tamagui';
 import { useToastController } from '@tamagui/toast';
 import { showToast } from '../utils/Toast/CurrentToast';
+import Link from '../utils/Link';
 
 const schema = yup.object().shape({
   email: yup.string().required('Email is required').email("Please enter a valid email"),
