@@ -17,9 +17,10 @@ import { CurrentToast } from '@/components/utils/Toast/CurrentToast';
 import { Colors } from '@/constants/Colors';
 import { initialWindowMetrics } from 'react-native-safe-area-context';
 import { setStatusBarBackgroundColor, setStatusBarStyle, StatusBar } from 'expo-status-bar';
-import AppStack from '@/components/navigation/AppStack';
+import AppStack, { animationDuration } from '@/components/navigation/AppStack';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,8 +36,10 @@ export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false);
   const colorScheme = useColorScheme();
   const { left, top, right } = initialWindowMetrics!.insets;
+  const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
   const setUser = useAuthStore((state) => state.setUser);
   const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+  const router = useRouter();
 
   useEffect(() => {
     async function prepare() {
@@ -48,14 +51,13 @@ export default function RootLayout() {
             colorScheme === 'dark' ? Colors.dark.background : Colors.light.background
           )
           setStatusBarStyle(colorScheme === 'dark' ? "light" : "dark")
-        }
-        // enables edge-to-edge mode
-        await NavigationBar.setPositionAsync('absolute');
-        NavigationBar.setButtonStyleAsync(colorScheme === 'dark' ? "dark" : "light");
-        await NavigationBar.setBackgroundColorAsync(
+           // enables edge-to-edge mode
+          await NavigationBar.setPositionAsync('absolute');
+          NavigationBar.setButtonStyleAsync(colorScheme === 'dark' ? "dark" : "light");
+          await NavigationBar.setBackgroundColorAsync(
           colorScheme === 'dark' ? Colors.dark.background : Colors.light.background
         )
-
+        }
         const supabase = await supabaseClient;
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
@@ -76,16 +78,23 @@ export default function RootLayout() {
     prepare();
   }, []);
 
-  const onLayoutRootView = useCallback(() => {
+  const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
       // This tells the splash screen to hide immediately! If we call this after
       // `setAppIsReady`, then we may see a blank screen while the app is
       // loading its initial state and rendering its first pixels. So instead,
       // we hide the splash screen once we know the root view has already
       // performed layout.
+      if (!isLoggedIn){
+        if (router.canDismiss()){
+          router.dismissAll();
+        }
+        router.replace("/login");
+        await new Promise(resolve => setTimeout(resolve, animationDuration*1.5));
+      }
       SplashScreen.hide();
     }
-  }, [appIsReady]);
+  }, [appIsReady, isLoggedIn]);
 
   if (!appIsReady) return null;
 
@@ -103,8 +112,4 @@ export default function RootLayout() {
       </ThemeProvider>
     </TamaguiProvider>
   );
-}
-
-export const unstable_settings = {
-  initialRouteName: 'index',
 }

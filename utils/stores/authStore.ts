@@ -60,25 +60,25 @@ export const useAuthStore = create<AuthStore>((set) => ({
     },
     googleSignIn: async () => {
       // Does not work on expo go
-      const supabase = await supabaseClient;
-      await GoogleSignin.hasPlayServices()
-      GoogleSignin.configure({ webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID! });
-      const userInfo = await GoogleSignin.signIn()
+      // const supabase = await supabaseClient;
+      // await GoogleSignin.hasPlayServices()
+      // GoogleSignin.configure({ webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID! });
+      // const userInfo = await GoogleSignin.signIn()
 
-      if (!(userInfo?.data?.idToken)) {
-        return {
-          error: {
-            message: "No ID token present !"
-          } as AuthError
-        }
-      }
-      const { data: { user }, error } = await supabase.auth.signInWithIdToken({
-        provider: 'google',
-        token: userInfo.data.idToken,
-      })
+      // if (!(userInfo?.data?.idToken)) {
+      //   return {
+      //     error: {
+      //       message: "No ID token present !"
+      //     } as AuthError
+      //   }
+      // }
+      // const { data: { user }, error } = await supabase.auth.signInWithIdToken({
+      //   provider: 'google',
+      //   token: userInfo.data.idToken,
+      // })
 
-      if (error) return { error };
-      set({ user });
+      // if (error) return { error };
+      // set({ user });
       set({ isLoggedIn: true });
       return {};
     },

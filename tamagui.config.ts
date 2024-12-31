@@ -6,12 +6,14 @@ import { createTamagui } from 'tamagui';
 const modifiedLightTheme = {
   ...tamaguiDefaultConfig.themes.light, // Clone the default light theme
   background: '#ffffff', // Set the background to white
-  onPressStyle: "#D9D9D9"
+  onPressStyle: "#D9D9D9",
+  danger: "#e00b19"
 };
 
 const modifiedDarkTheme = {
   ...tamaguiDefaultConfig.themes.dark, // Clone the default light theme
-  onPressStyle: "#333333"
+  onPressStyle: "#333333",
+  danger: "#ab0c16"
 };
 
 // Extend the existing themes with the modified light theme

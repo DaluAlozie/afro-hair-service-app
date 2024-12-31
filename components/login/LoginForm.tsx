@@ -20,11 +20,12 @@ import AppleLogin from '../utils/form/AppleLogin';
 import React, { useCallback } from 'react';
 import AzureLogin from '../utils/form/AzureLogin';
 import GoogleLogin from '../utils/form/GoogleLogin';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import SubmitButton from '../utils/form/SubmitButton';
 import { useToastController } from '@tamagui/toast';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { showToast } from '../utils/Toast/CurrentToast';
+import Link from '../utils/Link';
 
 const schema = yup.object().shape({
   email: yup.string().required('Email is required').email("Please enter a valid email"),
@@ -43,7 +44,6 @@ export function LoginForm() {
   const headerHeight = useHeaderHeight();
 
   const signIn = useAuthStore((state) => state.signIn);
-
   const onSubmit = useCallback(async (data: { email: string; password: string; }) => {
     const { error } = await signIn(data.email, data.password);
     if (error) {
@@ -56,15 +56,8 @@ export function LoginForm() {
       )
       return;
     }
-    showToast(
-      toast,
-      'Sign in successful !',
-      "Welcome to ....",
-      "success",
-      headerHeight
-    );
     if (router.canDismiss()) router.dismissAll();
-    router.replace("/home");
+    router.replace("/(tabs)");
     reset();
   },[]);
 
@@ -139,8 +132,6 @@ export function LoginForm() {
     </DismissKeyboard>
   )
 }
-
-
 
 const SignUpLink = () => {
   return (
