@@ -15,12 +15,13 @@ import * as yup from 'yup';
 import { useAuthStore } from '@/utils/stores/authStore';
 import { AuthStore } from '@/utils/stores/authStore';
 import { Input, InputError } from '../utils/form/inputs';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import SubmitButton from '../utils/form/SubmitButton';
 import FormTitle from '../utils/form/FormTitle';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useToastController } from '@tamagui/toast';
 import { showToast } from '../utils/Toast/CurrentToast';
+import Link from '../utils/Link';
 
 const schema = yup.object().shape({
   firstName: yup.string().required('First name is required'),

@@ -358,7 +358,7 @@ export const Input = ({ control, name, defaultValue, label, placeholder, textCon
   )
 }
 
-export const InputError =  ({children}: { children: ReactNode }) => {
+export const InputError =  ({children}: { children?: ReactNode }) => {
   const colorScheme = useColorScheme() ?? 'light';
   return (
     <Text alignSelf='flex-start' fontSize="$1" color={ colorScheme === "light" ? Colors.light.error : Colors.dark.error }>
