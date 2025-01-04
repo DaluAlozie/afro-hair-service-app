@@ -10,9 +10,8 @@ export default function FormTitle({ children }: { children: string }) {
             width:"100%",
             height: "auto",
             lineHeight: 40,
-            marginBottom: 30
         }}>
-        { children}
+        { children }
     </ThemedText>
   )
 }

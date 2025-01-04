@@ -22,6 +22,7 @@ import { useHeaderHeight } from '@react-navigation/elements';
 import { useToastController } from '@tamagui/toast';
 import { showToast } from '../utils/Toast/CurrentToast';
 import Link from '../utils/Link';
+import KeyboardAvoidingView from '../utils/KeyboardAvoidingView';
 
 const schema = yup.object().shape({
   firstName: yup.string().required('First name is required'),
@@ -68,80 +69,82 @@ export function SignUpForm() {
 
   return (
     <DismissKeyboard>
-      <Form alignItems='center' backgroundColor={theme.background.val}>
-        <YStack
-          alignItems="stretch"
-          justifyContent="center"
-          minWidth="60%"
-          width="100%"
-          maxWidth="100%"
-          height="100%"
-          gap="$6"
-          padding="$7"
-          paddingVertical="$6"
-          $gtSm={{
-            paddingVertical: '$4',
-            width: 400,
-          }}
-        >
-          <FormTitle>Create an Account</FormTitle>
-          <YStack gap="$1" width="100%">
-            <XStack gap="$3" width="100%" justifyContent="space-between">
-              <YStack gap="$2" flex={1}>
-                <Input
-                  control={control}
-                  label="First Name"
-                  name="firstName"
-                  placeholder='First Name'
-                  textContentType='givenName'/>
-                {errors.firstName && <InputError>{errors.firstName.message?.toString()}</InputError>}
+      <KeyboardAvoidingView>
+        <Form alignItems='center' backgroundColor={theme.background.val}>
+          <YStack
+            alignItems="stretch"
+            justifyContent="center"
+            minWidth="60%"
+            width="100%"
+            maxWidth="100%"
+            height="100%"
+            gap="$10"
+            padding="$7"
+            paddingVertical="$6"
+            $gtSm={{
+              paddingVertical: '$4',
+              width: 400,
+            }}
+          >
+            <FormTitle>Create an Account</FormTitle>
+            <YStack gap="$4" width="100%">
+              <XStack gap="$3" width="100%" justifyContent="space-between">
+                <YStack gap="$2" flex={1}>
+                  <Input
+                    control={control}
+                    label="First Name"
+                    name="firstName"
+                    placeholder='First Name'
+                    textContentType='givenName'/>
+                  {errors.firstName && <InputError>{errors.firstName.message?.toString()}</InputError>}
+                </YStack>
+                <YStack gap="$2" flex={1}>
+                  <Input
+                    control={control}
+                    label="Surname"
+                    name="surname"
+                    placeholder='Surname'
+                    textContentType='familyName'/>
+                  {errors.surname && <InputError>{errors.surname.message?.toString()}</InputError>}
               </YStack>
-              <YStack gap="$2" flex={1}>
+              </XStack>
+              <YStack gap="$2">
                 <Input
                   control={control}
-                  label="Surname"
-                  name="surname"
-                  placeholder='Surname'
-                  textContentType='familyName'/>
-                {errors.surname && <InputError>{errors.surname.message?.toString()}</InputError>}
-             </YStack>
-            </XStack>
-            <YStack gap="$2">
-              <Input
-                control={control}
-                label="Email"
-                name="email"
-                placeholder='email@example.com'
-                textContentType='emailAddress'/>
-                {errors.email && <InputError>{errors.email.message?.toString()}</InputError>}
+                  label="Email"
+                  name="email"
+                  placeholder='email@example.com'
+                  textContentType='emailAddress'/>
+                  {errors.email && <InputError>{errors.email.message?.toString()}</InputError>}
+              </YStack>
+              <YStack gap="$2" width="100%">
+                <Input
+                  control={control}
+                  label="Password"
+                  name="password"
+                  placeholder='Password'
+                  textContentType='password'
+                  secureTextEntry/>
+                {errors.password && <InputError>{errors.password.message?.toString()}</InputError>}
+              </YStack>
+              <YStack gap="$2" width="100%">
+                <Input
+                  control={control}
+                  label="Confirm Password"
+                  name="confirmPassword"
+                  placeholder='Confirm Password'
+                  textContentType='password'
+                  secureTextEntry/>
+                {errors.confirmPassword && <InputError>{errors.confirmPassword.message?.toString()}</InputError>}
+              </YStack>
             </YStack>
-            <YStack gap="$2" width="100%">
-              <Input
-                control={control}
-                label="Password"
-                name="password"
-                placeholder='Password'
-                textContentType='password'
-                secureTextEntry/>
-              {errors.password && <InputError>{errors.password.message?.toString()}</InputError>}
-            </YStack>
-            <YStack gap="$2" width="100%">
-              <Input
-                control={control}
-                label="Confirm Password"
-                name="confirmPassword"
-                placeholder='Confirm Password'
-                textContentType='password'
-                secureTextEntry/>
-              {errors.confirmPassword && <InputError>{errors.confirmPassword.message?.toString()}</InputError>}
-            </YStack>
+            <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
+              Sign Up
+            </SubmitButton>
+            <SignInLink />
           </YStack>
-          <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
-            Sign Up
-          </SubmitButton>
-          <SignInLink />
-        </YStack>
-      </Form>
+        </Form>
+      </KeyboardAvoidingView>
     </DismissKeyboard>
   )
 }

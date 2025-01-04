@@ -7,6 +7,7 @@ import {
 } from '@react-navigation/material-top-tabs';
 import { ParamListBase, TabNavigationState } from '@react-navigation/native';
 import { useTheme } from '@tamagui/core';
+import { useWindowDimensions } from 'react-native';
 
 const { Navigator } = createMaterialTopTabNavigator();
 
@@ -19,6 +20,9 @@ export const MaterialTopTabs = withLayoutContext<
 
 export default function BusinessLayout() {
   const theme = useTheme();
+  const { width } = useWindowDimensions();
+  const numberOfTabs = 6;
+  const overflow = width < 100*numberOfTabs;
 
   return (
     <MaterialTopTabs
@@ -26,11 +30,16 @@ export default function BusinessLayout() {
         tabBarScrollEnabled: true, // Enable horizontal scrolling
         tabBarContentContainerStyle: {
           backgroundColor: theme.background.val,
+          justifyContent: 'center',
         },
         tabBarIndicatorStyle: {
           backgroundColor: theme.color.val, // Sensible, theme-aligned underline colour
-          height: 2, // Thin underline
+          height: 10, // Thin underline
           alignSelf: 'center', // Center the underline beneath the text
+        },
+        tabBarIndicatorContainerStyle: {
+          backgroundColor: theme.background.val, // Ensure the underline doesn't have a background
+          justifyContent: 'center', // Center the underline beneath the text
         },
         tabBarLabelStyle: {
             width: "auto",
@@ -40,10 +49,10 @@ export default function BusinessLayout() {
         },
         tabBarStyle: {
           height: 50,
-          marginTop: 5
         },
         tabBarItemStyle: {
-            width: "auto"
+            width: "auto",
+            minWidth: overflow ? undefined : width/numberOfTabs,
         }
       }}
     >

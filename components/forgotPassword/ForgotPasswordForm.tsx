@@ -15,10 +15,11 @@ import { Input, InputError } from '../utils/form/inputs';
 import React, { useCallback } from 'react';
 import SubmitButton from '../utils/form/SubmitButton';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { useTheme } from 'tamagui';
 import { useToastController } from '@tamagui/toast';
 import { showToast } from '../utils/Toast/CurrentToast';
 import Link from '../utils/Link';
+import KeyboardAvoidingView from '../utils/KeyboardAvoidingView';
+import { useWindowDimensions } from 'react-native';
 
 const schema = yup.object().shape({
   email: yup.string().required('Email is required').email("Please enter a valid email"),
@@ -32,8 +33,8 @@ export function ForgotPasswordForm() {
 
   const forgotPassword = useAuthStore((state) => state.forgotPassword);
   const toast = useToastController();
-  const theme = useTheme();
   const headerHeight = useHeaderHeight();
+  const { height } = useWindowDimensions();
 
   const onSubmit = useCallback(async (data: { email: string }) => {
     const { error } = await forgotPassword(data.email);
@@ -59,39 +60,41 @@ export function ForgotPasswordForm() {
 
   return (
     <DismissKeyboard>
-      <Form alignItems='center' backgroundColor={theme.background}>
-        <YStack
-          alignItems="stretch"
-          justifyContent="center"
-          minWidth="60%"
-          width="100%"
-          maxWidth="100%"
-          height="100%"
-          gap="$5"
-          padding="$7"
-          paddingVertical="$6"
-          $gtSm={{
-            paddingVertical: '$4',
-            width: 400,
-          }}
-        >
-          <YStack gap="$3" width="100%">
-            <YStack gap="$2">
-              <Input
-                control={control}
-                label="Enter your email"
-                name="email"
-                placeholder='email@example.com'
-                textContentType='emailAddress'/>
-              {errors.email && <InputError>{errors.email.message?.toString()}</InputError>}
+      <KeyboardAvoidingView>
+        <Form alignItems='center' minHeight={height*0.9}>
+          <YStack
+            alignItems="stretch"
+            justifyContent="center"
+            minWidth="60%"
+            width="100%"
+            maxWidth="100%"
+            height="100%"
+            gap="$5"
+            padding="$7"
+            paddingVertical="$6"
+            $gtSm={{
+              paddingVertical: '$4',
+              width: 400,
+            }}
+          >
+            <YStack gap="$3" width="100%">
+              <YStack gap="$2">
+                <Input
+                  control={control}
+                  label="Enter your email"
+                  name="email"
+                  placeholder='email@example.com'
+                  textContentType='emailAddress'/>
+                {errors.email && <InputError>{errors.email.message?.toString()}</InputError>}
+              </YStack>
             </YStack>
+            <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
+                Reset Password
+            </SubmitButton>
+            <SignInLink/>
           </YStack>
-          <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
-              Reset Password
-          </SubmitButton>
-          <SignInLink/>
-        </YStack>
-      </Form>
+        </Form>
+      </KeyboardAvoidingView>
     </DismissKeyboard>
   )
 }

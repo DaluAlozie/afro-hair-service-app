@@ -5,15 +5,24 @@ import { StyleProps } from 'react-native-reanimated';
 
 type PressableProps =  ViewProps & {
   children?: React.ReactNode | string;
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
   onPress?: (event: GestureResponderEvent) => void;
   disabled?: boolean | undefined;
   pressedStyle?: StyleProps | undefined;
   activeOpacity?: number | undefined;
+  innerStyle?: StyleProps | undefined;
+  scale?:  number | undefined;
 };
 
-export default function Pressable(
-    { children, disabled, onPress, pressedStyle, style, activeOpacity, ...rest }: PressableProps
+export default function Pressable({
+    children,
+    disabled,
+    onPress,
+    pressedStyle,
+    style,
+    innerStyle,
+    activeOpacity,
+    scale,
+    ...rest }: PressableProps
 ) {
 
     const [isPressed, setIsPressed] = useState(false);
@@ -22,7 +31,7 @@ export default function Pressable(
     const onPressIn = () => {
         setIsPressed(true);
         Animated.timing(scaleValue, {
-        toValue: activeOpacity ?? 0.85, // Slightly smaller for the press effect
+        toValue: scale ?? 0.94, // Slightly smaller for the press effect
         duration: 100,
         useNativeDriver: true,
         }).start();
@@ -39,12 +48,12 @@ export default function Pressable(
     return (
         <Animated.View style={[{ transform: [{ scale: scaleValue}]}, (isPressed ? [style, pressedStyle] : style)]} {...rest}>
             <TouchableOpacity
-                activeOpacity={0.5}
+                activeOpacity={activeOpacity}
                 onPressIn={onPressIn}
                 onPressOut={onPressOut}
                 onPress={onPress}
                 disabled={disabled}
-                style={[{ height: "100%", width: "100%", alignItems: "center"}, style]}
+                style={[{ height: "100%", width: "100%", alignItems: "center"}, innerStyle ?? style]}
             >
                 {typeof children === 'string' ? (
                 <SizableText style={{ color: theme.color.val, fontWeight: 900 }}>{children}</SizableText>
