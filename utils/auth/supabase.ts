@@ -1,12 +1,29 @@
 import * as SessionStorage from "../storage/sessionStorage"
 import { createClient } from '@supabase/supabase-js'
-import { AppState } from "react-native"
+import { AppState, Platform } from "react-native"
 import { initializeStorage } from "../storage/initSessionStorage";
+import Constants from "expo-constants";
+// Alternative storage for Web and Expo Go
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const supabaseUrl: string = process.env.EXPO_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey: string = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY!
 
 const initializeSupabase = async () => {
+
+  if (
+    Constants.executionEnvironment === "storeClient" ||
+    Platform.OS === "web"
+  ) {
+    return createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storage: AsyncStorage,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    })
+  }
   const storageInstance = await initializeStorage();
   SessionStorage.setStorageInstance(storageInstance); // Set the storage instance
 

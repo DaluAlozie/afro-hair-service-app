@@ -4,7 +4,6 @@ import React from 'react';
 import { Platform, View, StyleSheet } from 'react-native';
 import Octicons from '@expo/vector-icons/Octicons';
 import { useTheme } from 'tamagui';
-import HomeFill from '@/assets/icons/home_fill';
 import TabBarBackground from '@/components/utils/ui/TabBarBackground';
 import SearchBold from '@/assets/icons/search_bold';
 import SearchOutline from '@/assets/icons/search_outline';
@@ -12,6 +11,7 @@ import { ThemedText, ThemedView } from '@/components/utils';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Pressable from '@/components/utils/Pressable';
 import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
+import HomeFill from '@/assets/icons/home_fill';
 
 export default function TabLayout() {
   const theme = useTheme();

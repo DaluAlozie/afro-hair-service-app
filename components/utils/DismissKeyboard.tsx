@@ -1,14 +1,20 @@
 import React from "react"
-import { Keyboard, Pressable } from "react-native"
+import { Keyboard, TouchableWithoutFeedback } from "react-native"
 
 type DismissKeyboardProps = {
     children?: React.ReactNode
+    onPress?: () => void
 }
-export default function DismissKeyboard({ children }: DismissKeyboardProps) {
+export default function DismissKeyboard({ children, onPress }: DismissKeyboardProps) {
 
   return (
-    <Pressable onPress={ () => Keyboard.dismiss() }>
+    <TouchableWithoutFeedback onPress={
+      () => {
+        Keyboard.dismiss()
+        if (onPress) {
+          onPress()
+    }}}>
       { children }
-    </Pressable>
+    </TouchableWithoutFeedback>
   )
 }

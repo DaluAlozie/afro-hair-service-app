@@ -1,356 +1,63 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Colors } from '@/constants/Colors'
-import { getFontSized } from '@tamagui/get-font-sized'
-import { getSpace } from '@tamagui/get-token'
-import { User } from '@tamagui/lucide-icons'
-import type { SizeVariantSpreadFunction, VariableVal } from '@tamagui/web'
-import React, { ReactNode, useId } from 'react'
-import { useState } from 'react'
+import React, { ReactNode, useId, useState } from 'react'
 import { Control, Controller } from 'react-hook-form'
-import { TextInputIOSProps, useColorScheme } from 'react-native'
-import type { ColorTokens, FontSizeTokens } from 'tamagui'
+import { KeyboardTypeOptions, Platform, TextInputIOSProps, useColorScheme } from 'react-native'
 import {
-  Label,
-  Button as TButton,
-  Input as TInput,
-  Text,
   View,
-  XGroup,
-  createStyledContext,
-  getFontSize,
-  getVariable,
-  isWeb,
-  styled,
-  useGetThemedIcon,
-  useTheme,
-  withStaticProperties,
+  Input as InputSkeleton,
+  TextArea as TextAreaSkeleton,
+  Label,
+  Switch as TSwitch,
+  Text as TamaguiText,
+  useTheme
 } from 'tamagui'
+import { Text, StyleSheet } from 'react-native'
+import DateTimePicker, { AndroidNativeProps } from '@react-native-community/datetimepicker';
+import { UseThemeResult } from '@tamagui/core';
+import Pressable from '../Pressable'
 
-const defaultContextValues = {
-  size: '$true',
-  scaleIcon: 1.2,
-  color: undefined,
-} as const
-
-export const InputContext = createStyledContext<{
-  size: FontSizeTokens
-  scaleIcon: number
-  color?: ColorTokens | string
-}>(defaultContextValues)
-
-export const defaultInputGroupStyles = {
-  size: '$true',
-  fontFamily: '$body',
-  borderWidth: 1,
-  outlineWidth: 0,
-  color: '$color',
-
-  borderColor: '$borderColor',
-  backgroundColor: '$color2',
-
-  // this fixes a flex bug where it overflows container
-  minWidth: 0,
-
-  hoverStyle: {
-    borderColor: '$borderColorHover',
-  },
-
-  focusStyle: {
-    outlineColor: '$outlineColor',
-    outlineWidth: 2,
-    outlineStyle: 'solid',
-    borderColor: '$borderColorFocus',
-  },
-} as const
-
-const InputGroupFrame = styled(XGroup, {
-  justifyContent: 'space-between',
-  context: InputContext,
-  variants: {
-    unstyled: {
-      false: defaultInputGroupStyles,
-    },
-    scaleIcon: {
-      ':number': {} as any,
-    },
-    applyFocusStyle: {
-      ':boolean': (val, { props }) => {
-        if (val) {
-          return props.focusStyle || defaultInputGroupStyles.focusStyle
-        }
-      },
-    },
-    size: {
-      '...size': (val, { tokens }) => {
-        return {
-          borderRadius: tokens.radius[val],
-        }
-      },
-    },
-  } as const,
-  defaultVariants: {
-    unstyled: process.env.TAMAGUI_HEADLESS === '1',
-  },
-})
-
-const FocusContext = createStyledContext({
-  setFocused: (val: boolean) => {},
-  focused: false,
-})
-
-const InputGroupImpl = InputGroupFrame.styleable((props, forwardedRef) => {
-  const { children, ...rest } = props
-  const [focused, setFocused] = useState(false)
-
-  return (
-    <FocusContext.Provider focused={focused} setFocused={setFocused}>
-      <InputGroupFrame applyFocusStyle={focused} ref={forwardedRef} {...rest}>
-        {children}
-      </InputGroupFrame>
-    </FocusContext.Provider>
-  )
-})
-
-export const inputSizeVariant: SizeVariantSpreadFunction<any> = (
-  val = '$true',
-  extras
-) => {
-  const radiusToken = extras.tokens.radius[val] ?? extras.tokens.radius['$true']
-  const paddingHorizontal = getSpace(val, {
-    shift: -1,
-    bounds: [2],
-  })
-  const fontStyle = getFontSized(val as any, extras)
-  // lineHeight messes up input on native
-  if (!isWeb && fontStyle) {
-    delete fontStyle['lineHeight']
-  }
-  return {
-    ...fontStyle,
-    height: val,
-    borderRadius: extras.props.circular ? 100_000 : radiusToken,
-    paddingHorizontal,
-  }
-}
-
-const InputFrame = styled(TInput, {
-  unstyled: true,
-  context: InputContext,
-})
-
-const InputImpl = InputFrame.styleable((props, ref) => {
-  const { setFocused } = FocusContext.useStyledContext()
-  const { size } = InputContext.useStyledContext()
-  const { ...rest } = props
-  return (
-    <View flex={1}>
-      <InputFrame
-        ref={ref}
-        onFocus={() => {
-          setFocused(true)
-        }}
-        onBlur={() => setFocused(false)}
-        size={size}
-        {...rest}
-      />
-    </View>
-  )
-})
-
-const InputSection = styled(XGroup.Item, {
-  justifyContent: 'center',
-  alignItems: 'center',
-  context: InputContext,
-})
-
-const Button = styled(TButton, {
-  context: InputContext,
-  justifyContent: 'center',
-  alignItems: 'center',
-
-  variants: {
-    size: {
-      '...size': (val = '$true', { tokens }) => {
-        if (typeof val === 'number') {
-          return {
-            paddingHorizontal: 0,
-            height: val,
-            borderRadius: val * 0.2,
-          }
-        }
-        return {
-          paddingHorizontal: 0,
-          height: val,
-          borderRadius: tokens.radius[val],
-        }
-      },
-    },
-  } as const,
-})
-
-// Icon starts
-
-export const InputIconFrame = styled(View, {
-  justifyContent: 'center',
-  alignItems: 'center',
-  context: InputContext,
-
-  variants: {
-    size: {
-      '...size': (val: string | number, { tokens }: any) => {
-        return {
-          paddingHorizontal: tokens.space[val],
-        }
-      },
-    },
-  } as const,
-})
-
-const getIconSize = (size: FontSizeTokens, scale: number) => {
-  return (
-    (typeof size === 'number' ? size * 0.5 : getFontSize(size as FontSizeTokens)) * scale
-  )
-}
-
-const InputIcon = InputIconFrame.styleable<{
-  scaleIcon?: number
-  color?: ColorTokens | string
-}>((props, ref) => {
-  const { children, color: colorProp, ...rest } = props
-  const inputContext = InputContext.useStyledContext()
-  const { size = '$true', color: contextColor, scaleIcon = 1 } = inputContext
-
-  const theme = useTheme()
-  const color = getVariable(
-    contextColor || theme[contextColor as any]?.get('web') || theme.color10?.get('web')
-  )
-  const iconSize = getIconSize(size as FontSizeTokens, scaleIcon)
-
-  const getThemedIcon = useGetThemedIcon({ size: iconSize, color: color as any })
-  return (
-    <InputIconFrame ref={ref} {...rest}>
-      {getThemedIcon(children)}
-    </InputIconFrame>
-  )
-})
-
-export const InputContainerFrame = styled(View, {
-  context: InputContext,
-  flexDirection: 'column',
-
-  variants: {
-    size: {
-      '...size': (val: string | number, { tokens }: any) => ({
-        gap: tokens.space[val].val * 0.3,
-      }),
-    },
-    color: {
-      '...color': () => ({}),
-    },
-    gapScale: {
-      ':number': {} as any,
-    },
-  } as const,
-
-  defaultVariants: {
-    size: '$4',
-  },
-})
-
-export const InputLabel = styled(Label, {
-  context: InputContext,
-  variants: {
-    size: {
-      '...fontSize': getFontSized as any,
-    },
-  } as const,
-})
-
-export const InputInfo = styled(Text, {
-  context: InputContext,
-  color: '$color10',
-
-  variants: {
-    size: {
-      '...fontSize': (val: string | number, { font }: any) => {
-        if (!font) return
-        const fontSize = font.size[val].val * 0.8
-        const lineHeight = font.lineHeight?.[val].val * 0.8
-        const fontWeight = font.weight?.['$2']
-        const letterSpacing = font.letterSpacing?.[val]
-        const textTransform = font.transform?.[val]
-        const fontStyle = font.style?.[val]
-        return {
-          fontSize,
-          lineHeight,
-          fontWeight,
-          letterSpacing,
-          textTransform,
-          fontStyle,
-        }
-      },
-    },
-  } as const,
-})
-
-const InputXGroup = styled(XGroup, {
-  context: InputContext,
-
-  variants: {
-    size: {
-      '...size': (val, { tokens }) => {
-        const radiusToken: VariableVal = tokens.radius[val] ?? tokens.radius['$true']
-        return {
-          borderRadius: radiusToken,
-        }
-      },
-    },
-  } as const,
-})
-
-export const InputSkeleton = withStaticProperties(InputContainerFrame, {
-  Box: InputGroupImpl,
-  Area: InputImpl,
-  Section: InputSection,
-  Button,
-  Icon: InputIcon,
-  Info: InputInfo,
-  Label: InputLabel,
-  XGroup: withStaticProperties(InputXGroup, { Item: XGroup.Item }),
-})
 
 type InputProps = {
   name: string,
   control: Control<any,any>,
   label: string,
   placeholder: string,
-  defaultValue?: string | undefined,
+  defaultValue?: string | number |undefined,
   textContentType?:  TextInputIOSProps["textContentType"] | undefined,
   secureTextEntry?: boolean | undefined,
   size?: string | number | undefined,
-  gap?: string | number | undefined
+  gap?: string | number | undefined,
+  keyboardType?: KeyboardTypeOptions | undefined,
+  disabled?: boolean | undefined,
 }
 
-export const Input = ({ control, name, defaultValue, label, placeholder, textContentType, secureTextEntry, size, gap }: InputProps) => {
+export const Input = ({
+  control,name, defaultValue, label, placeholder, textContentType, secureTextEntry, gap, keyboardType, disabled }: InputProps) => {
   const id = useId();
+  const theme = useTheme();
+  const styles = makeStyles(theme);
   return (
   <Controller
       control={control}
       render={({ field: { onChange, onBlur, value } }) => (
-        <InputSkeleton size={size ?? "$4"} gap={gap ?? "$1"}>
-          <InputSkeleton.Label htmlFor={id}>{label}</InputSkeleton.Label>
-          <InputSkeleton.Box>
-            <InputSkeleton.Area
+        <View gap={gap ?? "$1"} position='relative'>
+          {disabled && <View style={styles.overlay} pointerEvents="none" />}
+          <Label style={{ fontSize: 15, fontWeight: 800, color: theme.color.val }} htmlFor={id}>
+            <Text style={{ fontWeight: "bold" }}>{label}</Text>
+          </Label>
+          <InputSkeleton
             id={id}
             placeholder={placeholder}
             onChangeText={onChange}
             onBlur={onBlur}
             value={value}
             textContentType={textContentType}
-            secureTextEntry={secureTextEntry}/>
-          </InputSkeleton.Box>
-        </InputSkeleton>
+            secureTextEntry={secureTextEntry}
+            keyboardType={keyboardType}
+            disabled={disabled ?? false}
+            />
+        </View>
       )}
       name={name}
       defaultValue={defaultValue ?? ""}
@@ -358,11 +65,245 @@ export const Input = ({ control, name, defaultValue, label, placeholder, textCon
   )
 }
 
+export const TextArea = ({ control,
+  name,
+  defaultValue,
+  label,
+  placeholder,
+  textContentType,
+  secureTextEntry,
+  size,
+  gap,
+  disabled
+}: InputProps) => {
+  const id = useId();
+  const theme = useTheme();
+  const styles = makeStyles(theme);
+  return (
+    <Controller
+      control={control}
+      render={({ field: { onChange, onBlur, value } }) => (
+        <View position='relative' gap={gap ?? "$1"}>
+          {disabled && <View style={styles.overlay} pointerEvents="none" />}
+          <Label style={{ fontWeight: "bold", color: theme.color.val }}  htmlFor={id}>{label}</Label>
+          <TextAreaSkeleton
+            onChangeText={onChange}
+            onBlur={onBlur}
+            value={value}
+            placeholder={placeholder}
+            textContentType={textContentType}
+            secureTextEntry={secureTextEntry}
+            size={size}
+            gap={gap}
+            height={"$16"}
+            maxLength={200}
+            disabled={disabled ?? false}
+          />
+        </View>
+      )}
+      name={name}
+      defaultValue={defaultValue ?? ""}
+    />
+  )
+}
+
+type SwitchProps = {
+  name: string,
+  control: Control<any,any>,
+  label: string,
+  disabled?: boolean | undefined,
+  defaultValue?: boolean | undefined,
+  size?: string | number | undefined,
+  gap?: string | number | undefined,
+}
+
+export const Switch = ({ control, name, defaultValue, label, gap, disabled }: SwitchProps) => {
+  const id = useId();
+  const theme = useTheme();
+  const styles = makeStyles(theme);
+  return (
+    <Controller
+      control={control}
+      render={({ field: { onChange, onBlur, value } }) => (
+        <View position='relative'alignItems='flex-start' gap={gap ?? "$1"}>
+          {disabled && <View style={styles.overlay} pointerEvents="none" />}
+          <Label style={{ fontWeight: "bold" }}  htmlFor={id}>{label}</Label>
+          <TSwitch
+            id={id}
+            onCheckedChange={onChange}
+            onBlur={onBlur}
+            value={value}
+            gap={gap}
+            native
+            backgroundColor={theme.section.val}
+            margin={0}
+            width={50}
+            defaultChecked={defaultValue}
+            disabled={disabled}
+          >
+            <TSwitch.Thumb disabled={disabled}/>
+          </TSwitch>
+        </View>
+      )}
+      name={name}
+      defaultValue={defaultValue}
+    />
+  )
+}
+
 export const InputError =  ({children}: { children?: ReactNode }) => {
   const colorScheme = useColorScheme() ?? 'light';
   return (
-    <Text alignSelf='flex-start' fontSize="$1" color={ colorScheme === "light" ? Colors.light.error : Colors.dark.error }>
+    <TamaguiText alignSelf='flex-start' fontSize="$4" color={ colorScheme === "light" ? Colors.light.error : Colors.dark.error }>
       {children}
-    </Text>
+    </TamaguiText>
   )
 }
+
+export const CurrencyInput = ({
+  control,
+  name,
+  defaultValue,
+  label,
+  placeholder,
+  gap
+}: InputProps) => {
+  const id = useId();
+  const theme = useTheme();
+  const currency = "£";
+
+  const formatCurrency = (value: string | undefined): string => {
+    if (!value) return ""; // Default currency format
+    return currency + unformatCurrency(value);
+  };
+  const unformatCurrency = (value: string | undefined): string => {
+    if (!value) return ""; // Default currency format
+    return value.replace(/[^0-9.]/g, ""); // Remove non-numeric characters
+  }
+
+  return (
+    <Controller
+      control={control}
+      render={({ field: { onChange, onBlur, value } }) => (
+        <View gap={gap ?? "$1"}>
+          <Label style={{ fontSize: 15, fontWeight: 800, color: theme.color.val }} htmlFor={id}>
+            <Text style={{ fontWeight: "bold" }}>{label}</Text>
+          </Label>
+          <InputSkeleton
+            id={id}
+            placeholder={currency + placeholder}
+            onChangeText={(text) => {
+              onChange(unformatCurrency(text)); // Pass raw value (without currency symbol) to the form control
+            }}
+            onBlur={onBlur}
+            value={formatCurrency(value)}
+            keyboardType="numeric" // Set keyboard to numeric for easier input
+          />
+        </View>
+      )}
+      name={name}
+      defaultValue={defaultValue ?? ""}
+    />
+  );
+};
+
+type TimePickerProps = {
+  name: string;
+  control: Control<any, any>;
+  label: string;
+  defaultValue?: Date;
+  gap?: string | number | undefined;
+  mode?: AndroidNativeProps['mode'];
+  disabled?: boolean | undefined;
+};
+
+export const TimePicker = ({
+  control,
+  name,
+  label,
+  defaultValue,
+  gap,
+  mode = 'time',
+  disabled,
+}: TimePickerProps) => {
+  const id = React.useId();
+  const theme = useTheme();
+  const styles = makeStyles(theme);
+  const [date, setDate] = useState(defaultValue ?? new Date());
+  const [show, setShow] = useState(false);
+  const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+  return (
+    <Controller
+      control={control}
+      name={name}
+      defaultValue={defaultValue ?? new Date()}
+      render={({ field: { onChange, value } }) => (
+        <View style={{ position: 'relative', gap: gap ?? '$1' }}>
+          <Label
+            style={{
+              fontSize: 15,
+              fontWeight: 800,
+              color: theme.color.val,
+            }}
+            htmlFor={id}
+          >
+            <Text style={{ fontWeight: 'bold' }}>{label}</Text>
+          </Label>
+
+          {/* DateTimePicker with optional dim overlay */}
+          <View style={{ position: 'relative' }}>
+            {(Platform.OS === 'ios' || show)  && (
+              <DateTimePicker
+                value={value}
+                mode={mode}
+                display="default"
+                is24Hour
+                style={{
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 10,
+                  paddingRight: 5,
+                  paddingLeft: 0,
+                }}
+                onChange={(event, selectedDate) => {
+                  if (selectedDate) {
+                    setDate(selectedDate);
+                    onChange(selectedDate);
+                    setShow(false);
+                  }
+                }}
+                disabled={disabled}
+              />)}
+              {Platform.OS === 'android' && (
+                <Pressable onPress={() => setShow(true)} scale={0.99} activeOpacity={0.7} disabled={disabled} style={{
+                  alignItems: 'center',
+                  borderRadius: 10,
+                  justifyContent: 'center',
+                  backgroundColor: theme.section.val,
+                  padding: 10,
+                  height: 50,
+                  width: 90,
+                  }}>
+                  <Text style={{ color: theme.color.val }}>{time}</Text>
+                </Pressable>
+            )}
+            {disabled && <View style={styles.overlay} pointerEvents="none" />}
+          </View>
+        </View>
+      )}
+    />
+  );
+};
+
+const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: theme.tameOverlay.val, // Dim effect
+    zIndex: 1,
+  },
+});

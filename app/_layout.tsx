@@ -21,6 +21,8 @@ import AppStack, { animationDuration } from '@/components/navigation/AppStack';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useBusinessStore } from '@/utils/stores/businessStore';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -35,10 +37,12 @@ SplashScreen.setOptions({
 export default function RootLayout() {
   const [appIsReady, setAppIsReady] = useState(false);
   const colorScheme = useColorScheme();
+  const queryClient = new QueryClient();
   const { left, top, right } = initialWindowMetrics!.insets;
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
   const setUser = useAuthStore((state) => state.setUser);
   const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
+  const loadBusinessData = useBusinessStore((state) => state.load);
   const router = useRouter();
 
   useEffect(() => {
@@ -78,6 +82,12 @@ export default function RootLayout() {
     prepare();
   }, []);
 
+  useEffect(() => {
+    if (isLoggedIn) {
+      (async () => { await loadBusinessData() })();
+    }
+  }, [isLoggedIn]);
+
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
       // This tells the splash screen to hide immediately! If we call this after
@@ -101,13 +111,15 @@ export default function RootLayout() {
   return (
     <TamaguiProvider config={config} defaultTheme={colorScheme!}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <ToastProvider swipeDirection="up" duration={5000}>
-        <StatusBar style={colorScheme === 'dark' ? "light" : "dark"}/>
-          <ThemedView onLayout={onLayoutRootView} darkColor={Colors.dark.background} lightColor={Colors.light.background} style={{ height: '100%', width: '100%' }}>
-              <CurrentToast />
-              <ToastViewport flexDirection="column-reverse" top={top} left={left} right={right} />
-              <AppStack/>
-          </ThemedView>
+        <ToastProvider swipeDirection="up" duration={5000}>
+          <QueryClientProvider client={queryClient}>
+            <StatusBar style={colorScheme === 'dark' ? "light" : "dark"}/>
+            <ThemedView onLayout={onLayoutRootView} darkColor={Colors.dark.background} lightColor={Colors.light.background} style={{ height: '100%', width: '100%' }}>
+                <CurrentToast />
+                <ToastViewport flexDirection="column-reverse" top={top} left={left} right={right} />
+                <AppStack/>
+            </ThemedView>
+          </QueryClientProvider>
         </ToastProvider>
       </ThemeProvider>
     </TamaguiProvider>

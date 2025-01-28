@@ -12,7 +12,6 @@ import {
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-
 import { useAuthStore } from '@/utils/stores/authStore';
 import DismissKeyboard from '../utils/DismissKeyboard';
 import { Input, InputError } from '../utils/form/inputs';
@@ -71,7 +70,7 @@ export function LoginForm() {
           width="100%"
           maxWidth="100%"
           height="100%"
-          gap="$4"
+          gap="$6"
           padding="$7"
           paddingVertical="$6"
           $gtSm={{
@@ -79,7 +78,7 @@ export function LoginForm() {
             width: 400,
           }}
         >
-          <YStack gap="$3" width="100%">
+          <YStack gap="$5" width="100%">
             <YStack gap="$2">
             <Input
                 control={control}
