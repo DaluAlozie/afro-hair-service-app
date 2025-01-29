@@ -35,7 +35,7 @@ export default function Appointments() {
         />
       )}
       <View position='absolute' bottom={50} right={20}>
-        <Pressable onPress={() => router.push('/business/availability')} activeOpacity={0.99} style={{
+        <Pressable onPress={() => router.push('/myBusiness/availability')} activeOpacity={0.99} style={{
             flexDirection: 'row',
             alignItems: 'center',
             backgroundColor: scheme === 'light' ? theme.section.val : inverseTheme.background.val,

@@ -41,7 +41,7 @@ export default function VerifyEmail() {
       );
     }
     if (router.canDismiss()) router.dismiss();
-    else if (isLoggedIn) router.replace("/home");
+    else if (isLoggedIn) router.replace("/(tabs)");
     else router.replace("/login")
   },[url,rootNavigationState?.key]);
   return (

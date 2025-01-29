@@ -69,7 +69,7 @@ export default function TimeSlotModal({ id, open, setOpen }: { id: number, open:
             }
             setOpen(value);
         }}>
-            <Form alignItems="center" height={300} width={"100%"} backgroundColor={theme.background.val}>
+            <Form alignItems="center" height={300} width={"90%"} backgroundColor={theme.background.val} borderRadius={20}>
                 <YStack
                     alignItems="stretch"
                     justifyContent="flex-start"

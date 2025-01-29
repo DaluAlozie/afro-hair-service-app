@@ -9,9 +9,12 @@ import {
     ServiceLocation,
     Review,
     Variant,
-    TimeSlot
+    TimeSlot,
+    CustomizableOption,
+    CustomizableOptionType
 } from '@/components/business/types'
 import { PostgrestError } from '@supabase/supabase-js'
+import { decode } from 'base64-arraybuffer'
 
 export type BusinessProps = {
   error?: PostgrestError | PostgrestError | undefined
@@ -22,12 +25,14 @@ export interface BusinessStore {
     name: string,
     phoneNumber: string | null,
     description: string,
+    profilePicture: string | null,
     rating: number,
     services: Map<number, Service>
     appointments: Map<number, Appointment>,
     notifications: Map<string, Notification>,
     locations: Map<number, Location>,
     reviews: Map<number, Review>,
+    tags: string[],
     facebook: string | null,
     instagram: string | null,
     twitter: string | null,
@@ -37,7 +42,11 @@ export interface BusinessStore {
     availability: Map<number, TimeSlot>,
     createBusiness: (name: string, number: string | null, description: string) => Promise<BusinessProps>,
     load(): Promise<unknown>,
+    reset: () => void,
     loadBusiness: () => Promise<BusinessProps>,
+    loadProfilePicture: () => Promise<BusinessProps>,
+    uploadProfilePicture: (image: string) => Promise<BusinessProps>,
+    removeProfilePicture: () => Promise<BusinessProps>,
     loadServices: () => Promise<BusinessProps>,
     loadBusinessLocations: () => Promise<BusinessProps>,
     loadBusinessAppointments: () => Promise<BusinessProps>,
@@ -46,13 +55,16 @@ export interface BusinessStore {
     loadServiceOptions: (serviceId: number) => Promise<BusinessProps>,
     loadAddOns: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
     loadVariants: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
+    loadCustomizableOptions: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
     addService: (
-        title: string,
+        name: string,
         description: string,
     ) => Promise<BusinessProps>,
     addAvailability: (
         availabilities: { from: Date, to: Date }[]
     ) => Promise<BusinessProps>,
+    addTag: (tag: string) => Promise<BusinessProps>,
+    removeTag: (tag: string) => Promise<BusinessProps>,
     addBusinessLocation: (
         streetAddress: string,
         flatNumber: string | null,
@@ -63,7 +75,7 @@ export interface BusinessStore {
         latitude: number
     ) => Promise<BusinessProps>
     addServiceOption: (
-        title: string,
+        name: string,
         description: string,
         enabled: boolean,
         serviceId: number
@@ -88,6 +100,14 @@ export interface BusinessStore {
         serviceOptionId: number,
         serviceId: number,
     ) => Promise<BusinessProps>,
+    addCustomizableOption: (
+        name: string,
+        type: CustomizableOptionType,
+        lower_bound: number | null,
+        upper_bound: number | null,
+        serviceOptionId: number,
+        serviceId: number,
+    ) => Promise<BusinessProps>,
     removeService: (serviceId: number) => Promise<BusinessProps>,
     removeAvailability: (availabilityIds: number[]) => Promise<BusinessProps>,
     removeBusinessLocation: (locationId: number) => Promise<BusinessProps>,
@@ -95,6 +115,7 @@ export interface BusinessStore {
     removeServiceOption: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
     removeAddOn: (serviceId: number, serviceOptionId: number, addOnId: number) => Promise<BusinessProps>
     removeVariant: (serviceId: number, serviceOptionId: number, variantId: number) => Promise<BusinessProps>
+    removeCustomizableOption: (serviceId: number, serviceOptionId: number, customizableOptionId: number) => Promise<BusinessProps>
     cancelAppointment: (appointmentId: number) => Promise<BusinessProps>
     editBusinessName: (newName: string) => Promise<BusinessProps>
     editBusinessPhoneNumber: (newNumber: string | null) => Promise<BusinessProps>
@@ -126,6 +147,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
     name: "",
     phoneNumber: "",
     description: "",
+    profilePicture: null,
     rating: 0,
     services: new Map<number, Service>(),
     availability: new Map<number, TimeSlot>(),
@@ -133,6 +155,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
     locations: new Map<number, Location>(),
     notifications: new Map<string, Notification>(),
     reviews: new Map<number, Review>(),
+    tags: [],
     facebook: "",
     instagram: "",
     twitter: "",
@@ -171,6 +194,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 set({ loading: false })
                 return {};
             }
+            await get().loadProfilePicture();
             await get().loadAvailability();
             await get().loadServices();
             await get().loadBusinessLocations();
@@ -185,6 +209,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 for (const serviceOptionId of serviceOptionIds) {
                     await get().loadAddOns(id, serviceOptionId);
                     await get().loadVariants(id, serviceOptionId);
+                    await get().loadCustomizableOptions(id, serviceOptionId);
                 }
             }
             set({ loading: false })
@@ -195,6 +220,9 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
             set({ loading: false });
             return { error };
         }
+    },
+    reset: () => {
+        set(initialState);
     },
     loadBusiness: async () => {
         const supabase = await supabaseClient;
@@ -219,9 +247,74 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 hasBusiness: true,
                 facebook: data.facebook,
                 instagram: data.instagram,
-                twitter: data.twitter
+                twitter: data.twitter,
+                tags: data.tags,
             })
         }
+        return {};
+    },
+    loadProfilePicture: async () => {
+        const supabase = await supabaseClient;
+        const user = await supabase.auth.getUser();
+        if (!user || !user.data.user) {
+            return {};
+        }
+        const { data: exists } = await supabase.storage
+            .from('BusinessProfile')
+            .exists(`${user.data.user.id}/profilePicture.png`);
+
+        if (!exists) {
+            return {};
+        }
+        const { data } = supabase.storage.from('BusinessProfile').getPublicUrl(
+            `${user.data.user.id}/profilePicture.png`
+        )
+        if (!data || !data.publicUrl) {
+            return {};
+        }
+        set({
+            profilePicture: data.publicUrl == "" || data.publicUrl === undefined ? null : data.publicUrl
+        });
+        return {};
+    },
+    uploadProfilePicture: async (image: string) => {
+        const supabase = await supabaseClient;
+        const user = await supabase.auth.getUser();
+        if (!user || !user.data.user) {
+            return {};
+        }
+        const { error } = await supabase.storage.from('BusinessProfile').update(
+            `${user.data.user.id}/profilePicture.png`,
+            decode(image),
+            {
+                contentType: 'image/png',
+                upsert: true,
+                cacheControl: '0',
+            }
+        )
+        if (error) {
+            console.log(error);
+            return {};
+        }
+        await get().loadProfilePicture();
+        const imageUri = `data:image/png;base64,${image}`;
+        set({ profilePicture: imageUri });
+        return {};
+    },
+    removeProfilePicture: async () => {
+        const supabase = await supabaseClient;
+        const user = await supabase.auth.getUser();
+        if (!user || !user.data.user) {
+            return {};
+        }
+        const { error } = await supabase.storage.from('BusinessProfile').remove(
+            [`${user.data.user.id}/profilePicture.png`]
+        )
+        if (error) {
+            console.log(error);
+            return {};
+        }
+        set({ profilePicture: null });
         return {};
     },
     loadServices: async () => {
@@ -260,6 +353,34 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 } as TimeSlot)
         })
         set({ availability });
+        return {};
+    },
+    addTag: async (tag: string) => {
+        const supabase = await supabaseClient;
+        const { error } = await supabase
+            .from('Business')
+            .update({ tags: [...get().tags, tag] })
+            .eq('id', get().id)
+        if (error) {
+            return { error };
+        }
+        set((state) => ({
+            tags: [tag, ...state.tags]
+        }));
+        return {};
+    },
+    removeTag: async (tag: string) => {
+        const supabase = await supabaseClient;
+        const { error } = await supabase
+            .from('Business')
+            .update({ tags: get().tags.filter((t) => t !== tag) })
+            .eq('id', get().id)
+        if (error) {
+            return { error };
+        }
+        set((state) => ({
+            tags: state.tags.filter((t) => t !== tag)
+        }));
         return {};
     },
     loadBusinessLocations: async () => {
@@ -383,14 +504,35 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }));
         return {};
     },
+    loadCustomizableOptions: async (serviceId: number, serviceOptionId: number) => {
+        const supabase = await supabaseClient;
+        const { data, error } = await supabase
+            .from('CustomizableOption')
+            .select('*')
+            .eq('service_option_id', serviceOptionId)
+        if (error) {
+            throw { error };
+        }
+        const customizableOptions = new Map<number, CustomizableOption>();
+        data?.forEach((customizableOption: CustomizableOption) => {
+            customizableOptions.set(customizableOption.id, {...customizableOption, service_id: serviceId})
+        })
+        const service = get().services.get(serviceId) as Service;
+        const serviceOption = service.service_options.get(serviceOptionId) as ServiceOption;
+        serviceOption.customizableOptions = customizableOptions;
+        set((state) => ({
+            services: new Map(state.services).set(service.id, service)
+        }));
+        return {};
+    },
     addService: async (
-        title: string,
+        name: string,
         description: string,
     ) => {
         const supabase = await supabaseClient;
         const { data, error } = await supabase
             .from('Service')
-            .insert([{ title, description, business_id: get().id }])
+            .insert([{ name, description, business_id: get().id }])
             .select()
             .limit(1)
             .single()
@@ -399,7 +541,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }
         const service = {
             id: data.id,
-            title: data.title,
+            name: data.name,
             description: data.description,
             enabled: data.enabled,
             service_options: new Map<number, ServiceOption>(),
@@ -474,7 +616,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         return {};
      },
     addServiceOption: async (
-        title: string,
+        name: string,
         description: string,
         enabled: boolean,
         serviceId: number
@@ -483,7 +625,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         const { data, error } = await supabase
             .from('ServiceOption')
             .insert([{
-                title,
+                name,
                 description,
                 enabled,
                 service_id: serviceId
@@ -497,7 +639,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }
         const service = get().services.get(serviceId);
         if (!service) return {};
-        service.service_options.set(data.id, {...data, addOns: new Map<number, AddOn>(), variants: new Map<number, Variant>()});
+        service.service_options.set(data.id, {
+            ...data,
+            addOns: new Map<number, AddOn>(),
+            variants: new Map<number, Variant>(),
+            customizableOptions: new Map<number, CustomizableOption>()
+        });
         return {};
     },
     addServiceLocation: async (
@@ -587,6 +734,36 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         const service = get().services.get(serviceId);
         if (!service) return {};
         service.service_options.get(serviceOptionId)?.variants.set(data.id, {...data, service_id: serviceId});
+        return {};
+    },
+    addCustomizableOption: async (
+        name: string,
+        type: CustomizableOptionType,
+        lower_bound: number | null,
+        upper_bound: number | null,
+        serviceOptionId: number,
+        serviceId: number,
+    ) => {
+        const supabase = await supabaseClient;
+        const { data, error } = await supabase
+            .from('CustomizableOption')
+            .insert([{
+                name,
+                type,
+                lower_bound,
+                upper_bound,
+                service_option_id: serviceOptionId
+            }])
+            .select()
+            .limit(1)
+            .single()
+
+        if (error) {
+            return { error };
+        }
+        const service = get().services.get(serviceId);
+        if (!service) return {};
+        service.service_options.get(serviceOptionId)?.customizableOptions.set(data.id, {...data, service_id: serviceId});
         return {};
     },
     removeService: async (serviceId: number) => {
@@ -711,6 +888,23 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         });
         return {};
     },
+    removeCustomizableOption: async (serviceId: number, serviceOptionId: number, customizableOptionId: number) => {
+        const supabase = await supabaseClient;
+        const { error } = await supabase
+            .from('CustomizableOption')
+            .delete()
+            .eq('id', customizableOptionId)
+        if (error) {
+            return { error };
+        }
+        set((state) => {
+            const service = state.services.get(serviceId);
+            if (!service) return {};
+            service.service_options.get(serviceOptionId)?.customizableOptions.delete(customizableOptionId);
+            return { services: new Map(state.services).set(serviceId, service) };
+        });
+        return {};
+    },
     cancelAppointment: async (appointmentId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
@@ -803,14 +997,14 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('Service')
-            .update({ title: newName })
+            .update({ name: newName })
             .eq('id', serviceId)
         if (error) {
             return { error };
         }
         const service = get().services.get(serviceId);
         if (!service) return {};
-        service.title = newName;
+        service.name = newName;
         set((state) => ({
             services: new Map(state.services).set(serviceId, service)
         }));
@@ -1056,3 +1250,24 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
     }
   })
 )
+
+const initialState = {
+    id: -1,
+    name: "",
+    phoneNumber: "",
+    description: "",
+    profilePicture: null,
+    rating: 0,
+    services: new Map<number, Service>(),
+    availability: new Map<number, TimeSlot>(),
+    appointments: new Map<number, Appointment>(),
+    locations: new Map<number, Location>(),
+    notifications: new Map<string, Notification>(),
+    reviews: new Map<number, Review>(),
+    facebook: "",
+    instagram: "",
+    twitter: "",
+    online: false,
+    hasBusiness: false,
+    loading: true,
+}

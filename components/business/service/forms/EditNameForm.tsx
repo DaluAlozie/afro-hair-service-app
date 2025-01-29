@@ -1,19 +1,14 @@
-import {
-    YStack,
-    Form,
-  } from 'tamagui'
-
+import { YStack } from 'tamagui'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import { useBusinessStore } from '@/utils/stores/businessStore';
-import DismissKeyboard from '../../../utils/DismissKeyboard';
 import { Input, InputError } from '../../../utils/form/inputs';
 import React, { useCallback } from 'react';
 import SubmitButton from '../../../utils/form/SubmitButton';
-import { useTheme  } from 'tamagui';
 import confirm from '../../../utils/Alerts/Confirm';
+import EditModalForm from '@/components/utils/ui/EditModalForm';
 
 const schema = yup.object().shape({
   newName: yup
@@ -22,16 +17,14 @@ const schema = yup.object().shape({
     .max(50, "The name exceeds the character limit of 50."),
 });
 
-
 export function EditServiceNameForm({ serviceId, close }:
   { serviceId: number, close: () => void }) {
 
-  const name = useBusinessStore(state => state.services.get(serviceId)?.title);
+  const name = useBusinessStore(state => state.services.get(serviceId)?.name);
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const theme = useTheme();
   const editServiceName = useBusinessStore((state) => state.editServiceName)
   const onSubmit = useCallback(async (data: { newName: string }) => {
     confirm(
@@ -50,8 +43,7 @@ export function EditServiceNameForm({ serviceId, close }:
     },[]);
 
   return (
-    <DismissKeyboard>
-      <Form alignItems="center" height={300} width={"100%"} backgroundColor={theme.background.val}>
+      <EditModalForm>
           <YStack
               alignItems="stretch"
               justifyContent="flex-start"
@@ -83,7 +75,6 @@ export function EditServiceNameForm({ serviceId, close }:
                 Edit Service Name
             </SubmitButton>
           </YStack>
-      </Form>
-    </DismissKeyboard>
+      </EditModalForm>
   )
 }

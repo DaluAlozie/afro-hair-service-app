@@ -8,9 +8,9 @@ import { router } from "expo-router";
 export default function ServiceCover(
     {
         id,
-        title,
+        name,
         description,
-    }: { id: number, title: string, description: string }
+    }: { id: number, name: string, description: string }
 ) {
     const theme = useTheme();
 
@@ -34,7 +34,7 @@ export default function ServiceCover(
                     fontSize={30}
                     fontWeight={"bold"}
                 >
-                    {title}
+                    {name}
                 </Text>
                 <Text>{description}</Text>
             </ScrollView>

@@ -36,7 +36,7 @@ export default function ServicePage() {
             router.dismissTo("/(business)/services");
             return null
         }
-        const title = service.title.length < 20 ? service.title : "Service";
+        const title = service.name.length < 20 ? service.name : "Service";
         navigation.setOptions({
             title: title + " Service",
         })
@@ -165,10 +165,10 @@ function General({ service }: { service: ServiceProp }) {
                         justifyContent: "flex-end",
                         alignItems: "center" }}
                         activeOpacity={0.7} scale={0.99}>
-                    <Text style={[styles.contentText, { marginRight: 2 }]}>
-                        {service.title}
+                    <Text style={[styles.contentText, { marginRight: 5 }]}>
+                        {service.name}
                     </Text>
-                    <Feather name="edit-3" size={12} color={theme.color.val}/>
+                    <Feather name="edit-3" size={16} color={theme.color.val}/>
                     </Pressable>
                 </ScrollView>
             </XStack>
@@ -183,10 +183,10 @@ function General({ service }: { service: ServiceProp }) {
                         justifyContent: "flex-end",
                         alignItems: "center"
                     }} activeOpacity={0.7} scale={0.99}>
-                    <Text style={[styles.contentText, { marginRight: 2 }]}>
+                    <Text style={[styles.contentText, { marginRight: 5 }]}>
                         {service.description}
                     </Text>
-                    <Feather name="edit-3" size={12} color={theme.color.val}/>
+                    <Feather name="edit-3" size={16} color={theme.color.val}/>
                     </Pressable>
                 </ScrollView>
             </XStack>

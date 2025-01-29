@@ -117,7 +117,7 @@ export function SignUpForm() {
                   textContentType='emailAddress'/>
                   {errors.email && <InputError>{errors.email.message?.toString()}</InputError>}
               </YStack>
-              <YStack gap="$2" width="100%">
+              <YStack gap="$2">
                 <Input
                   control={control}
                   label="Password"
@@ -127,7 +127,7 @@ export function SignUpForm() {
                   secureTextEntry/>
                 {errors.password && <InputError>{errors.password.message?.toString()}</InputError>}
               </YStack>
-              <YStack gap="$2" width="100%">
+              <YStack gap="$2">
                 <Input
                   control={control}
                   label="Confirm Password"

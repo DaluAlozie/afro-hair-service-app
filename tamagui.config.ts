@@ -5,11 +5,11 @@ import { createTamagui } from 'tamagui';
 // Modify the light theme's background
 const modifiedLightTheme = {
   ...tamaguiDefaultConfig.themes.light, // Clone the default light theme
-  background: '#f3f2f6', // Set the background to white
+  background: '#ffffff', // Set the background to whiter
   onPressStyle: "#D9D9D9",
   danger: "#e00b19",
   linkBlue: "#007aff",
-  section: "#ffffff",
+  section: "#f3f3f3",
   calendarSelectedRange: "rgba(220, 219, 219, 0.3)",
   calendarSelected: "rgb(220, 219, 219)",
   overlay: "rgba(243, 242, 246, 0.9)",

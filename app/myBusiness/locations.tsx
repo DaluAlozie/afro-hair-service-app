@@ -37,7 +37,7 @@ function HeaderComponent() {
     height={"auto"}
   >
     <Pressable
-      onPress={() => router.push('/business/addLocation')}
+      onPress={() => router.push('/myBusiness/addLocation')}
       style={styles.addLocationButton}
       innerStyle={styles.innerStyle}
       pressedStyle={{ backgroundColor: theme.onPressStyle.val }}
@@ -56,9 +56,11 @@ const makeStyles = (
   theme: UseThemeResult,
 ) => StyleSheet.create({
   container: {
-    width: '90%',
+    width: '100%',
+    height: "100%",
+    padding: 20,
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignSelf: 'center',
     backgroundColor: theme.background.val,
   },

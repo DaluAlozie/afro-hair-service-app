@@ -1,20 +1,25 @@
 import { Stack, useRouter } from 'expo-router';
 import React from 'react';
-import { useTheme } from 'tamagui';
+import { useTheme, View } from 'tamagui';
 import { ThemedText } from '../utils';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Pressable from '../utils/Pressable';
 import { Platform } from 'react-native';
+import { Image } from 'expo-image';
+import emptyProfile from '@/assets/images/empty-profile.png';
+import { useBusinessStore } from '@/utils/stores/businessStore';
 
 export const animationDuration = 200;
 export default function AppStack() {
-    const theme = useTheme()
-    const router = useRouter()
+    const theme = useTheme();
+    const router = useRouter();
+    const bg = theme.background.val
+
     return (
-        <Stack initialRouteName="login" screenOptions={{
+        <Stack initialRouteName="(tabs)" screenOptions={{
             headerStyle: {
-            backgroundColor: theme.background.val,
+            backgroundColor: bg,
             },
             headerTintColor: theme.colors?.val,
             headerTitleStyle: {
@@ -39,50 +44,70 @@ export default function AppStack() {
 
             {/* Protected Routes */}
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="map" options={{ title: 'Map', headerShown: false }}/>
+            <Stack.Screen name="searchFilters" options={{
+                title: 'Search Filters',
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
+                gestureEnabled:true,
+                gestureDirection: "vertical",
+                animation:"slide_from_bottom",
+                headerLeft: HeaderLeftAlt
+            }} />
+            <Stack.Screen name="search" options={{
+                title: 'Search',
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
+                gestureDirection: "vertical",
+                animation:"slide_from_bottom",
+                headerLeft: HeaderLeftAlt
+            }} />
             <Stack.Screen name="(business)" options={{
                 title: 'Your Business',
                 headerLeft: () => (
-                    <Pressable onPress={() => router.dismissTo("/(tabs)")}>
+                    <Pressable onPress={() => router.dismissTo("/(tabs)")} style={{ marginTop: 5 }}>
                         <MaterialIcons name="arrow-back-ios-new" size={24} color={theme.color.val} />
                     </Pressable>
-                )}}
+                ),
+                headerRight: BusinessHeaderRight
+            }}
             />
-            <Stack.Screen name="business/createBusiness" options={{
+            <Stack.Screen name="myBusiness/createBusiness" options={{
                 title: "Start your Business",
-                presentation: (Platform.OS === "ios" && Platform.isPad)? "fullScreenModal" : "modal",
-                fullScreenGestureEnabled: true,
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
                 gestureDirection: "vertical",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
                 }} />
-            <Stack.Screen name="business/addService" options={{
+            <Stack.Screen name="myBusiness/addService" options={{
                 title: "Add Service",
-                presentation: (Platform.OS === "ios" && Platform.isPad)? "fullScreenModal" : "modal",
-                fullScreenGestureEnabled: true,
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
                 gestureDirection: "vertical",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
             }} />
-            <Stack.Screen name="business/locations" options={{
+            <Stack.Screen name="myBusiness/locations" options={{
                 title: "Locations",
-                presentation: (Platform.OS === "ios" && Platform.isPad)? "fullScreenModal" : "modal",
-                fullScreenGestureEnabled: true,
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
                 gestureDirection: "vertical",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
             }} />
-            <Stack.Screen name="business/addLocation" options={{
+            <Stack.Screen name="myBusiness/addLocation" options={{
                 title: "Add Location",
-                presentation: (Platform.OS === "ios" && Platform.isPad)? "fullScreenModal" : "modal",
-                fullScreenGestureEnabled: true,
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
                 gestureDirection: "vertical",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
             }} />
-            <Stack.Screen name="business/availability" options={{
+            <Stack.Screen name="myBusiness/availability" options={{
                 title: "Availability",
-                presentation: (Platform.OS === "ios" && Platform.isPad)? "fullScreenModal" : "modal",
-                fullScreenGestureEnabled: true,
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
+                gestureDirection: "vertical",
+                animation:"slide_from_bottom",
+                headerLeft: HeaderLeftAlt
+            }} />
+            <Stack.Screen name="myBusiness/tags" options={{
+                title: "Business Tags",
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
                 gestureDirection: "vertical",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
@@ -92,8 +117,7 @@ export default function AppStack() {
             }} />
             <Stack.Screen name="service/[serviceId]/addServiceOption" options={{
                 title: "Add Service Option",
-                presentation: (Platform.OS === "ios" && Platform.isPad)? "fullScreenModal" : "modal",
-                fullScreenGestureEnabled: true,
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
                 gestureDirection: "vertical",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
@@ -103,7 +127,7 @@ export default function AppStack() {
             }} />
             <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/addVariant" options={{
                 title: "Add Variant",
-                presentation: (Platform.OS === "ios" && Platform.isPad)? "fullScreenModal": "modal",
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card": "modal",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
                 }} />
@@ -112,11 +136,22 @@ export default function AppStack() {
                 }} />
             <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/addAddOn" options={{
                 title: "Add Add On",
-                presentation: (Platform.OS === "ios" && Platform.isPad)? "fullScreenModal": "modal",
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card": "modal",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
                 }} />
-
+            <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/customizableOptions" options={{
+                title: "Customizations",
+                }} />
+            <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/addCustomizableOption" options={{
+                title: "Add Customization",
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card": "modal",
+                animation:"slide_from_bottom",
+                headerLeft: HeaderLeftAlt
+                }} />
+            <Stack.Screen name="business/[businessId]" options={{
+                title: "Business"
+            }} />
             <Stack.Screen name="resetPassword" options={{ title: 'Reset Password' }} />
             <Stack.Screen name="settings" options={{ title: 'Settings' }} />
             <Stack.Screen name="+not-found"/>
@@ -130,6 +165,28 @@ function HeaderLeftAlt() {
     return (
         <Pressable onPress={() => router.back()}>
             <Ionicons name="close" size={24} color={theme.color.val} />
+        </Pressable>
+    )
+}
+
+function BusinessHeaderRight() {
+    const theme = useTheme();
+    const router = useRouter();
+    const profilePicture = useBusinessStore(state => state.profilePicture);
+    return (
+        <Pressable onPress={() => router.push("/(business)/businessSettings")}>
+            <View height={35} width={35} position='relative' overflow='hidden' borderRadius={125} marginRight={5} marginTop={5}>
+                <Image
+                    style={{
+                        flex: 1,
+                        width: '100%',
+                        backgroundColor: theme.background.val,
+                    }}
+                    source={profilePicture ? { uri: profilePicture } : emptyProfile}
+                    contentFit="cover"
+                    transition={400}
+                    />
+            </View>
         </Pressable>
     )
 }

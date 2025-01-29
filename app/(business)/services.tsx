@@ -31,8 +31,8 @@ export default function Services() {
             <FlashList
               ListFooterComponent={() => <HeaderComponent /> }
               data={items}
-              renderItem={({ item: { id, title, description} }: { item: ServiceProps}) =>
-                <ServiceCover id={id} title={title} description={description} key={id}
+              renderItem={({ item: { id, name, description} }: { item: ServiceProps}) =>
+                <ServiceCover id={id} name={name} description={description} key={id}
               />}
               ItemSeparatorComponent={Separator}
               estimatedItemSize={100}
@@ -69,7 +69,7 @@ function HeaderComponent() {
     height={"auto"}
   >
     <Pressable
-      onPress={() => router.push('/business/addService')}
+      onPress={() => router.push('/myBusiness/addService')}
       style={styles.addServiceButton}
       innerStyle={styles.innerStyle}
       pressedStyle={{ backgroundColor: theme.onPressStyle.val }}

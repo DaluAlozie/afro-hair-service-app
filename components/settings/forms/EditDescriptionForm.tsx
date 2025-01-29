@@ -1,19 +1,13 @@
-import {
-  YStack,
-  Form,
-  useTheme,
-} from 'tamagui'
-
+import { YStack } from 'tamagui'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useBusinessStore } from '@/utils/stores/businessStore';
-import DismissKeyboard from '@/components/utils/DismissKeyboard';
 import { Input, InputError } from '@/components/utils/form/inputs';
 import SubmitButton from '@/components/utils/form/SubmitButton';
 import React, { useCallback } from 'react';
 import confirm from '@/components/utils/Alerts/Confirm';
-
+import EditModalForm from '@/components/utils/ui/EditModalForm';
 
 const schema = yup.object().shape({
 newDescription: yup
@@ -22,14 +16,12 @@ newDescription: yup
   .max(50, "The description exceeds the character limit of 50.")
 });
 
-
 export function EditBusinessDescriptionForm({ close }: { close: () => void }) {
 
 const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
   resolver: yupResolver(schema),
 });
 
-const theme = useTheme();
 const description = useBusinessStore(state => state.description);
 const editBusinessDescription = useBusinessStore((state) => state.editBusinessDescription)
 const onSubmit = useCallback(async (data: { newDescription: string }) => {
@@ -49,8 +41,7 @@ const onSubmit = useCallback(async (data: { newDescription: string }) => {
   },[]);
 
 return (
-  <DismissKeyboard>
-    <Form alignItems="center" height={300} width={"100%"} backgroundColor={theme.background.val}>
+    <EditModalForm>
         <YStack
             alignItems="stretch"
             justifyContent="flex-start"
@@ -82,7 +73,6 @@ return (
               Edit Business Description
           </SubmitButton>
         </YStack>
-    </Form>
-  </DismissKeyboard>
-)
+    </EditModalForm>
+  )
 }

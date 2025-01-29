@@ -8,9 +8,9 @@ export default function KeyboardAvoidingView({ children }: { children: React.Rea
     <RNKeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ height: '100%', width: '100%' }}
-          keyboardVerticalOffset={150}
+          keyboardVerticalOffset={100}
         >
-        <ScrollView showsVerticalScrollIndicator={false}>
+        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" keyboardDismissMode="interactive">
             {children}
         </ScrollView>
     </RNKeyboardAvoidingView>

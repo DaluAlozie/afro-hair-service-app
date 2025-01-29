@@ -15,14 +15,15 @@ import HomeFill from '@/assets/icons/home_fill';
 
 export default function TabLayout() {
   const theme = useTheme();
+  const bg = theme.background.val
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: theme.color.val,
         tabBarBackground: () => <TabBarBackground/>,
-        tabBarActiveBackgroundColor: theme.background.val,
-        tabBarInactiveBackgroundColor: theme.background.val,
-        headerBackgroundContainerStyle: {backgroundColor: theme.background.val},
+        tabBarActiveBackgroundColor: bg,
+        tabBarInactiveBackgroundColor: bg,
+        headerBackgroundContainerStyle: {backgroundColor: bg},
         headerBackground: () => <ThemedView></ThemedView>,
         tabBarHideOnKeyboard: true,
         headerRight: HeaderRight,
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height:"100%",
     marginTop: 5,
-    alignItems: "center"
+    alignItems: "center",
   },
   headerRight: {
     marginRight: 11,
