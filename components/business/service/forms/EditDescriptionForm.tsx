@@ -1,19 +1,15 @@
-import {
-    YStack,
-    Form,
-  } from 'tamagui'
+import { YStack } from 'tamagui'
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 import { useBusinessStore } from '@/utils/stores/businessStore';
-import DismissKeyboard from '../../../utils/DismissKeyboard';
 import { Input, InputError } from '../../../utils/form/inputs';
 import React, { useCallback } from 'react';
 import SubmitButton from '../../../utils/form/SubmitButton';
-import { useTheme  } from 'tamagui';
 import confirm from '../../../utils/Alerts/Confirm';
+import EditModalForm from '@/components/utils/ui/EditModalForm';
 
 const schema = yup.object().shape({
   newDescription: yup
@@ -31,7 +27,6 @@ export function EditDescriptionForm({ serviceId, close }:
     resolver: yupResolver(schema),
   });
 
-  const theme = useTheme();
   const editServiceDescription = useBusinessStore((state) => state.editServiceDescription)
   const onSubmit = useCallback(async (data: { newDescription: string }) => {
     confirm(
@@ -50,40 +45,38 @@ export function EditDescriptionForm({ serviceId, close }:
     },[]);
 
   return (
-    <DismissKeyboard>
-      <Form alignItems="center" height={300} width={"100%"} backgroundColor={theme.background.val}>
-          <YStack
-              alignItems="stretch"
-              justifyContent="flex-start"
-              minWidth="60%"
-              width="100%"
-              height="100%"
-              gap="$5"
-              padding="$7"
-              paddingVertical="$6"
-              $gtSm={{
-              paddingVertical: '$4',
-              width: 400,
-              }}
-          >
-            <YStack gap="$3" width="100%">
-                <YStack>
-                    <Input
-                        control={control}
-                        label="Service Description"
-                        name="newDescription"
-                        placeholder='Service Description'
-                        textContentType="none"
-                        defaultValue={description}
-                        />
-                    {errors.newDescription && <InputError>{errors.newDescription.message?.toString()}</InputError>}
-                </YStack>
-            </YStack>
-            <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
-                Edit Service Description
-            </SubmitButton>
+    <EditModalForm>
+        <YStack
+            alignItems="stretch"
+            justifyContent="flex-start"
+            minWidth="60%"
+            width="100%"
+            height="100%"
+            gap="$5"
+            padding="$7"
+            paddingVertical="$6"
+            $gtSm={{
+            paddingVertical: '$4',
+            width: 400,
+            }}
+        >
+          <YStack gap="$3" width="100%">
+              <YStack>
+                  <Input
+                      control={control}
+                      label="Service Description"
+                      name="newDescription"
+                      placeholder='Service Description'
+                      textContentType="none"
+                      defaultValue={description}
+                      />
+                  {errors.newDescription && <InputError>{errors.newDescription.message?.toString()}</InputError>}
+              </YStack>
           </YStack>
-      </Form>
-    </DismissKeyboard>
+          <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
+              Edit Service Description
+          </SubmitButton>
+        </YStack>
+    </EditModalForm>
   )
 }

@@ -14,8 +14,9 @@ import { useRouter } from 'expo-router';
 import DismissKeyboard from '@/components/utils/DismissKeyboard';
 import { Input, InputError } from '@/components/utils/form/inputs';
 import SubmitButton from '@/components/utils/form/SubmitButton';
-import LocationSearch, { Address } from './LocationSearch';
+import LocationSearch from './LocationSearch';
 import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
+import { Address } from './types';
 
 const schema = yup.object().shape({
     streetAddress: yup
@@ -51,11 +52,10 @@ export function AddBusinessLocationForm() {
   const [resultsVisible, setResultsVisible] = useState(false);
   useEffect(() => {
     if (!address) return;
-
-    if (address.streetAddress) setValue("streetAddress", address.streetAddress);
-    if (address.city) setValue("city", address.city);
-    if (address.postcode) setValue("postcode", address.postcode);
-    if (address.country) setValue("country", address.country);
+    if (address.streetAddress) setValue("streetAddress", address.streetAddress || "");
+    if (address.city || address.locality) setValue("city", address.city || address.locality || "");
+    if (address.postcode) setValue("postcode", address.postcode || "");
+    if (address.country) setValue("country", address.country || "");
   }, [address])
 
   const onSubmit = useCallback(async (data: {
@@ -77,7 +77,7 @@ export function AddBusinessLocationForm() {
       address.latitude,
     );
     if (error)console.log(error);
-    else router.dismissTo("/business/locations");
+    else router.dismissTo("/myBusiness/locations");
     reset()
   },[address]);
 
@@ -92,9 +92,12 @@ export function AddBusinessLocationForm() {
           minWidth="60%"
           width="90%"
           height="100%"
+          paddingTop="$5"
+          gap="$10"
           $gtSm={{
             width: 400,
           }}
+          marginBottom="$10"
           >
           <LocationSearch
             address={address}
@@ -107,11 +110,9 @@ export function AddBusinessLocationForm() {
             onFocus={() => setResultsVisible(false)}
             alignItems="stretch"
             justifyContent="flex-start"
-            marginTop="$1"
             width="100%"
             height="100%"
             gap="$10"
-            paddingVertical="$6"
           >
             <YStack gap="$3" width="100%">
               <YStack gap="$2">

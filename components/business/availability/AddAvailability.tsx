@@ -83,7 +83,7 @@ export default function AddAvailability() {
             <TimePicker control={control} name="start" label="Start Time" disabled={startDate === undefined} />
             {errors.start && <InputError>{errors.start.message?.toString()}</InputError>}
           </YStack>
-          <View width={20} height={1} alignSelf='center' marginTop={40} backgroundColor={theme.color.val}></View>
+          <View opacity={startDate === undefined ? 0.3: 1} width={20} height={1} alignSelf='center' marginTop={40} backgroundColor={theme.color.val}></View>
           <YStack flex={1} alignItems='flex-end'>
             <TimePicker control={control} name="end" label="End Time" disabled={startDate === undefined} />
             {errors.end && <InputError>{errors.end.message?.toString()}</InputError>}

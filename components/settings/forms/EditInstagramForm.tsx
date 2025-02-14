@@ -1,18 +1,14 @@
-import {
-  YStack,
-  Form,
-  useTheme,
-} from 'tamagui'
+import { YStack } from 'tamagui'
 
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { useBusinessStore } from '@/utils/stores/businessStore';
-import DismissKeyboard from '@/components/utils/DismissKeyboard';
-import { Input, InputError } from '@/components/utils/form/inputs';
+import { FormattedInput, InputError } from '@/components/utils/form/inputs';
 import SubmitButton from '@/components/utils/form/SubmitButton';
 import React, { useCallback } from 'react';
 import confirm from '@/components/utils/Alerts/Confirm';
+import EditModalForm from '@/components/utils/ui/EditModalForm';
 
 
 const schema = yup.object().shape({
@@ -28,7 +24,6 @@ const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
   resolver: yupResolver(schema),
 });
 
-const theme = useTheme();
 const instagram = useBusinessStore(state => state.instagram);
 const editBusinessInstagram = useBusinessStore((state) => state.editBusinessInstagram)
 const onSubmit = useCallback(async (data: { newInstagram?: string | undefined }) => {
@@ -48,40 +43,39 @@ const onSubmit = useCallback(async (data: { newInstagram?: string | undefined })
   },[]);
 
 return (
-  <DismissKeyboard>
-    <Form alignItems="center" height={300} width={"100%"} backgroundColor={theme.background.val}>
-        <YStack
-            alignItems="stretch"
-            justifyContent="flex-start"
-            minWidth="60%"
-            width="100%"
-            height="100%"
-            gap="$5"
-            padding="$7"
-            paddingVertical="$6"
-            $gtSm={{
-            paddingVertical: '$4',
-            width: 400,
-            }}
-        >
-          <YStack gap="$3" width="100%">
-              <YStack>
-                  <Input
-                      control={control}
-                      label="Instagram"
-                      name="newInstagram"
-                      placeholder='Instagram'
-                      textContentType="none"
-                      defaultValue={instagram ?? ""}
-                      />
-                  {errors.newInstagram && <InputError>{errors.newInstagram.message?.toString()}</InputError>}
-              </YStack>
-          </YStack>
-          <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
-              Edit Instagram
-          </SubmitButton>
+  <EditModalForm>
+      <YStack
+          alignItems="stretch"
+          justifyContent="flex-start"
+          minWidth="60%"
+          width="100%"
+          height="100%"
+          gap="$5"
+          padding="$7"
+          paddingVertical="$6"
+          $gtSm={{
+          paddingVertical: '$4',
+          width: 400,
+          }}
+      >
+        <YStack gap="$3" width="100%">
+            <YStack>
+                <FormattedInput
+                    control={control}
+                    label="Instagram"
+                    name="newInstagram"
+                    placeholder='Instagram'
+                    textContentType="none"
+                    defaultValue={instagram ?? ""}
+                    symbol='@'
+                    />
+                {errors.newInstagram && <InputError>{errors.newInstagram.message?.toString()}</InputError>}
+            </YStack>
         </YStack>
-    </Form>
-  </DismissKeyboard>
+        <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
+            Edit Instagram
+        </SubmitButton>
+      </YStack>
+  </EditModalForm>
 )
 }

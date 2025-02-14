@@ -49,28 +49,26 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
     },[]);
 
     return (
-      <DismissKeyboard>
         <KeyboardAvoidingView>
-          <Form
-            alignItems="center" backgroundColor={theme.background}
-            >
-            <YStack
-              alignItems="stretch"
-              justifyContent="flex-start"
-              marginTop="$14"
-              minWidth="60%"
-              width="100%"
-              maxWidth="100%"
-              height="100%"
-              gap="$5"
-              padding="$7"
-              paddingVertical="$6"
-              $gtSm={{
-              paddingVertical: '$4',
-              maxWidth: 400,
-              }}
-            >
-                <YStack gap="$3" width="100%">
+          <DismissKeyboard>
+            <Form alignItems="center" backgroundColor={theme.background}>
+              <YStack
+                alignItems="stretch"
+                justifyContent="flex-start"
+                marginTop="$14"
+                minWidth="60%"
+                width="100%"
+                maxWidth="100%"
+                height="100%"
+                gap="$5"
+                padding="$7"
+                paddingVertical="$6"
+                $gtSm={{
+                paddingVertical: '$4',
+                maxWidth: 400,
+                }}
+              >
+                <YStack gap="$3" width={"100%"}>
                     <YStack gap="$2">
                         <Input
                         control={control}
@@ -103,9 +101,9 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
                 <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
                     Add Service Option
                 </SubmitButton>
-            </YStack>
-          </Form>
+              </YStack>
+            </Form>
+          </DismissKeyboard>
         </KeyboardAvoidingView>
-      </DismissKeyboard>
     )
   }

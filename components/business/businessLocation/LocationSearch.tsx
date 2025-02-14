@@ -1,26 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useTheme, Input, ScrollView, XStack, Text, View } from 'tamagui';
+import { useTheme, ScrollView, Text, View } from 'tamagui';
 import * as Location from 'expo-location';
 import { UseThemeResult } from '@tamagui/core';
 import Pressable from '@/components/utils/Pressable';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { StyleSheet } from 'react-native';
 import PageSpinner from '@/components/utils/loading/PageSpinner';
+import SearchBar from '@/components/utils/SearchBar';
+import { Address } from './types';
+import { getAddressPart } from './utils';
 
 type Place = {
     name: string;
     placeId: string;
-};
-
-export type Address = {
-    streetAddress: string;
-    city: string;
-    postcode: string;
-    country: string;
-    longitude: number;
-    latitude: number;
 };
 
 type LocationSearchProps = {
@@ -31,13 +24,7 @@ type LocationSearchProps = {
     hideResults: () => void;
 };
 
-const getAddressPart = (type: string, addressComponents: any[]) => {
-    const component = addressComponents.find((c: { types: string | any[]; }) => c.types.includes(type));
-    if (component) {
-        return component.longText;
-    }
-    return '';
-};
+
 
 export default function LocationSearch({ setAddress, resultsVisible, showResults, hideResults }: LocationSearchProps) {
     const [location, setLocation] = useState<Location.LocationObject | null>(null);
@@ -103,12 +90,12 @@ export default function LocationSearch({ setAddress, resultsVisible, showResults
         const data = await response.json();
         const addressComponents = data.addressComponents;
         const location = data.location;
-
         setAddress({
             streetAddress: `${getAddressPart('street_number', addressComponents)??""} ${getAddressPart('route', addressComponents)}`,
             city: getAddressPart('postal_town', addressComponents),
             postcode: getAddressPart('postal_code', addressComponents),
             country: getAddressPart('country', addressComponents),
+            locality: getAddressPart('locality', addressComponents),
             longitude: location.longitude,
             latitude: location.latitude,
         });
@@ -122,52 +109,47 @@ export default function LocationSearch({ setAddress, resultsVisible, showResults
 
     return (
         <View style={styles.container}>
-            <XStack style={styles.input}>
-                <View style={{ alignItems: 'flex-start', justifyContent: 'center', width: "5%" }}>
-                    <FontAwesome name="search" size={20} color={theme.gray9.val} />
-                </View>
-                <Input
-                    style={{
-                        width: '95%',
-                        backgroundColor: "none",
-                        borderWidth: 0,
-                        borderColor: "none",
-                        outline: "none",
-                        outlineColor: "none",
-                    }}
-                    borderWidth={0}
-                    placeholder="Search for a location"
-                    value={input}
-                    onChangeText={setInput}
-                    onFocus={showResults}
+            <SearchBar
+                style={{ zIndex:100 }}
+                input={input}
+                setInput={setInput}
+                showResults={showResults}
+                placeholder='Search for an address'
                 />
-            </XStack>
             <View width={"100%"} height={100} justifyContent={"center"} alignItems={"center"}>
                 {(isFetchingPlaces || isFetchingPlace) && (
                     <PageSpinner />
                 )}
             </View>
             {resultsVisible && (
-                <ScrollView style={styles.placeList}>
-                    {places?.map((item, index) =>
-                        <View key={item.placeId}>
-                            <Pressable
-                                scale={0.98}
-                                activeOpacity={0.7}
-                                onPress={() => {
-                                    setSelectedPlaceId(item.placeId)
-                                    hideResults();
-                                }}
-                                style={styles.placeItem}>
-                                <ScrollView>
-                                    <Text style={{ color: theme.color.val }}>{item.name}</Text>
-                                </ScrollView>
-                            </Pressable>
-                            {index < places.length - 1 && <Separator />}
-                        </View>
-                    )}
+                <ScrollView style={styles.placeList}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="always"
+                >
+                {places && places.length > 0 &&
+                    <View
+                        width={"100%"}
+                        height={50}
+                        backgroundColor={theme.section.val}
+                        position='absolute'
+                        top={-40} zIndex={1}/>
+                }
+                {places?.map((item, index) =>
+                    <View key={item.placeId} zIndex={2}>
+                        <Pressable
+                            scale={0.98}
+                            activeOpacity={0.7}
+                            onPress={() => {
+                                setSelectedPlaceId(item.placeId)
+                                hideResults();
+                            }}
+                            style={styles.placeItem}>
+                                <Text overflow='scroll' style={{ color: theme.color.val }}>{item.name}</Text>
+                        </Pressable>
+                        {index < places.length - 1 && <Separator />}
+                    </View>
+                 )}
                 </ScrollView>
-
             )}
         </View>
     );
@@ -181,31 +163,20 @@ const Separator = () => {
 
 const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     container: {
-        paddingTop: 50,
         position: 'relative',
         width: '100%',
         alignItems: 'center',
-        maxWidth: 500,
-        height: 150,
-    },
-    input: {
-        borderRadius: 8,
-        height: 45,
-        width: '100%',
-        zIndex: 1,
-        borderWidth: 1,
-        borderColor: theme.gray9.val,
-        backgroundColor: theme.gray3.val,
-        paddingHorizontal: 20,
+        height: 50,
     },
     placeList: {
-        width: '100%',
+        width: '99%',
         backgroundColor: theme.section.val,
         position: 'absolute',
         zIndex: 10,
-        top: 101,
+        top: 55,
         borderRadius: 1,
         maxHeight: 300,
+        overflow: "visible",
     },
     placeItem: {
         height: 50,

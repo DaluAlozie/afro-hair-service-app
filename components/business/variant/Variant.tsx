@@ -45,10 +45,10 @@ export default function Variant({ id, name, price, duration, enabled, service_id
             <Pressable
               onPress={() => editVariantPrice(id)}
               style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} activeOpacity={0.7} scale={0.99}>
-              <Text style={[styles.contentText, { marginRight: 2 }]}>
+              <Text style={[styles.contentText, { marginRight: 3 }]}>
                 {currency}{price}
               </Text>
-              <Feather name="edit-3" size={12} color={theme.color.val}/>
+              <Feather name="edit-3" size={16} color={theme.color.val}/>
             </Pressable>
           </ScrollView>
       </XStack>
@@ -82,7 +82,7 @@ export default function Variant({ id, name, price, duration, enabled, service_id
           </Text>
         </Pressable>
       </View>
-      </View>
+    </View>
   )
 }
 
@@ -122,8 +122,9 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     justifyContent: "flex-end",
   },
   contentText: {
-    fontSize: 14,
-    textAlign: "right"
+    fontSize: 15,
+    textAlign: "right",
+    fontWeight: "bold"
   },
   pressable: {
     flex: 1,

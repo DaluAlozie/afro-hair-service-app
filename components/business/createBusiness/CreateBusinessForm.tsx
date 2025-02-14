@@ -69,7 +69,7 @@ export function CreateBusinessForm() {
             width: 400,
           }}
         >
-          <YStack gap="$3" width="100%">
+          <YStack gap="$3">
             <YStack gap="$2">
               <Input
                 control={control}

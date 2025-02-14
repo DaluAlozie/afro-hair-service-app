@@ -17,7 +17,7 @@ import DismissKeyboard from '../utils/DismissKeyboard';
 import { Input, InputError } from '../utils/form/inputs';
 import AppleLogin from '../utils/form/AppleLogin';
 import React, { useCallback } from 'react';
-import AzureLogin from '../utils/form/AzureLogin';
+// import AzureLogin from '../utils/form/AzureLogin';
 import GoogleLogin from '../utils/form/GoogleLogin';
 import { useRouter } from 'expo-router';
 import SubmitButton from '../utils/form/SubmitButton';
@@ -120,7 +120,7 @@ export function LoginForm() {
                 <YStack flexWrap="wrap" gap="$3">
                   <GoogleLogin></GoogleLogin>
                   <AppleLogin></AppleLogin>
-                  <AzureLogin></AzureLogin>
+                  {/* <AzureLogin></AzureLogin> */}
                 </YStack>
               </YStack>
             </Theme>

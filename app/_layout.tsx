@@ -29,7 +29,7 @@ SplashScreen.preventAutoHideAsync();
 
 // Set the animation options. This is optional.
 SplashScreen.setOptions({
-  duration: 1000,
+  duration: 500,
   fade: true,
 });
 
@@ -84,7 +84,9 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (isLoggedIn) {
-      (async () => { await loadBusinessData() })();
+      (async () => {
+        await loadBusinessData()
+      })();
     }
   }, [isLoggedIn]);
 
@@ -124,4 +126,8 @@ export default function RootLayout() {
       </ThemeProvider>
     </TamaguiProvider>
   );
+}
+
+export const unstable_settings = {
+  initialRouteName: '(tabs)/index',
 }

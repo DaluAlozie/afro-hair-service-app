@@ -59,11 +59,13 @@ export default function Availability() {
 const makeStyles = (theme: UseThemeResult) =>
   StyleSheet.create({
     container: {
-      width: '90%',
+      width: '100%',
+      padding: 20,
       backgroundColor: theme.background.val,
       alignSelf: 'center',
       paddingTop: 20,
       maxWidth: 600,
+      height: '100%',
     },
     calendar: {
       width: '100%',
