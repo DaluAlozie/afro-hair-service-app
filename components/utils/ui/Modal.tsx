@@ -24,10 +24,19 @@ export const Modal: React.FC<ModalProps> = ({ children, open, setOpen }) => {
       visible={open}
       animationType="fade"
       onRequestClose={() => setOpen(false)}
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: "auto",
+        height: "100%",
+        width: "100%",
+        padding: 100,
+      }}
     >
       <TouchableWithoutFeedback onPress={() => setOpen(false)}>
         <View style={styles.overlay}>
-          <TouchableWithoutFeedback>
+          <TouchableWithoutFeedback onPress={() => setOpen(false)}>
             <View style={styles.alertBox}>{children}</View>
           </TouchableWithoutFeedback>
         </View>
@@ -42,8 +51,8 @@ const makeStyles = (theme: UseThemeResult) =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: theme.background.val,
-      opacity: 0.9,
+      backgroundColor: theme.gray1Dark.val,
+      opacity: 0.95,
     },
     alertBox: {
       width: "100%",

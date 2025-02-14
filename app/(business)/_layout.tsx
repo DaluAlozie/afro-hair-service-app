@@ -23,13 +23,15 @@ export default function BusinessLayout() {
   const { width } = useWindowDimensions();
   const numberOfTabs = 6;
   const overflow = width < 100*numberOfTabs;
+  const bg = theme.background.val
+
 
   return (
     <MaterialTopTabs
       screenOptions={{
         tabBarScrollEnabled: true, // Enable horizontal scrolling
         tabBarContentContainerStyle: {
-          backgroundColor: theme.background.val,
+          backgroundColor: bg,
           justifyContent: 'center',
         },
         tabBarIndicatorStyle: {

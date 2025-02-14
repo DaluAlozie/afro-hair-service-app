@@ -18,11 +18,9 @@ import { Input, InputError } from '../utils/form/inputs';
 import { useRouter } from 'expo-router';
 import SubmitButton from '../utils/form/SubmitButton';
 import FormTitle from '../utils/form/FormTitle';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useToastController } from '@tamagui/toast';
-import { showToast } from '../utils/Toast/CurrentToast';
 import Link from '../utils/Link';
 import KeyboardAvoidingView from '../utils/KeyboardAvoidingView';
+import useToast from '@/hooks/useToast';
 
 const schema = yup.object().shape({
   firstName: yup.string().required('First name is required'),
@@ -39,29 +37,24 @@ export function SignUpForm() {
 
   const theme = useTheme();
   const router = useRouter();
-  const toast = useToastController();
-  const headerHeight = useHeaderHeight();
   const signUp = useAuthStore((state: AuthStore) => state.signUp);
+  const { showToast } = useToast();
 
   const onSubmit = useCallback(async (data: { firstName: string, surname: string, email: string; password: string; }) => {
     const { error } = await signUp(data.email, data.password)
 
     if (error) {
       showToast(
-        toast,
         "Something went wrong",
         error.message,
         "error",
-        headerHeight
       );
       return;
     }
     showToast(
-      toast,
       "Account Created Successfully !",
       "A verification link was sent to your Email",
       "info",
-      headerHeight
     );
     router.push("/login");
     reset();
@@ -117,7 +110,7 @@ export function SignUpForm() {
                   textContentType='emailAddress'/>
                   {errors.email && <InputError>{errors.email.message?.toString()}</InputError>}
               </YStack>
-              <YStack gap="$2" width="100%">
+              <YStack gap="$2">
                 <Input
                   control={control}
                   label="Password"
@@ -127,7 +120,7 @@ export function SignUpForm() {
                   secureTextEntry/>
                 {errors.password && <InputError>{errors.password.message?.toString()}</InputError>}
               </YStack>
-              <YStack gap="$2" width="100%">
+              <YStack gap="$2">
                 <Input
                   control={control}
                   label="Confirm Password"

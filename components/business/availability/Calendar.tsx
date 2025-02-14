@@ -37,6 +37,8 @@ type CalendarProps = {
   setStartDate: (date: Date | undefined) => void;
   setEndDate: (date: Date | undefined) => void;
   disabledDates: Date[] | ((date: Date) => boolean);
+  minDate?: Date | undefined;
+  maxDate?: Date | undefined
 }
 
 export default function Calendar({
@@ -45,6 +47,8 @@ export default function Calendar({
   setStartDate,
   setEndDate,
   disabledDates,
+  minDate,
+  maxDate
 }: CalendarProps) {
 
   const theme = useTheme();
@@ -142,7 +146,7 @@ export default function Calendar({
         }}
         calendarTextStyle	={{ color: theme.color.val }}
         headerTextStyle={{ color: theme.color.val }}
-        selectedRangeBackgroundColor={theme.calendarSelectedRange.val}
+        selectedRangeBackgroundColor={theme.gray3.val}
         headerButtonColor={theme.color.val}
         weekDaysTextStyle={{ color: theme.color.val }}
         monthContainerStyle={{ backgroundColor: theme.section.val }}
@@ -159,6 +163,8 @@ export default function Calendar({
           padding: 0,
           backgroundColor: theme.gray3.val,
         }}
+        minDate={minDate}
+        maxDate={maxDate}
         />
     </View>
   );
@@ -174,9 +180,10 @@ const makeStyles = (theme: UseThemeResult) =>
     },
     calendar: {
       width: '100%',
+      maxWidth: 600,
       borderRadius: 10,
       alignSelf: 'center',
-      backgroundColor: theme.section.val,
-      padding: 20,
+      backgroundColor: theme.background.val,
+      padding: 1,
     },
   });

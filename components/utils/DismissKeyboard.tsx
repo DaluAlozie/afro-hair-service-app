@@ -8,12 +8,12 @@ type DismissKeyboardProps = {
 export default function DismissKeyboard({ children, onPress }: DismissKeyboardProps) {
 
   return (
-    <TouchableWithoutFeedback onPress={
-      () => {
+    <TouchableWithoutFeedback style={{ width: "100%" }} onPress={() => {
         Keyboard.dismiss()
         if (onPress) {
           onPress()
-    }}}>
+        }
+    }}>
       { children }
     </TouchableWithoutFeedback>
   )

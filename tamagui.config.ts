@@ -5,15 +5,16 @@ import { createTamagui } from 'tamagui';
 // Modify the light theme's background
 const modifiedLightTheme = {
   ...tamaguiDefaultConfig.themes.light, // Clone the default light theme
-  background: '#f3f2f6', // Set the background to white
+  background: '#ffffff', // Set the background to whiter
   onPressStyle: "#D9D9D9",
   danger: "#e00b19",
   linkBlue: "#007aff",
-  section: "#ffffff",
-  calendarSelectedRange: "rgba(220, 219, 219, 0.3)",
+  section: "#f3f3f3",
+  calendarSelectedRange: "#f3f3f3",
   calendarSelected: "rgb(220, 219, 219)",
   overlay: "rgba(243, 242, 246, 0.9)",
   tameOverlay: "rgba(243, 242, 246, 0.6)",
+  orangeRed: "#fc2803"
 };
 
 const modifiedDarkTheme = {
@@ -23,10 +24,11 @@ const modifiedDarkTheme = {
   linkBlue: "#007aff",
   background: '#000000', // Set the background to black
   section: "#1c1c1e",
-  calendarSelectedRange: "rgba(64, 64, 64,0.3)",
+  calendarSelectedRange: "rgba(64, 64, 64,0.9)",
   calendarSelected: "rgb(64, 64, 64)",
   overlay: "rgba(0, 0, 0, 0.8)",
   tameOverlay: "rgba(0, 0, 0, 0.5)",
+  orangeRed: "#fc2803"
 };
 
 // Extend the existing themes with the modified light theme

@@ -5,7 +5,7 @@ import { View, StyleSheet } from 'react-native';
 import { UseThemeResult } from '@tamagui/core';
 
 type SubmitButtonProps = {
-    children?: string;
+    children?: string | React.ReactNode;
     onPress: () => void;
     isSubmitting: boolean;
     disabled?: boolean;
@@ -52,7 +52,7 @@ export default function SubmitButton({ children, onPress, isSubmitting, disabled
                                 animation="quick"
                                 enterStyle={{
                                     opacity: 1,
-                                    scale: 0.5,
+                                    scale: 1,
                                 }}
                                 exitStyle={{
                                     opacity: 1,
@@ -61,7 +61,11 @@ export default function SubmitButton({ children, onPress, isSubmitting, disabled
                             />
                         </AnimatePresence>
                     ) : (
-                        <Button.Text style={{ color: inverseTheme.color.val }}>{children}</Button.Text>
+                        typeof children === 'string' ? (
+                            <Button.Text style={{ color: inverseTheme.color.val }}>{children}</Button.Text>
+                        ) : (
+                            children
+                        )
                     )}
                 </View>
             </Pressable>
@@ -85,5 +89,6 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
         right: 0,
         bottom: 0,
         backgroundColor: theme.overlay.val, // Semi-transparent dim effect
+        borderRadius: 5,
     },
 });

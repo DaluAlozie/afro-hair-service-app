@@ -2,7 +2,6 @@ import { Modal } from '@/components/utils/ui/Modal'
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import React, { useCallback, useEffect, useState } from 'react'
 import { View, Text, XStack, YStack, Form, useTheme } from 'tamagui';
-import timeSchema from './timeSchema';
 import { TimePicker, InputError } from '@/components/utils/form/inputs';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -11,6 +10,7 @@ import Feather from '@expo/vector-icons/Feather';
 import Pressable from '@/components/utils/Pressable';
 import confirm from '@/components/utils/Alerts/Confirm';
 import notify from '@/components/utils/Alerts/Notify';
+import { formatDate, timeSchema } from './utils';
 
 export default function TimeSlotModal({ id, open, setOpen }: { id: number, open: boolean, setOpen: (value: boolean) => void }) {
     const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
@@ -59,9 +59,7 @@ export default function TimeSlotModal({ id, open, setOpen }: { id: number, open:
 
 
 
-    const title = timeSlot ? new Date(timeSlot.from).toLocaleDateString(
-        'en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }
-    ): "";
+    const title = timeSlot ? formatDate(timeSlot.from): "";
     return (
         <Modal open={open} setOpen={(value: boolean) => {
             if (!value) {
@@ -69,7 +67,7 @@ export default function TimeSlotModal({ id, open, setOpen }: { id: number, open:
             }
             setOpen(value);
         }}>
-            <Form alignItems="center" height={300} width={"100%"} backgroundColor={theme.background.val}>
+            <Form alignItems="center" height={300} width={"90%"} backgroundColor={theme.background.val} borderRadius={20}>
                 <YStack
                     alignItems="stretch"
                     justifyContent="flex-start"

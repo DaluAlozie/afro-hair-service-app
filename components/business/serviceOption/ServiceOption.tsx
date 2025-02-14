@@ -11,7 +11,7 @@ import confirm from '@/components/utils/Alerts/Confirm'
 import { useRouter } from 'expo-router'
 
 export default function ServiceOption(
-  { id, title, description, enabled, service_id  }: ServiceOptionProps) {
+  { id, name, description, enabled, service_id  }: ServiceOptionProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function ServiceOption(
         <Text style={styles.title}>Name</Text>
         <ScrollView contentContainerStyle={styles.content}>
           <Text style={styles.contentText}>
-            {title}
+            {name}
           </Text>
         </ScrollView>
       </XStack>
@@ -65,6 +65,15 @@ export default function ServiceOption(
         activeOpacity={0.7} scale={0.99}
         >
         <Text style={styles.title}>Add Ons</Text>
+        <Feather name="chevron-right" size={25} color={theme.gray11.val} />
+      </Pressable>
+      <Separator/>
+      <Pressable
+        style={styles.section}
+        onPress={() => router.push(`/service/${service_id}/serviceOption/${id}/customizableOptions`) }
+        activeOpacity={0.7} scale={0.99}
+        >
+        <Text style={styles.title}>Customizations</Text>
         <Feather name="chevron-right" size={25} color={theme.gray11.val} />
       </Pressable>
       <Separator/>

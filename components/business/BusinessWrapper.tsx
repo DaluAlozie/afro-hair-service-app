@@ -9,6 +9,8 @@ import { useBusinessStore } from '@/utils/stores/businessStore';
 
 import { Text } from 'react-native';
 import Link from '../utils/Link';
+import { useColorScheme } from '@/hooks/useColorScheme.web';
+import PageSpinner from '../utils/loading/PageSpinner';
 
 type BusinessWrapperProps = {
   children: React.ReactNode,
@@ -17,22 +19,22 @@ type BusinessWrapperProps = {
 }
 export default function BusinessWrapper({
   children,
-  suspense = <></>,
 }: BusinessWrapperProps) {
     const theme = useTheme();
     const styles = makeStyles(theme);
     const hasBusiness = useBusinessStore((state) => state.hasBusiness)
     const loading = useBusinessStore((state) => state.loading)
+    const scheme = useColorScheme();
     return (
       <AuthWrapper>
         <ThemedView style={styles.container}>
             {
-              loading ? suspense :
+              loading ?<PageSpinner/> :
                 hasBusiness ?
                   children : (
                     <>
-                      <NoBusinessIcon color={theme.gray3.val} size={300}/>
-                      <Link style={styles.link} href={'/business/createBusiness'}>
+                      <NoBusinessIcon color={scheme === "dark"?theme.gray1Dark.val:theme.gray5.val} size={300}/>
+                      <Link style={styles.link} href={'/myBusiness/createBusiness'}>
                         <Text style={styles.link}>Start your Business</Text>
                       </Link>
                     </>

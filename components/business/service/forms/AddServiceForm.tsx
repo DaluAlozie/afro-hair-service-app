@@ -44,52 +44,52 @@ export function AddServiceForm() {
   },[]);
 
   return (
-    <DismissKeyboard>
       <KeyboardAvoidingView>
-        <Form alignItems="center" backgroundColor={theme.background}>
-          <YStack
-            alignItems="stretch"
-            justifyContent="flex-start"
-            marginTop="$14"
-            minWidth="60%"
-            width="100%"
-            maxWidth="100%"
-            height="100%"
-            gap="$5"
-            padding="$7"
-            paddingVertical="$6"
-            $gtSm={{
-              paddingVertical: '$4',
-              width: 400,
-            }}
-          >
-            <YStack gap="$3" width="100%">
-              <YStack gap="$2">
+        <DismissKeyboard>
+          <Form alignItems="center" backgroundColor={theme.background}>
+            <YStack
+              alignItems="stretch"
+              justifyContent="flex-start"
+              marginTop="$14"
+              minWidth="60%"
+              width="100%"
+              maxWidth="100%"
+              height="100%"
+              gap="$5"
+              padding="$7"
+              paddingVertical="$6"
+              $gtSm={{
+                paddingVertical: '$4',
+                width: 400,
+              }}
+            >
+              <YStack gap="$3">
+                <YStack gap="$2">
+                  <Input
+                    control={control}
+                    label="Service Name"
+                    name="name"
+                    placeholder='Service Name'
+                    textContentType='organizationName'/>
+                  {errors.name && <InputError>{errors.name.message?.toString()}</InputError>}
+                </YStack>
+                <YStack>
                 <Input
                   control={control}
-                  label="Service Name"
-                  name="name"
-                  placeholder='Service Name'
-                  textContentType='organizationName'/>
-                {errors.name && <InputError>{errors.name.message?.toString()}</InputError>}
+                  label="Service Description"
+                  name="description"
+                  placeholder='Description of the service'
+                  textContentType="organizationName"
+                  />
+                {errors.description && <InputError>{errors.description.message?.toString()}</InputError>}
+                </YStack>
               </YStack>
-              <YStack>
-              <Input
-                control={control}
-                label="Service Description"
-                name="description"
-                placeholder='Description of the service'
-                textContentType="organizationName"
-                />
-              {errors.description && <InputError>{errors.description.message?.toString()}</InputError>}
-              </YStack>
+              <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
+                  Add Service
+              </SubmitButton>
             </YStack>
-            <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
-                Add Service
-            </SubmitButton>
-          </YStack>
-        </Form>
+          </Form>
+        </DismissKeyboard>
       </KeyboardAvoidingView>
-    </DismissKeyboard>
   )
 }

@@ -2,7 +2,7 @@
 import { Colors } from '@/constants/Colors'
 import React, { ReactNode, useId, useState } from 'react'
 import { Control, Controller } from 'react-hook-form'
-import { KeyboardTypeOptions, Platform, TextInputIOSProps, useColorScheme } from 'react-native'
+import { DimensionValue, KeyboardTypeOptions, Platform, TextInputIOSProps, useColorScheme } from 'react-native'
 import {
   View,
   Input as InputSkeleton,
@@ -10,20 +10,22 @@ import {
   Label,
   Switch as TSwitch,
   Text as TamaguiText,
-  useTheme
+  useTheme,
+  RadioGroup,
+  XStack,
 } from 'tamagui'
 import { Text, StyleSheet } from 'react-native'
 import DateTimePicker, { AndroidNativeProps } from '@react-native-community/datetimepicker';
-import { UseThemeResult } from '@tamagui/core';
+import { SizeTokens, UseThemeResult } from '@tamagui/core';
 import Pressable from '../Pressable'
-
+import { Picker as RNPicker } from '@react-native-picker/picker';
 
 type InputProps = {
   name: string,
   control: Control<any,any>,
   label: string,
   placeholder: string,
-  defaultValue?: string | number |undefined,
+  defaultValue?: string | number | undefined | null,
   textContentType?:  TextInputIOSProps["textContentType"] | undefined,
   secureTextEntry?: boolean | undefined,
   size?: string | number | undefined,
@@ -36,13 +38,11 @@ export const Input = ({
   control,name, defaultValue, label, placeholder, textContentType, secureTextEntry, gap, keyboardType, disabled }: InputProps) => {
   const id = useId();
   const theme = useTheme();
-  const styles = makeStyles(theme);
   return (
   <Controller
       control={control}
       render={({ field: { onChange, onBlur, value } }) => (
-        <View gap={gap ?? "$1"} position='relative'>
-          {disabled && <View style={styles.overlay} pointerEvents="none" />}
+        <View gap={gap ?? "$1"} position='relative' opacity={disabled ? 0.3 : 1}>
           <Label style={{ fontSize: 15, fontWeight: 800, color: theme.color.val }} htmlFor={id}>
             <Text style={{ fontWeight: "bold" }}>{label}</Text>
           </Label>
@@ -60,7 +60,7 @@ export const Input = ({
         </View>
       )}
       name={name}
-      defaultValue={defaultValue ?? ""}
+      defaultValue={defaultValue}
   />
   )
 }
@@ -120,13 +120,11 @@ type SwitchProps = {
 export const Switch = ({ control, name, defaultValue, label, gap, disabled }: SwitchProps) => {
   const id = useId();
   const theme = useTheme();
-  const styles = makeStyles(theme);
   return (
     <Controller
       control={control}
       render={({ field: { onChange, onBlur, value } }) => (
-        <View position='relative'alignItems='flex-start' gap={gap ?? "$1"}>
-          {disabled && <View style={styles.overlay} pointerEvents="none" />}
+        <View position='relative'alignItems='flex-start' gap={gap ?? "$1"} opacity={disabled ? 0.3 : 1}>
           <Label style={{ fontWeight: "bold" }}  htmlFor={id}>{label}</Label>
           <TSwitch
             id={id}
@@ -159,26 +157,26 @@ export const InputError =  ({children}: { children?: ReactNode }) => {
     </TamaguiText>
   )
 }
-
-export const CurrencyInput = ({
+export const FormattedInput = ({
   control,
   name,
   defaultValue,
   label,
   placeholder,
-  gap
-}: InputProps) => {
+  keyboardType,
+  gap,
+  symbol
+}: InputProps & { symbol: string }) => {
   const id = useId();
   const theme = useTheme();
-  const currency = "£";
 
-  const formatCurrency = (value: string | undefined): string => {
-    if (!value) return ""; // Default currency format
-    return currency + unformatCurrency(value);
+  const formatValue = (value: string | undefined): string => {
+    if (!value) return ""; // Default format
+    return symbol + unformatValue(value);
   };
-  const unformatCurrency = (value: string | undefined): string => {
-    if (!value) return ""; // Default currency format
-    return value.replace(/[^0-9.]/g, ""); // Remove non-numeric characters
+  const unformatValue = (value: string | undefined): string => {
+    if (!value) return ""; // Default format
+    return value.replace(new RegExp(`${symbol}`, "gi"), ""); // symbol characters
   }
 
   return (
@@ -191,19 +189,26 @@ export const CurrencyInput = ({
           </Label>
           <InputSkeleton
             id={id}
-            placeholder={currency + placeholder}
+            placeholder={placeholder}
             onChangeText={(text) => {
-              onChange(unformatCurrency(text)); // Pass raw value (without currency symbol) to the form control
+              onChange(unformatValue(text)); // Pass raw value (without symbol) to the form control
             }}
             onBlur={onBlur}
-            value={formatCurrency(value)}
-            keyboardType="numeric" // Set keyboard to numeric for easier input
+            value={formatValue(value)}
+            keyboardType={keyboardType} // Set keyboard to numeric for easier input
           />
         </View>
       )}
       name={name}
       defaultValue={defaultValue ?? ""}
     />
+  );
+};
+
+export const CurrencyInput = ({placeholder, ...props}: InputProps) => {
+  const currency = "£";
+  return (
+    <FormattedInput {...props} symbol={currency} keyboardType="decimal-pad" placeholder={currency+placeholder}  />
   );
 };
 
@@ -228,7 +233,6 @@ export const TimePicker = ({
 }: TimePickerProps) => {
   const id = React.useId();
   const theme = useTheme();
-  const styles = makeStyles(theme);
   const [date, setDate] = useState(defaultValue ?? new Date());
   const [show, setShow] = useState(false);
   const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -239,7 +243,7 @@ export const TimePicker = ({
       name={name}
       defaultValue={defaultValue ?? new Date()}
       render={({ field: { onChange, value } }) => (
-        <View style={{ position: 'relative', gap: gap ?? '$1' }}>
+        <View style={{ position: 'relative', gap: gap ?? '$1', opacity: disabled ? 0.3 : 1 }}>
           <Label
             style={{
               fontSize: 15,
@@ -259,6 +263,7 @@ export const TimePicker = ({
                 mode={mode}
                 display="default"
                 is24Hour
+                minuteInterval={5}
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -288,8 +293,66 @@ export const TimePicker = ({
                   <Text style={{ color: theme.color.val }}>{time}</Text>
                 </Pressable>
             )}
-            {disabled && <View style={styles.overlay} pointerEvents="none" />}
           </View>
+        </View>
+      )}
+    />
+  );
+};
+
+type PickerProps = {
+  name: string;
+  control: Control<any, any>;
+  label: string;
+  items: { label: string; value: string | number }[];
+  placeholder: string,
+  gap?: string | number | undefined;
+  disabled?: boolean | undefined;
+  defaultValue?: string | number | undefined;
+  width?: DimensionValue | undefined,
+  noItemsMessage?: string | undefined,
+};
+
+export const Picker = ({
+  control,
+  name,
+  label,
+  items,
+  gap,
+  disabled,
+  defaultValue,
+  placeholder,
+  noItemsMessage = "No items available",
+}: PickerProps) => {
+  const id = React.useId();
+  const theme = useTheme();
+  return (
+    <Controller
+      control={control}
+      name={name}
+      defaultValue={defaultValue}
+      render={({ field: { onChange, value } }) => (
+        <View gap={gap ?? '$1'} opacity={disabled ? 0.3 : 1}>
+          <Label style={{ fontSize: 15, fontWeight: 800, color: theme.color.val }} htmlFor={id}>
+            <Text style={{ fontWeight: 'bold' }}>{label}</Text>
+          </Label>
+          <RNPicker
+            selectedValue={value}
+            onValueChange={onChange}
+            placeholder={placeholder}
+            style={{
+              width: '100%',
+              color: theme.color.val,
+              overflow: 'hidden',
+              borderRadius: 10,
+              height: 200,
+            }}
+            >
+              {items.length === 0 && <RNPicker.Item label={noItemsMessage} value={-1} enabled={false} />}
+            {items.map((item) => (
+              <RNPicker.Item key={item.value} label={item.label} value={item.value} />
+            ))}
+          </RNPicker>
         </View>
       )}
     />
@@ -304,6 +367,51 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     right: 0,
     bottom: 0,
     backgroundColor: theme.tameOverlay.val, // Dim effect
+    borderRadius: 5,
     zIndex: 1,
   },
 });
+
+
+export function RadioGroupItemWithLabel(props: {
+  size: SizeTokens;
+  value: string;
+  label: string;
+  width?: string | number;
+  selectedValue: string;
+}) {
+  const id = useId();
+  const theme = useTheme();
+  const isSelected = props.value === props.selectedValue;
+  return (
+    <XStack width={props.width} alignItems="center" gap="$4">
+      <RadioGroup.Item
+        value={props.value}
+        id={id}
+        size={props.size}
+        width={"100%"}
+        height={50}
+        borderRadius={10}
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        backgroundColor={isSelected ? "auto" : "auto"}
+        borderColor={"$color"}
+        borderWidth={isSelected ? 2 : 1}
+        opacity={isSelected ? 1 : 0.2}
+        paddingLeft={"$4"}
+        shadowColor={"$shadow"}
+        hoverStyle={{
+          backgroundColor: "$blue300",
+          shadowColor: "$shadowHover",
+        }}
+        transition="all 0.2s ease-in-out"
+      >
+        <Label size={props.size} fontWeight={"bold"} htmlFor={id}>
+          <Text style={{ fontWeight: isSelected ? 700:"normal", color: theme.color.val }}>
+            {props.label}
+          </Text>
+        </Label>
+      </RadioGroup.Item>
+    </XStack>
+  );
+}

@@ -55,73 +55,73 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
     },[]);
 
     return (
-      <DismissKeyboard>
         <KeyboardAvoidingView>
-            <Form alignItems="center" backgroundColor={theme.background}>
-                <YStack
-                    alignItems="stretch"
-                    justifyContent="flex-start"
-                    marginTop="$14"
-                    minWidth="60%"
-                    width="100%"
-                    maxWidth="100%"
-                    height="100%"
-                    gap="$5"
-                    padding="$7"
-                    paddingVertical="$6"
-                    $gtSm={{
-                    paddingVertical: '$4',
-                    width: 400,
-                    }}
-                >
-                    <YStack gap="$3" width="100%">
-                        <YStack gap="$2">
-                            <Input
-                            control={control}
-                            label="Variant Name"
-                            name="name"
-                            placeholder='Variant Name'
-                            textContentType='organizationName'/>
-                            {errors.name && <InputError>{errors.name.message?.toString()}</InputError>}
-                        </YStack>
-                        <YStack>
-                            <CurrencyInput
+            <DismissKeyboard>
+                <Form alignItems="center" backgroundColor={theme.background}>
+                    <YStack
+                        alignItems="stretch"
+                        justifyContent="flex-start"
+                        marginTop="$14"
+                        minWidth="60%"
+                        width="100%"
+                        maxWidth="100%"
+                        height="100%"
+                        gap="$10"
+                        padding="$7"
+                        paddingVertical="$6"
+                        $gtSm={{
+                        paddingVertical: '$4',
+                        width: 400,
+                        }}
+                    >
+                        <YStack gap="$3">
+                            <YStack gap="$2">
+                                <Input
                                 control={control}
-                                label="Price"
-                                name="price"
-                                placeholder='0'
-                                textContentType="none"
-                                keyboardType="numeric"
-                                />
-                            {errors.price && <InputError>{errors.price.message?.toString()}</InputError>}
+                                label="Variant Name"
+                                name="name"
+                                placeholder='Variant Name'
+                                textContentType='organizationName'/>
+                                {errors.name && <InputError>{errors.name.message?.toString()}</InputError>}
+                            </YStack>
+                            <YStack>
+                                <CurrencyInput
+                                    control={control}
+                                    label="Price"
+                                    name="price"
+                                    placeholder='0'
+                                    textContentType="none"
+                                    keyboardType="numeric"
+                                    />
+                                {errors.price && <InputError>{errors.price.message?.toString()}</InputError>}
+                            </YStack>
+                            <YStack>
+                                <Input
+                                    control={control}
+                                    label="Duration (minutes)"
+                                    name="duration"
+                                    placeholder='0'
+                                    textContentType="none"
+                                    keyboardType="numeric"
+                                    />
+                                {errors.duration && <InputError>{errors.duration.message?.toString()}</InputError>}
+                            </YStack>
+                            <YStack>
+                                <Switch
+                                    control={control}
+                                    label="Enabled"
+                                    name="enabled"
+                                    defaultValue={true}
+                                    />
+                                {errors.enabled && <InputError>{errors.enabled.message?.toString()}</InputError>}
+                            </YStack>
                         </YStack>
-                        <YStack>
-                            <Input
-                                control={control}
-                                label="Duration (minutes)"
-                                name="duration"
-                                placeholder='0'
-                                textContentType="none"
-                                keyboardType="numeric"
-                                />
-                            {errors.duration && <InputError>{errors.duration.message?.toString()}</InputError>}
-                        </YStack>
-                        <YStack>
-                            <Switch
-                                control={control}
-                                label="Enabled"
-                                name="enabled"
-                                defaultValue={true}
-                                />
-                            {errors.enabled && <InputError>{errors.enabled.message?.toString()}</InputError>}
-                        </YStack>
+                        <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
+                            Add Variant
+                        </SubmitButton>
                     </YStack>
-                    <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
-                        Add Variant
-                    </SubmitButton>
-                </YStack>
-            </Form>
+                </Form>
+            </DismissKeyboard>
         </KeyboardAvoidingView>
-      </DismissKeyboard>
     )
   }

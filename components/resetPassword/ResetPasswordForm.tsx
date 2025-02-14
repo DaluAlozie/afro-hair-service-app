@@ -12,9 +12,7 @@ import DismissKeyboard from '../utils/DismissKeyboard';
 import { Input, InputError } from '../utils/form/inputs';
 import React, { useCallback } from 'react';
 import SubmitButton from '../utils/form/SubmitButton';
-import { showToast } from '../utils/Toast/CurrentToast';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useToastController } from '@tamagui/toast';
+import useToast from '@/hooks/useToast';
 
 const schema = yup.object().shape({
   password: yup.string().required('Password is required').min(8,"Password must be at least 8 characters"),
@@ -26,27 +24,22 @@ export function ResetPasswordForm() {
     resolver: yupResolver(schema),
   });
   const resetPassword = useAuthStore((state) => state.resetPassword);
-  const toast = useToastController();
-  const headerHeight = useHeaderHeight();
+  const { showToast } = useToast();
 
   const onSubmit = useCallback(async (data: { password: string; }) => {
     const { error } = await resetPassword(data.password);
     if (error) {
       showToast(
-        toast,
         'Something went wrong',
         error.message,
         "error",
-        headerHeight
       )
       return;
     }
     showToast(
-      toast,
       'Password Changed Successfully !',
       "You can now sign in with your new password",
       "success",
-      headerHeight
     );
     reset();
   },[]);

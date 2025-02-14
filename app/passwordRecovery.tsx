@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from 'react'
-import { useToastController } from '@tamagui/toast';
 import { useNavigationContainerRef, useRootNavigationState, useRouter } from 'expo-router';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { useAuthStore } from '@/utils/stores/authStore';
 import { getQueryParams } from 'expo-auth-session/build/QueryParams';
 import PageSpinner from '@/components/utils/loading/PageSpinner';
 import DeepLinkHandler from '@/components/navigation/DeepLinkHandler';
 import AnonWrapper from '@/components/auth/AnonWrapper';
-import { showToast } from '@/components/utils/Toast/CurrentToast';
+import useToast from '@/hooks/useToast';
 
 export default function PasswordRecovery() {
-  const toast = useToastController();
   const [url, setURL] = useState<string | null>(null);
   const router = useRouter();
-  const headerHeight = useHeaderHeight();
   const setSession = useAuthStore((state) => state.setSession);
   const rootNavigationState = useRootNavigationState();
   const navigationContainerRef = useNavigationContainerRef();
+  const { showToast } = useToast();
 
   useEffect(() => {
     let error_message: string | undefined = undefined;
@@ -34,12 +31,10 @@ export default function PasswordRecovery() {
         error_message = error?.message
       }
       showToast(
-        toast,
         "Something went wrong",
         error_message ?? error_description,
         "error",
-        headerHeight
-      )
+      );
       router.replace("/login");
     }
     handleURL();

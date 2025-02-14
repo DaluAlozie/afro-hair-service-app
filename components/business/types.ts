@@ -1,6 +1,20 @@
+interface Business {
+    id: number,
+    name: string,
+    description: string,
+    phone_number: string,
+    instagram: string,
+    facebook: string,
+    twitter: string,
+    online: boolean,
+    tags: string[],
+    rating: number,
+    owner_id: string
+}
+
 interface Service {
     id: number,
-    title: string,
+    name: string,
     description: string,
     enabled: boolean,
     service_options: Map<number, ServiceOption>,
@@ -9,12 +23,13 @@ interface Service {
 
 interface ServiceOption {
     id: number,
-    title: string,
+    name: string,
     description: string,
     requirements:string,
     enabled: boolean,
     addOns: Map<number, AddOn>,
     variants: Map<number, Variant>,
+    customizableOptions: Map<number, CustomizableOption>,
     service_id: number
 }
 
@@ -37,6 +52,16 @@ interface AddOn {
     service_option_id: number,
     service_id: number
 }
+type CustomizableOptionType = "text" | "boolean" | "numeric"
+interface CustomizableOption {
+    id: number,
+    name: string,
+    type: CustomizableOptionType,
+    lower_bound: number,
+    upper_bound: number,
+    service_option_id: number,
+    service_id: number
+}
 
 interface Location {
     id: number,
@@ -45,7 +70,10 @@ interface Location {
     city: string,
     postcode: string,
     country: string,
+    longitude: number,
+    latitude: number,
     enabled: boolean
+    business_id: number
 }
 
 interface ServiceLocation {
@@ -69,14 +97,15 @@ interface Rating {
 interface Appointment {
     id: number,
     start_time: Date,
-    endTime: Date,
-    street_address: string,
-    city: string,
-    postcode: string,
-    country: string,
-    addOns: Map<number, AddOn>[],
-    at_home: boolean,
-    accepted: boolean
+    end_time: Date,
+    customer_id: string,
+    variant_id: number,
+    business_id: number,
+    total_price: number,
+    paid: boolean,
+    cancelled: boolean,
+    addOns: Map<number, AddOn>,
+    customizableOptions: Map<number, CustomizableOption>
 }
 
 interface Notification {
@@ -102,13 +131,8 @@ type NotificationType =
     |   "appointment-request"
     |   "new-availability"
 
-
-
-
-
-
-
 export {
+    Business,
     Service,
     ServiceOption,
     AddOn,
@@ -120,5 +144,7 @@ export {
     Notification,
     NotificationType,
     Variant,
-    TimeSlot
+    TimeSlot,
+    CustomizableOption,
+    CustomizableOptionType
 }

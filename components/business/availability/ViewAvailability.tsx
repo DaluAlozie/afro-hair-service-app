@@ -15,6 +15,10 @@ export default function ViewAvailability() {
   const [date, setDate] = useState<Date|undefined>(undefined);
   const [timeSlotId, setTimeSlotId] = useState<number | undefined>(undefined);
   const [modalOpen, setModalOpen] = useState(false);
+
+  const yearFromNow = new Date();
+  yearFromNow.setFullYear(yearFromNow.getFullYear() + 1);
+
   useEffect(() => {
     const timeSlot = Array.from(availability.values()).find((timeSlot) => {
       const d = getDate(timeSlot.from);
@@ -45,6 +49,7 @@ export default function ViewAvailability() {
         date={date}
         setDate={setDate}
         disabledDates={(date: Date) => !timeSlots.some((timeSlot) => getDate(timeSlot)?.getTime() === date.getTime())}
+        maxDate={yearFromNow}
         />
     </View>
   );

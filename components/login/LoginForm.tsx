@@ -17,14 +17,12 @@ import DismissKeyboard from '../utils/DismissKeyboard';
 import { Input, InputError } from '../utils/form/inputs';
 import AppleLogin from '../utils/form/AppleLogin';
 import React, { useCallback } from 'react';
-import AzureLogin from '../utils/form/AzureLogin';
+// import AzureLogin from '../utils/form/AzureLogin';
 import GoogleLogin from '../utils/form/GoogleLogin';
 import { useRouter } from 'expo-router';
 import SubmitButton from '../utils/form/SubmitButton';
-import { useToastController } from '@tamagui/toast';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { showToast } from '../utils/Toast/CurrentToast';
 import Link from '../utils/Link';
+import useToast from '@/hooks/useToast';
 
 const schema = yup.object().shape({
   email: yup.string().required('Email is required').email("Please enter a valid email"),
@@ -39,19 +37,15 @@ export function LoginForm() {
 
   const theme = useTheme();
   const router = useRouter();
-  const toast = useToastController();
-  const headerHeight = useHeaderHeight();
-
+  const { showToast } = useToast();
   const signIn = useAuthStore((state) => state.signIn);
   const onSubmit = useCallback(async (data: { email: string; password: string; }) => {
     const { error } = await signIn(data.email, data.password);
     if (error) {
       showToast(
-        toast,
         'Something went wrong',
         error.message,
-        "error",
-        headerHeight
+        "error"
       )
       return;
     }
@@ -120,7 +114,7 @@ export function LoginForm() {
                 <YStack flexWrap="wrap" gap="$3">
                   <GoogleLogin></GoogleLogin>
                   <AppleLogin></AppleLogin>
-                  <AzureLogin></AzureLogin>
+                  {/* <AzureLogin></AzureLogin> */}
                 </YStack>
               </YStack>
             </Theme>

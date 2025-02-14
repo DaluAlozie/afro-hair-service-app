@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { ScrollView, useTheme, Text } from 'tamagui';
 import { StyleSheet } from 'react-native';
-import { UseThemeResult } from '@tamagui/core';
+import { UseThemeResult, View } from '@tamagui/core';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import Variant from '@/components/business/variant/Variant';
@@ -36,7 +36,7 @@ export default function Variants() {
       router.dismissTo(`/service/${serviceId}/index`);
       return null;
     }
-    const title = serviceOption.title;
+    const title = serviceOption.name;
     navigation.setOptions({
       title: title.length < 20 ? title + " Variants" : "Variants",
     });
@@ -85,6 +85,7 @@ export default function Variants() {
             >
               <Text>Add Variant</Text>
             </Pressable>
+            <View height={50}/>
           </ScrollView>
         </>
       )}

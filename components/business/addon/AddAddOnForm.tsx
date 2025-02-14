@@ -19,7 +19,7 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
 const schema = yup.object().shape({
     name: yup
     .string()
-    .required('The service option name is required')
+    .required('The add on name is required')
     .max(50, "The name exceeds the character limit of 50."),
     price: yup
         .number()
@@ -55,73 +55,73 @@ const schema = yup.object().shape({
     },[]);
 
     return (
-      <DismissKeyboard>
         <KeyboardAvoidingView>
-            <Form alignItems="center" backgroundColor={theme.background}>
-                <YStack
-                    alignItems="stretch"
-                    justifyContent="flex-start"
-                    marginTop="$14"
-                    minWidth="60%"
-                    width="100%"
-                    maxWidth="100%"
-                    height="100%"
-                    gap="$5"
-                    padding="$7"
-                    paddingVertical="$6"
-                    $gtSm={{
-                    paddingVertical: '$4',
-                    width: 400,
-                    }}
-                >
-                    <YStack gap="$3" width="100%">
-                        <YStack gap="$2">
-                            <Input
-                            control={control}
-                            label="Add On Name"
-                            name="name"
-                            placeholder='Add on name'
-                            textContentType='organizationName'/>
-                            {errors.name && <InputError>{errors.name.message?.toString()}</InputError>}
-                        </YStack>
-                        <YStack>
-                            <CurrencyInput
+            <DismissKeyboard>
+                <Form alignItems="center" backgroundColor={theme.background}>
+                    <YStack
+                        alignItems="stretch"
+                        justifyContent="flex-start"
+                        marginTop="$14"
+                        minWidth="60%"
+                        width="100%"
+                        maxWidth="100%"
+                        height="100%"
+                        gap="$10"
+                        padding="$7"
+                        paddingVertical="$6"
+                        $gtSm={{
+                        paddingVertical: '$4',
+                        width: 400,
+                        }}
+                    >
+                        <YStack gap="$3">
+                            <YStack gap="$2">
+                                <Input
                                 control={control}
-                                label="Price"
-                                name="price"
-                                placeholder='0'
-                                textContentType="none"
-                                keyboardType="numeric"
-                                />
-                            {errors.price && <InputError>{errors.price.message?.toString()}</InputError>}
+                                label="Add On Name"
+                                name="name"
+                                placeholder='Add on name'
+                                textContentType='organizationName'/>
+                                {errors.name && <InputError>{errors.name.message?.toString()}</InputError>}
+                            </YStack>
+                            <YStack>
+                                <CurrencyInput
+                                    control={control}
+                                    label="Price"
+                                    name="price"
+                                    placeholder='0'
+                                    textContentType="none"
+                                    keyboardType="numeric"
+                                    />
+                                {errors.price && <InputError>{errors.price.message?.toString()}</InputError>}
+                            </YStack>
+                            <YStack>
+                                <Input
+                                    control={control}
+                                    label="Duration (minutes)"
+                                    name="duration"
+                                    placeholder='0'
+                                    textContentType="none"
+                                    keyboardType="numeric"
+                                    />
+                                {errors.duration && <InputError>{errors.duration.message?.toString()}</InputError>}
+                            </YStack>
+                            <YStack>
+                                <Switch
+                                    control={control}
+                                    label="Enabled"
+                                    name="enabled"
+                                    defaultValue={true}
+                                    />
+                                {errors.enabled && <InputError>{errors.enabled.message?.toString()}</InputError>}
+                            </YStack>
                         </YStack>
-                        <YStack>
-                            <Input
-                                control={control}
-                                label="Duration (minutes)"
-                                name="duration"
-                                placeholder='0'
-                                textContentType="none"
-                                keyboardType="numeric"
-                                />
-                            {errors.duration && <InputError>{errors.duration.message?.toString()}</InputError>}
-                        </YStack>
-                        <YStack>
-                            <Switch
-                                control={control}
-                                label="Enabled"
-                                name="enabled"
-                                defaultValue={true}
-                                />
-                            {errors.enabled && <InputError>{errors.enabled.message?.toString()}</InputError>}
-                        </YStack>
+                        <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
+                            Add add on
+                        </SubmitButton>
                     </YStack>
-                    <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
-                        Add add on
-                    </SubmitButton>
-                </YStack>
-            </Form>
+                </Form>
+            </DismissKeyboard>
         </KeyboardAvoidingView>
-      </DismissKeyboard>
     )
   }

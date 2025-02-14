@@ -21,15 +21,18 @@ import AppStack, { animationDuration } from '@/components/navigation/AppStack';
 import * as NavigationBar from 'expo-navigation-bar';
 import { Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useBusinessStore } from '@/utils/stores/businessStore';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useNotificationObserver } from '@/hooks/notifications/useNotificationObserver';
+import useResetStores from '@/hooks/useResetStores';
+import useStripeDeepLinkHandler from '@/hooks/booking/useStripeDeepLinkHandler';
+import useAppLoad from '@/hooks/useAppLoad';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 // Set the animation options. This is optional.
 SplashScreen.setOptions({
-  duration: 1000,
+  duration: 300,
   fade: true,
 });
 
@@ -42,13 +45,23 @@ export default function RootLayout() {
   const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
   const setUser = useAuthStore((state) => state.setUser);
   const setIsLoggedIn = useAuthStore((state) => state.setIsLoggedIn);
-  const loadBusinessData = useBusinessStore((state) => state.load);
+  const resetStores = useResetStores();
+
   const router = useRouter();
 
+  // Handle deep links for Stripe
+  useStripeDeepLinkHandler();
+
+  // Handle deep links for notifications
+  const { handleNotification } = useNotificationObserver();
+
+  // Load app data when the app is ready and the user is logged in
+  useAppLoad();
+
+  // Prepare the app for rendering after the splash screen is hidden
   useEffect(() => {
     async function prepare() {
       try {
-
         await SplashScreen.preventAutoHideAsync();
         if (Platform.OS == "android") {
           setStatusBarBackgroundColor(
@@ -65,6 +78,7 @@ export default function RootLayout() {
         const supabase = await supabaseClient;
         const { data: { user } } = await supabase.auth.getUser();
         if (user) {
+          await resetStores();
           setUser(user);
           setIsLoggedIn(true);
         }
@@ -82,11 +96,6 @@ export default function RootLayout() {
     prepare();
   }, []);
 
-  useEffect(() => {
-    if (isLoggedIn) {
-      (async () => { await loadBusinessData() })();
-    }
-  }, [isLoggedIn]);
 
   const onLayoutRootView = useCallback(async () => {
     if (appIsReady) {
@@ -103,6 +112,9 @@ export default function RootLayout() {
         await new Promise(resolve => setTimeout(resolve, animationDuration*1.5));
       }
       SplashScreen.hide();
+      if (isLoggedIn) {
+        return handleNotification();
+      }
     }
   }, [appIsReady, isLoggedIn]);
 
@@ -124,4 +136,8 @@ export default function RootLayout() {
       </ThemeProvider>
     </TamaguiProvider>
   );
+}
+
+export const unstable_settings = {
+  initialRouteName: '(tabs)/index',
 }

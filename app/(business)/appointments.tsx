@@ -1,68 +1,79 @@
-import Appointment from '@/components/business/appointment/Appointment'
-import BusinessWrapper from '@/components/business/BusinessWrapper'
-import { ThemedText, ThemedView } from '@/components/utils'
+import AppointmentCalendar from '@/components/business/appointment/AgendaCalendar'
+import AgendaList from '@/components/business/appointment/AgendaList'
 import Pressable from '@/components/utils/Pressable'
-import { Fonts } from '@/constants/Fonts'
+import { useAppointmentSummaries } from '@/hooks/business/useAppointmentSummaries'
 import { useBusinessStore } from '@/utils/stores/businessStore'
-import Entypo from '@expo/vector-icons/Entypo'
-import { FlashList } from '@shopify/flash-list'
-import { UseThemeResult } from '@tamagui/web'
+import { Entypo, FontAwesome5, FontAwesome6 } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
-import React from 'react'
-import { StyleSheet, useColorScheme } from 'react-native'
-import { Text, useTheme, View } from 'tamagui'
+import React, { useState } from 'react'
+import { useColorScheme } from 'react-native'
+import { useTheme, View, Text } from 'tamagui'
 
 export default function Appointments() {
   const theme = useTheme();
-  const inverseTheme = useTheme({ inverse: true });
-  const styles = makeStyles(theme);
-  const scheme = useColorScheme();
-  const appointments = useBusinessStore((state) => state.appointments);
-  const router = useRouter();
+  const [view, setView] = useState<"calendar" | "list">("calendar");
+
+  const appointmentsMap = useBusinessStore((state) => state.appointments);
+  const appointments = Array.from(appointmentsMap.values());
+  const {
+    appointments: summaries,
+    refetchAppointments,
+    isFetchingAppointments,
+    isRefetchingAppointments
+  } = useAppointmentSummaries(appointments.map((a) => a.id));
+
   return (
-    <BusinessWrapper>
-      {appointments.size <= 0 ? (
-        <ThemedView style={styles.container}>
-          <ThemedText style={styles.fadedText}>No Appointments</ThemedText>
-        </ThemedView>
-      ) : (
-        <FlashList
-          data={Array.from(appointments.values())}
-          renderItem={({ item }) => (
-            <Appointment key={item.id} {...item}
-            />
-          )}
-        />
-      )}
-      <View position='absolute' bottom={50} right={20}>
-        <Pressable onPress={() => router.push('/business/availability')} activeOpacity={0.99} style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            backgroundColor: scheme === 'light' ? theme.section.val : inverseTheme.background.val,
-            width: 130,
-            height: 55,
-            justifyContent: 'center',
-            gap: 10,
-            borderRadius: 100,
-          }}>
-          <Entypo name="calendar" size={24} color={ scheme === 'light' ? theme.color.val : inverseTheme.color.val} />
-          <Text color={scheme === 'light' ? theme.color.val : inverseTheme.color.val}>Availability</Text>
+    <View>
+      {view === "calendar" ?
+      <AppointmentCalendar
+        summaries={summaries}
+        refetchAppointments={refetchAppointments}
+        isFetchingAppointments={isFetchingAppointments}
+        isRefetchingAppointments={isRefetchingAppointments}
+       /> :
+      <AgendaList
+        summaries={summaries}
+        refetchAppointments={refetchAppointments}
+        isFetchingAppointments={isFetchingAppointments}
+        isRefetchingAppointments={isRefetchingAppointments}
+       />
+      }
+      <AvailabilityButton />
+      <View position='absolute' bottom={40} left={20} zIndex={1000} height={50}>
+        {view === "list" ?
+        <Pressable onPress={() => setView("calendar")} activeOpacity={0.99}>
+          <FontAwesome5 name="calendar-alt" size={24} color={theme.color.val}/>
+        </Pressable>:
+        <Pressable onPress={() => setView("list")} activeOpacity={0.99}>
+          <FontAwesome6 name="list-ul" size={24} color={theme.color.val} />
         </Pressable>
+        }
       </View>
-    </BusinessWrapper>
+    </View>
   )
 }
 
-const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: theme.background.val
-  },
-  fadedText: {
-    lineHeight: 30,
-    fontSize: Fonts.contentAlt.fontSize,
-    color: theme.gray8.val
-  }
-})
+const AvailabilityButton = () => {
+  const router = useRouter();
+  const theme = useTheme();
+  const inverseTheme = useTheme({ inverse: true });
+  const scheme = useColorScheme();
+  return (
+    <View position='absolute' bottom={50} right={20} zIndex={1000}>
+      <Pressable onPress={() => router.push('/myBusiness/availability')} activeOpacity={0.99} style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          backgroundColor: scheme === 'light' ? theme.section.val : inverseTheme.background.val,
+          width: 130,
+          height: 55,
+          justifyContent: 'center',
+          gap: 10,
+          borderRadius: 100,
+          }}>
+          <Entypo name="calendar" size={24} color={ scheme === 'light' ? theme.color.val : inverseTheme.color.val} />
+          <Text color={scheme === 'light' ? theme.color.val : inverseTheme.color.val}>Availability</Text>
+      </Pressable>
+    </View>
+  )
+}
+

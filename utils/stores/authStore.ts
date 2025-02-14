@@ -8,6 +8,7 @@ import { makeRedirectUri } from 'expo-auth-session'
 export type AuthProps = {
   error?: AuthError | undefined
 }
+
 export interface AuthStore {
   user: User | null;
   isLoggedIn: boolean;
@@ -22,6 +23,7 @@ export interface AuthStore {
   resetPassword: (newPassword: string) => Promise<AuthProps>;
   forgotPassword: (email: string) => Promise<AuthProps>;
   signOut: () => Promise<AuthProps>;
+  reset: () => void;
 }
 
 export const useAuthStore = create<AuthStore>((set) => ({
@@ -62,21 +64,19 @@ export const useAuthStore = create<AuthStore>((set) => ({
       // Does not work on expo go
       const supabase = await supabaseClient;
       await GoogleSignin.hasPlayServices()
-      GoogleSignin.configure({ webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID! });
+      GoogleSignin.configure({
+        webClientId: process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID!,
+        iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID!});
       const userInfo = await GoogleSignin.signIn()
 
       if (!(userInfo?.data?.idToken)) {
-        return {
-          error: {
-            message: "No ID token present !"
-          } as AuthError
-        }
+        console.error('No idToken');
+        return {};
       }
       const { data: { user }, error } = await supabase.auth.signInWithIdToken({
         provider: 'google',
         token: userInfo.data.idToken,
       })
-
       if (error) return { error };
       set({ user });
       set({ isLoggedIn: true });
@@ -95,7 +95,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
         ],
       })
       // Sign in via Supabase Auth.
-      if (!credential.identityToken) throw new Error('No identityToken.');
+      if (!credential.identityToken) {
+        console.error('No identityToken');
+        return {};
+      };
       const { error, data: { user }, } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
         token: credential.identityToken,
@@ -141,5 +144,10 @@ export const useAuthStore = create<AuthStore>((set) => ({
       if (error) return { error };
       return {};
     },
-  })
-)
+    reset: () => set(initialState),
+}));
+
+const initialState = {
+  user: null,
+  isLoggedIn: false,
+}
