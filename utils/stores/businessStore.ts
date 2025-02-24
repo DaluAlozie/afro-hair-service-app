@@ -30,6 +30,7 @@ export interface BusinessStore {
     services: Map<number, Service>
     appointments: Map<number, Appointment>,
     notifications: Map<string, Notification>,
+    availability: Map<number, TimeSlot>,
     locations: Map<number, Location>,
     reviews: Map<number, Review>,
     tags: string[],
@@ -39,7 +40,14 @@ export interface BusinessStore {
     online: boolean,
     hasBusiness: boolean,
     loading: boolean,
-    availability: Map<number, TimeSlot>,
+    loadingBusiness: boolean,
+    loadingAppointments: boolean,
+    loadingAvailability: boolean,
+    loadingServices: boolean,
+    loadingLocations: boolean,
+    loadingReviews: boolean,
+    loadingNotifications: boolean,
+    loadingProfilePicture: boolean,
     createBusiness: (name: string, number: string | null, description: string) => Promise<BusinessProps>,
     load(): Promise<unknown>,
     reset: () => void,
@@ -51,6 +59,7 @@ export interface BusinessStore {
     loadBusinessLocations: () => Promise<BusinessProps>,
     loadBusinessAppointments: () => Promise<BusinessProps>,
     loadAvailability: () => Promise<BusinessProps>,
+    loadReviews: () => Promise<BusinessProps>,
     loadServiceLocations: (serviceId: number) => Promise<BusinessProps>,
     loadServiceOptions: (serviceId: number) => Promise<BusinessProps>,
     loadAddOns: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
@@ -143,7 +152,7 @@ export interface BusinessStore {
     disableAddOn: (serviceId: number, serviceOptionId: number, addOnId: number) => Promise<BusinessProps>
 }
 
-export const useBusinessStore = create<BusinessStore>((set, get) => ({
+const initialState = {
     id: -1,
     name: "",
     phoneNumber: "",
@@ -163,6 +172,18 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
     online: false,
     hasBusiness: false,
     loading: true,
+    loadingBusiness: true,
+    loadingAppointments: true,
+    loadingAvailability: true,
+    loadingServices: true,
+    loadingLocations: true,
+    loadingReviews: true,
+    loadingNotifications: true,
+    loadingProfilePicture: true,
+}
+
+export const useBusinessStore = create<BusinessStore>((set, get) => ({
+    ...initialState,
     createBusiness: async (name: string, number: string | null, description: string) => {
         const supabase = await supabaseClient;
         const user = await supabase.auth.getUser();
@@ -195,10 +216,22 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 set({ loading: false })
                 return {};
             }
+            set({ loadingBusiness: false });
+
             get().loadProfilePicture();
+            set({ loadingProfilePicture: false });
+
             get().loadAvailability();
+            set({ loadingAvailability: false });
+
             get().loadBusinessAppointments();
+            set({ loadingAppointments: false });
+
             get().loadBusinessLocations();
+            set({ loadingLocations: false });
+
+            get().loadReviews();
+            set({ loadingReviews: false });
 
             await get().loadServices();
             const serviceIds = Array.from(get().services.keys());
@@ -214,6 +247,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                     await get().loadCustomizableOptions(id, serviceOptionId);
                 }
             }
+            set({ loadingServices: false });
             set({ loading: false })
             console.log("Business data loaded");
             return {};
@@ -317,6 +351,22 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
             return {};
         }
         set({ profilePicture: null });
+        return {};
+    },
+    loadReviews: async () => {
+        const supabase = await supabaseClient;
+        const { data, error } = await supabase
+            .from('Review')
+            .select('*')
+            .eq('business_id', get().id)
+        if (error) {
+            throw { error };
+        }
+        const reviews = new Map<number, Review>()
+        data?.forEach((review: Review) => {
+            reviews.set(review.id, review)
+        })
+        set({ reviews });
         return {};
     },
     loadServices: async () => {
@@ -1275,24 +1325,3 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
     }
   })
 )
-
-const initialState = {
-    id: -1,
-    name: "",
-    phoneNumber: "",
-    description: "",
-    profilePicture: null,
-    rating: 0,
-    services: new Map<number, Service>(),
-    availability: new Map<number, TimeSlot>(),
-    appointments: new Map<number, Appointment>(),
-    locations: new Map<number, Location>(),
-    notifications: new Map<string, Notification>(),
-    reviews: new Map<number, Review>(),
-    facebook: "",
-    instagram: "",
-    twitter: "",
-    online: false,
-    hasBusiness: false,
-    loading: true,
-}

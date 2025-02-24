@@ -4,9 +4,9 @@ import { CustomizableOption as CustomizableOptionType } from "../types";
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import { useCallback } from 'react';
 import confirm from '@/components/utils/Alerts/Confirm';
-import { UseThemeResult } from '@tamagui/core';
-import { StyleSheet, Text } from 'react-native';
+import { Text } from 'react-native';
 import Pressable from '@/components/utils/Pressable';
+import { makeStyles } from '../utils';
 
 const convertType = (type: string) => {
   switch (type) {
@@ -42,14 +42,14 @@ export default function CustomizableOption({  id, name, type, lower_bound, upper
   return (
     <View style={styles.container}>
       <XStack style={styles.section}>
-          <Text style={styles.contentLabel}>Name</Text>
+          <Text style={styles.title}>Name</Text>
           <ScrollView contentContainerStyle={styles.content}>
               <Text style={styles.contentText}>{name}</Text>
           </ScrollView>
       </XStack>
       <Separator />
       <XStack style={styles.section}>
-          <Text style={styles.contentLabel}>Type</Text>
+          <Text style={styles.title}>Type</Text>
           <ScrollView contentContainerStyle={styles.content}>
               <Text style={[styles.contentText, { opacity: 0.7, fontWeight: "normal" }]}>{convertType(type)}</Text>
           </ScrollView>
@@ -59,7 +59,7 @@ export default function CustomizableOption({  id, name, type, lower_bound, upper
           <>
             <Separator />
             <XStack style={styles.section}>
-                <Text style={styles.contentLabel}>Minimum</Text>
+                <Text style={styles.title}>Minimum</Text>
                 <ScrollView contentContainerStyle={styles.content}>
                     <Text style={styles.contentText}>{lower_bound ?? "None"}</Text>
                 </ScrollView>
@@ -72,7 +72,7 @@ export default function CustomizableOption({  id, name, type, lower_bound, upper
           <>
             <Separator />
             <XStack style={styles.section}>
-                <Text style={styles.contentLabel}>Maximum</Text>
+                <Text style={styles.title}>Maximum</Text>
                 <ScrollView contentContainerStyle={styles.content}>
                     <Text style={styles.contentText}>{upper_bound ?? "None"}</Text>
                 </ScrollView>
@@ -83,7 +83,7 @@ export default function CustomizableOption({  id, name, type, lower_bound, upper
       <Separator />
       <View justifyContent='center' style={styles.section}>
         <Pressable
-          activeOpacity={0.85} scale={0.99} onPress={deleteCustomizableOption} style={{ justifyContent: "center", alignItems: "center" }}>
+          activeOpacity={0.85} scale={0.99} onPress={deleteCustomizableOption} style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Text style={{ color: theme.danger.val, fontSize: 16 }}>
             Remove Customization
           </Text>
@@ -98,53 +98,3 @@ const Separator = () => {
     const styles = makeStyles(theme);
     return <View style={styles.separator} />;
 }
-
-const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
-  container: {
-    width: '100%',
-    alignItems: "stretch",
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    backgroundColor: theme.section.val,
-    margin: 10,
-    alignSelf: 'center',
-  },
-  title: {
-    fontSize: 15,
-    color: theme.color.val
-  },
-  section: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 50,
-    width: '100%',
-  },
-  separator: {
-    height: 1,
-    width: '100%',
-    backgroundColor: theme.gray5.val,
-  },
-  content: {
-    alignSelf: 'flex-end',
-    width: '50%',
-    justifyContent: "flex-end",
-    color: theme.color.val
-  },
-  contentLabel: {
-    fontSize: 15,
-    textAlign: "right",
-    color: theme.color.val
-  },
-  contentText: {
-    fontSize: 14,
-    textAlign: "right",
-    color: theme.color.val,
-    fontWeight: "bold"
-
-  },
-  pressable: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-end",
-  }
-});

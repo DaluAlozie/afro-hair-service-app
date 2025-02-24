@@ -4,10 +4,9 @@ import { Location as LocationProps } from '../types'
 import { Switch, Text, useTheme } from 'tamagui'
 import Pressable from '@/components/utils/Pressable';
 import { useBusinessStore } from '@/utils/stores/businessStore';
-import { StyleSheet } from 'react-native'
-import { UseThemeResult } from '@tamagui/core'
 import confirm from '@/components/utils/Alerts/Confirm';
 import notify from '@/components/utils/Alerts/Notify';
+import { makeStyles } from '../utils';
 
 export default function BusinessLocation(
   { id, street_address, flat_number, city, postcode, country, enabled }: LocationProps
@@ -44,7 +43,7 @@ export default function BusinessLocation(
         <>
           <Separator/>
           <View style={styles.section}>
-            <Text style={styles.title}>Appartement Number</Text>
+            <Text style={styles.title}>Apartment Number</Text>
             <Text style={styles.contentText}>{flat_number}</Text>
           </View>
         </>
@@ -100,45 +99,3 @@ function Separator() {
   const styles = makeStyles(theme);
   return <View style={styles.separator} />
 }
-
-const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
-  container: {
-    width: '100%',
-    alignItems: "stretch",
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    backgroundColor: theme.section.val,
-    margin: 10,
-    alignSelf: 'center',
-    paddingTop: 10,
-  },
-  title: {
-    fontSize: 15,
-  },
-  section: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 50,
-    width: '100%',
-  },
-  separator: {
-    height: 1,
-    width: '100%',
-    backgroundColor: theme.gray5.val,
-  },
-  content: {
-    alignSelf: 'flex-end',
-    width: '50%',
-    justifyContent: "flex-end",
-  },
-  contentText: {
-    fontSize: 14,
-    textAlign: "right"
-  },
-  pressable: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-end",
-  }
-});

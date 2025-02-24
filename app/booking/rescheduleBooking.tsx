@@ -197,9 +197,10 @@ const makeStyles = (theme: UseThemeResult) =>
   StyleSheet.create({
     container: {
       width: '100%',
+      maxWidth: 600,
       backgroundColor: theme.background.val,
       paddingHorizontal: 20,
-      height: '100%',
+      height: "auto",
       alignSelf: 'center',
     },
     heading: {

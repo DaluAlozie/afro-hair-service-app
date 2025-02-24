@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { ScrollView, useTheme, XStack, View } from 'tamagui'
+import { XStack, useTheme, View } from 'tamagui'
 import { Text } from 'react-native'
 import Ionicons from '@expo/vector-icons/Ionicons'
 import Pressable from '@/components/utils/Pressable'
@@ -46,16 +46,16 @@ export default function Socials() {
             <Ionicons name="logo-facebook" size={24} color={theme.color.val} />
             <Text style={styles.sectionItemText}>Facebook</Text>
           </XStack>
-          <ScrollView contentContainerStyle={styles.sectionItem}>
+          <XStack>
             <Pressable
             onPress={() => setFacebookModalOpen(true)}
-            style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} activeOpacity={0.7} scale={0.99}>
-              <Text style={[styles.contentText, { marginRight: 10 }]}>
+            style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} activeOpacity={0.7} scale={0.99}>
+              <Text style={styles.contentText} numberOfLines={2}>
                   {coalesce(facebook)}
               </Text>
               <Feather name="edit-3" size={16} color={theme.color.val}/>
             </Pressable>
-          </ScrollView>
+          </XStack>
         </View>
         <Separator/>
         <View style={styles.sectionItem}>
@@ -63,16 +63,16 @@ export default function Socials() {
             <Ionicons name="logo-instagram" size={24} color={theme.color.val} />
             <Text style={styles.sectionItemText}>Instagram</Text>
           </XStack>
-          <ScrollView contentContainerStyle={styles.sectionItem}>
+          <XStack>
             <Pressable
             onPress={() => setInstagramModalOpen(true)}
-            style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} activeOpacity={0.7} scale={0.99}>
-              <Text style={[styles.contentText, { marginRight: 10 }]}>
+            style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} activeOpacity={0.7} scale={0.99}>
+              <Text style={styles.contentText} numberOfLines={2}>
                   {coalesce(instagram)}
               </Text>
               <Feather name="edit-3" size={16} color={theme.color.val}/>
             </Pressable>
-          </ScrollView>
+          </XStack>
         </View>
         <Separator/>
         <View style={styles.sectionItem}>
@@ -80,16 +80,16 @@ export default function Socials() {
             <Ionicons name="logo-twitter" size={24} color={theme.color.val} />
             <Text style={styles.sectionItemText}>Twitter</Text>
           </XStack>
-          <ScrollView contentContainerStyle={styles.sectionItem}>
+          <XStack>
             <Pressable
             onPress={() => setTwitterModalOpen(true)}
-            style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} activeOpacity={0.7} scale={0.99}>
-              <Text style={[styles.contentText, { marginRight: 10 }]}>
+            style={{ flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} activeOpacity={0.7} scale={0.99}>
+              <Text style={styles.contentText} numberOfLines={2}>
                   {coalesce(twitter)}
               </Text>
               <Feather name="edit-3" size={16} color={theme.color.val}/>
             </Pressable>
-          </ScrollView>
+          </XStack>
         </View>
       </View>
     </View>

@@ -1,13 +1,12 @@
 import React, { useCallback } from 'react'
 import { AddOn as AddOnProps } from '@/components/business/types';
-import { ScrollView, View, Text, useTheme, Switch, XStack } from 'tamagui';
-import { StyleSheet } from 'react-native';
-import { UseThemeResult } from '@tamagui/core';
+import { View, Text, useTheme, Switch, XStack, ScrollView } from 'tamagui';
 import Pressable from '@/components/utils/Pressable';
 import Feather from '@expo/vector-icons/Feather';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import confirm from '@/components/utils/Alerts/Confirm';
 import notify from '@/components/utils/Alerts/Notify';
+import { makeStyles } from '../utils';
 
 export default function AddOn({ id, name, price, duration, enabled, service_id, service_option_id, editAddOnPrice}:
     AddOnProps & { editAddOnPrice: (id: number) => void }) {
@@ -40,7 +39,7 @@ export default function AddOn({ id, name, price, duration, enabled, service_id, 
   return (
     <View style={styles.container}>
         <XStack style={styles.section}>
-            <Text>Name</Text>
+            <Text style={styles.title}>Name</Text>
             <ScrollView contentContainerStyle={styles.content}>
                 <Text style={styles.contentText}>{name}</Text>
             </ScrollView>
@@ -48,7 +47,7 @@ export default function AddOn({ id, name, price, duration, enabled, service_id, 
         <Separator />
         <XStack style={styles.section}>
           <Text style={styles.title}>Price</Text>
-          <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.content}>
               <Pressable
               onPress={() => editAddOnPrice(id)}
               style={{ flex: 1, flexDirection: "row", justifyContent: "flex-end", alignItems: "center" }} activeOpacity={0.7} scale={0.99}>
@@ -57,7 +56,7 @@ export default function AddOn({ id, name, price, duration, enabled, service_id, 
               </Text>
               <Feather name="edit-3" size={16} color={theme.color.val}/>
               </Pressable>
-          </ScrollView>
+          </View>
       </XStack>
       <Separator />
       <XStack style={styles.section}>
@@ -83,7 +82,7 @@ export default function AddOn({ id, name, price, duration, enabled, service_id, 
       <Separator />
       <View justifyContent='center' style={styles.section}>
         <Pressable
-          activeOpacity={0.85} scale={0.99} onPress={deleteAddOn} style={{ justifyContent: "center", alignItems: "center" }}>
+          activeOpacity={0.85} scale={0.99} onPress={deleteAddOn} style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Text color={theme.danger.val} fontSize={16}>
             Remove AddOn
           </Text>
@@ -98,44 +97,3 @@ const Separator = () => {
     const styles = makeStyles(theme);
     return <View style={styles.separator} />;
 }
-
-const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
-  container: {
-    width: '100%',
-    alignItems: "stretch",
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    backgroundColor: theme.section.val,
-    margin: 10,
-    alignSelf: 'center',
-  },
-  title: {
-    fontSize: 15,
-  },
-  section: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 50,
-    width: '100%',
-  },
-  separator: {
-    height: 1,
-    width: '100%',
-    backgroundColor: theme.gray5.val,
-  },
-  content: {
-    alignSelf: 'flex-end',
-    width: '50%',
-    justifyContent: "flex-end",
-  },
-  contentText: {
-    fontSize: 15,
-    textAlign: "right",
-    fontWeight: "bold"
-  },
-  pressable: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-end",
-  }
-});

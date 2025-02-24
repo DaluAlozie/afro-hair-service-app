@@ -13,7 +13,7 @@ export const useBusinessSummaries = () => {
     const fetchBusinessSummaries = useCallback(async (): Promise<Map<number, BusinessSummary>> => {
 
         const supabase = await supabaseClient;
-        const { data, error } = await supabase.rpc('business_details');
+        const { data, error } = await supabase.rpc('get_business_summaries');
 
         if (error) {
             console.log(error);

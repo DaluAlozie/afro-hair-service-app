@@ -146,8 +146,9 @@ const makeStyles = (theme: UseThemeResult) =>
       width: '100%',
       backgroundColor: theme.background.val,
       paddingHorizontal: 20,
-      height: '100%',
+      height: 'auto',
       alignSelf: 'center',
+      maxWidth: 600,
     },
     heading: {
       fontSize: 30,

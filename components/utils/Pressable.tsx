@@ -1,66 +1,75 @@
-import { TouchableOpacity, Animated, ViewProps, GestureResponderEvent } from 'react-native';
+import { TouchableOpacity, ViewProps, GestureResponderEvent } from 'react-native';
 import React, { useState } from 'react';
 import { SizableText, useTheme } from 'tamagui';
+import Animated, { useSharedValue, withTiming, useAnimatedStyle } from 'react-native-reanimated';
 import { StyleProps } from 'react-native-reanimated';
 
-type PressableProps =  ViewProps & {
+type PressableProps = ViewProps & {
   children?: React.ReactNode | string;
   onPress?: (event: GestureResponderEvent) => void;
-  disabled?: boolean | undefined;
-  pressedStyle?: StyleProps | undefined;
-  activeOpacity?: number | undefined;
-  innerStyle?: StyleProps | undefined;
-  scale?:  number | undefined;
+  disabled?: boolean;
+  pressedStyle?: StyleProps;
+  activeOpacity?: number;
+  innerStyle?: StyleProps;
+  scale?: number;
 };
 
 export default function Pressable({
-    children,
-    disabled,
-    onPress,
-    pressedStyle,
-    style,
-    innerStyle,
-    activeOpacity,
-    scale,
-    ...rest }: PressableProps
-) {
+  children,
+  disabled,
+  onPress,
+  pressedStyle,
+  style,
+  innerStyle,
+  activeOpacity,
+  scale,
+  ...rest
+}: PressableProps) {
+  const [isPressed, setIsPressed] = useState(false);
+  const scaleValue = useSharedValue(1);
+  const theme = useTheme();
 
-    const [isPressed, setIsPressed] = useState(false);
-    const [scaleValue] = useState(new Animated.Value(1));
-    const theme = useTheme();
-    const onPressIn = () => {
-        setIsPressed(true);
-        Animated.timing(scaleValue, {
-        toValue: scale ?? 0.94, // Slightly smaller for the press effect
-        duration: 100,
-        useNativeDriver: true,
-        }).start();
-    };
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleValue.value }],
+  }));
 
-    const onPressOut = () => {
-        setIsPressed(false);
-        Animated.timing(scaleValue, {
-        toValue: 1, // Reset to original size
-        duration: 100,
-        useNativeDriver: true,
-        }).start();
-    };
-    return (
-        <Animated.View style={[{ transform: [{ scale: scaleValue}]}, (isPressed ? [style, pressedStyle] : style)]} {...rest}>
-            <TouchableOpacity
-                activeOpacity={activeOpacity}
-                onPressIn={onPressIn}
-                onPressOut={onPressOut}
-                onPress={onPress}
-                disabled={disabled}
-                style={[{ height: "100%", width: "100%", alignItems: "center"}, innerStyle ?? style]}
-            >
-                {typeof children === 'string' ? (
-                <SizableText style={{ color: theme.color.val, fontWeight: 900 }}>{children}</SizableText>
-                ) : (
-                children
-                )}
-            </TouchableOpacity>
-        </Animated.View>
-    );
+  const onPressIn = () => {
+    setIsPressed(true);
+    scaleValue.value = withTiming(scale ?? 0.94, { duration: 100 });
+  };
+
+  const onPressOut = () => {
+    setIsPressed(false);
+    scaleValue.value = withTiming(1, { duration: 100 });
+  };
+
+  return (
+    <Animated.View
+      style={[
+        animatedStyle,
+        isPressed ? [style, pressedStyle] : style,
+      ]}
+      {...rest}
+    >
+      <TouchableOpacity
+        activeOpacity={activeOpacity}
+        onPressIn={onPressIn}
+        onPressOut={onPressOut}
+        onPress={onPress}
+        disabled={disabled}
+        style={[
+          { height: 'auto', width: 'auto', alignItems: 'center' },
+          innerStyle ?? style,
+        ]}
+      >
+        {typeof children === 'string' ? (
+          <SizableText style={{ color: theme.color.val, fontWeight: '900' }}>
+            {children}
+          </SizableText>
+        ) : (
+          children
+        )}
+      </TouchableOpacity>
+    </Animated.View>
+  );
 }

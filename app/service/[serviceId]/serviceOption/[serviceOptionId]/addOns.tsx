@@ -1,20 +1,22 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, useTheme, Text } from 'tamagui';
-import { StyleSheet } from 'react-native';
-import { UseThemeResult } from '@tamagui/core';
+
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import { Collapsible } from '@/components/utils';
 import Pressable from '@/components/utils/Pressable';
 import AddOn from '@/components/business/addon/AddOn';
 import EditAddOnPriceModal from '@/components/business/addon/EditAddOnPriceModal';
+import { AddOn as AddOnProps } from '@/components/business/types';
+import { makeContainerStyles } from '@/components/business/utils';
+import { SectionTitle } from '../..';
 
 export default function AddOns() {
   const { serviceId, serviceOptionId } = useLocalSearchParams();
   const router = useRouter();
   const services = useBusinessStore((state) => state.services);
   const theme = useTheme();
-  const styles = makeStyles(theme);
+  const styles = makeContainerStyles(theme);
 
   const onLayout = useCallback(() => {
     if (typeof serviceId !== 'string' || isNaN(parseInt(serviceId))) {
@@ -63,10 +65,16 @@ export default function AddOns() {
             showsVerticalScrollIndicator={false}
           >
             {serviceOption && (
-              <Collapsible defaultOpen={true}>
-                {addOns.map((addOn) => (
-                  <AddOn key={addOn.id} {...addOn} editAddOnPrice={openEditAddOnPriceModal} />
-                ))}
+              <Collapsible defaultOpen={true} style={{ width: "100%" }}
+              header={<SectionTitle title={"Add Ons"} />}
+                >
+                {addOns.map(useMemo(() => {
+                  const AddOnComponent = (addOn: AddOnProps) => (
+                    <AddOn key={addOn.id} {...addOn} editAddOnPrice={openEditAddOnPriceModal} />
+                  );
+                  AddOnComponent.displayName = 'AddOnComponent';
+                  return AddOnComponent;
+                }, [addOns]))}
               </Collapsible>
             )}
             <Pressable
@@ -87,22 +95,3 @@ export default function AddOns() {
   );
 }
 
-const makeStyles = (theme: UseThemeResult) =>
-  StyleSheet.create({
-    container: {
-      width: '90%',
-      alignItems: 'center',
-      alignSelf: 'center',
-      borderRadius: 10,
-    },
-    addButton: {
-      flexDirection: 'row',
-      alignSelf: 'center',
-      height: 50,
-      justifyContent: 'center',
-      backgroundColor: theme.section.val,
-      width: '100%',
-      borderRadius: 10,
-      marginVertical: 20,
-    },
-  });

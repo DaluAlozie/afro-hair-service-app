@@ -6,7 +6,7 @@ import { useCustomerStore } from "@/utils/stores/customerStore";
 import { FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { UseThemeResult } from "@tamagui/core";
 import { router, useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useColorScheme } from "react-native";
 import { View, Text, useTheme, XStack, RadioGroup } from "tamagui";
 import { StyleSheet } from "react-native";
@@ -191,7 +191,7 @@ const Business = ({ business, distance, index }:
   const theme = useTheme();
   const styles = makeStyles(theme)
   const profilePicture = `${process.env.EXPO_PUBLIC_BUSINESS_PROFILE_BASE_URL}/${business.owner_id}/profilePicture.png`
-  const services = business.services.filter(isNotEmpty).map(capitalise).join(", ");
+  const services = useMemo(() => business.services.filter(isNotEmpty).map(capitalise).join(", "), [business.services]);
   const tags = business.tags.map(capitalise).slice(0, 5);
   return (
   <>

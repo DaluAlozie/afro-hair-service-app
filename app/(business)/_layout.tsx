@@ -60,7 +60,7 @@ export default function BusinessLayout() {
     >
       <MaterialTopTabs.Screen name="index" options={{ title: 'Overview' }} />
       <MaterialTopTabs.Screen name="services" options={{ title: 'Services' }}/>
-      <MaterialTopTabs.Screen name="analytics" options={{ title: 'Analytics' }}/>
+      <MaterialTopTabs.Screen name="analytics" options={{ title: 'Analytics', }}/>
       <MaterialTopTabs.Screen name="appointments" options={{ title: 'Appointments' }}/>
       <MaterialTopTabs.Screen name="reviews" options={{ title: 'Reviews' }} />
       <MaterialTopTabs.Screen name="businessSettings" options={{ title: 'Settings' }}/>

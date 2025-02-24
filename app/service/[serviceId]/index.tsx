@@ -4,8 +4,8 @@ import { Collapsible } from '@/components/utils';
 import Pressable from '@/components/utils/Pressable';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
-import React, { useCallback, useState } from 'react'
-import { ScrollView, View, Text, useTheme, XStack, YStack, Switch } from 'tamagui'
+import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import { ScrollView, Text, useTheme, XStack, YStack, Switch, View } from 'tamagui'
 import { UseThemeResult } from '@tamagui/web'
 import { StyleSheet } from 'react-native'
 import confirm from '@/components/utils/Alerts/Confirm';
@@ -15,56 +15,38 @@ import EditNameModal from '@/components/business/service/modals/EditNameModal';
 
 export default function ServicePage() {
     const { serviceId } = useLocalSearchParams();
-    const router = useRouter();
-    const theme = useTheme();
+
     const navigation = useNavigation();
     const services = useBusinessStore(state => state.services);
-    const [service, setService] = useState<ServiceProp | null>(null);
+    const parsedId = parseInt(typeof serviceId === "string" ? serviceId : "-1");
+    const service = services.get(parsedId);
 
-    const onLayout = useCallback(() => {
-        if (typeof serviceId !== "string" || isNaN(parseInt("99191ss"))) {
-            router.dismissTo("/(business)/services");
-            return null
-        }
-        const service = services.get(parseInt(serviceId));
+    useEffect(() => {
         if (!service) {
-            router.dismissTo("/(business)/services");
-            return null
-        }
-        setService(service);
-        if (!service) {
-            router.dismissTo("/(business)/services");
-            return null
+            return;
         }
         const title = service.name.length < 20 ? service.name : "Service";
         navigation.setOptions({
             title: title + " Service",
         })
-    }, [serviceId])
+    }, [service])
 
+    if (!service) {
+        return null;
+    }
     return (
-        <ScrollView
-            onLayout={onLayout}
-            style={{ flex: 1, backgroundColor: theme.background.val }}
-            contentContainerStyle={{ paddingTop: 20, gap: 120 }}
-            showsHorizontalScrollIndicator={false}
-            showsVerticalScrollIndicator={false}
-        >
-            {service && (
-                <>
-                <ServiceOptions serviceId={service.id} serviceOptions={service.service_options} />
-                <General service={service} />
-                </>
-            )}
+        <ScrollView backgroundColor={"$background"}>
+            <ServiceOptions serviceId={parsedId} serviceOptions={service.service_options ?? new Map()}/>
+            <General service={service}/>
         </ScrollView>
   )
 }
 
-function SectionTitle({ title }: { title: string }) {
+export function SectionTitle({ title }: { title: string }) {
     const theme = useTheme();
     return (
-        <View>
             <Text
+                width={"93%"}
                 color={theme.gray11Dark.val}
                 fontWeight={"regular"}
                 fontSize={16}
@@ -72,15 +54,7 @@ function SectionTitle({ title }: { title: string }) {
             >
                 {title}
             </Text>
-             <View
-                width={"100%"}
-                height={1}
-                backgroundColor={theme.gray8.val}
-                alignSelf='center'
-                borderRadius={100}
-                marginVertical={10}
-                />
-        </View>
+
     )
 }
 
@@ -92,11 +66,13 @@ function ServiceOptions({ serviceId, serviceOptions }: { serviceId: number, serv
     return (
         <>
         <View style={styles.section}>
-            <SectionTitle title={"Service Options"} />
-            <Collapsible defaultOpen={true} >
-                {items.map((item) => (
+            <Collapsible defaultOpen={true}
+            header={<SectionTitle title={"Service Options"}/>}
+            
+            >
+                {useMemo(() => items.map((item) => (
                     <ServiceOption key={item.id} {...item}/>
-                ))}
+                )),[items])}
             </Collapsible>
             <Pressable
                 onPress={() => router.push(`/service/${serviceId}/addServiceOption`)}
@@ -114,7 +90,7 @@ function ServiceOptions({ serviceId, serviceOptions }: { serviceId: number, serv
     )
 }
 
-function General({ service }: { service: ServiceProp }) {
+function General({ service }: { service: ServiceProp | null }) {
     const theme = useTheme();
     const styles = makeStyles(theme);
     const router = useRouter();
@@ -133,6 +109,7 @@ function General({ service }: { service: ServiceProp }) {
         setNameModalOpen(false);
     }, [])
     const deleteService = useCallback(async () => {
+        if (!service) return;
         await confirm(
             async () => {
                 const { error } = await removeService(service.id);
@@ -148,6 +125,7 @@ function General({ service }: { service: ServiceProp }) {
             "destructive"
         );
     },[])
+    if (!service) return null;
     return (
         <>
         <EditNameModal serviceId={service.id} open={nameModalOpen} setOpen={setNameModalOpen} />

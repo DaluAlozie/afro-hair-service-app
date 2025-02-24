@@ -1,5 +1,5 @@
 import { useBusinessStore } from '@/utils/stores/businessStore';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, RefreshControl, useWindowDimensions } from 'react-native';
 import { useTheme, View } from 'tamagui';
 import { Agenda } from 'react-native-calendars';
@@ -10,49 +10,62 @@ import { AppointmentItem } from '@/components/business/appointment/Appointment';
 import PageSpinner from '@/components/utils/loading/PageSpinner';
 
 const parseAgendaItems = (appointments: Appointment[]): Record<string, Appointment[]> => {
-  // Get all appointment dates
-  const appointmentDates = appointments
-    .filter((appointment) => appointment.start_time) // Ensure the date exists
-    .map((appointment) => new Date(appointment.start_time).toISOString().split('T')[0]);
+  // Group appointments by date
+  const groups: Record<string, Appointment[]> = {};
+  let minTimestamp = Infinity;
+  let maxTimestamp = -Infinity;
 
-  // Find the minimum and maximum dates
-  const minDate = appointmentDates.length > 0
-    ? Math.min(...appointmentDates.map((date) => new Date(date).getTime()))
-    : new Date().getTime();
-  const maxDate = appointmentDates.length > 0
-    ? Math.max(...appointmentDates.map((date) => new Date(date).getTime()))
-    : new Date().getTime();
+  appointments.forEach(app => {
+    if (app.start_time) {
+      const dateKey = new Date(app.start_time).toISOString().split('T')[0];
+      groups[dateKey] = groups[dateKey] ? [...groups[dateKey], app] : [app];
 
-  // Adjust minDate and maxDate to ±1 years
-  const adjustedMinDate = new Date(minDate);
-  adjustedMinDate.setFullYear(adjustedMinDate.getFullYear() - 1); // Subtract 2 years
-  const adjustedMaxDate = new Date(maxDate);
-  adjustedMaxDate.setFullYear(adjustedMaxDate.getFullYear() + 1); // Add 2 years
+      const startTs = new Date(app.start_time).getTime();
+      const endTs = new Date(app.end_time).getTime();
+      if (startTs < minTimestamp) minTimestamp = startTs;
+      if (endTs > maxTimestamp) maxTimestamp = endTs;
+    }
+  });
 
-  // Initialize the items object
+  // Fallback if no appointments
+  if (minTimestamp === Infinity) {
+    minTimestamp = new Date().getTime();
+    maxTimestamp = new Date().getTime();
+  }
+
+  // Adjust dates by one month on each side
+  const adjustedMin = new Date(minTimestamp);
+  adjustedMin.setMonth(adjustedMin.getMonth() - 1);
+  const adjustedMax = new Date(maxTimestamp);
+  adjustedMax.setMonth(adjustedMax.getMonth() + 1);
+
   const items: Record<string, Appointment[]> = {};
-  // Iterate through each day between adjustedMinDate and adjustedMaxDate
-  for (let currentDate = adjustedMinDate.getTime(); currentDate <= adjustedMaxDate.getTime(); currentDate += 86400000) { // 86400000 ms = 1 day
-    const dateKey = new Date(currentDate).toISOString().split('T')[0];
-    items[dateKey] = appointments.filter((appointment) => {
-      const appointmentDate = new Date(appointment.start_time).toISOString().split('T')[0];
-      return appointmentDate === dateKey;
-    }).sort((a, b) =>  a.start_time.getTime() - b.start_time.getTime());
+  // Iterate through every day between adjustedMin and adjustedMax
+  for (let time = adjustedMin.getTime(); time <= adjustedMin.getTime(); time += 86400000) {
+    const dateKey = new Date(time).toISOString().split('T')[0];
+    if (groups[dateKey]) {
+      items[dateKey] = groups[dateKey].sort(
+        (a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()
+      );
+    } else {
+      items[dateKey] = [];
+    }
   }
   return items;
-}
+};
 
 type AppointmentCalendarProps = {
-    summaries: Map<number, AppointmentSummary>
-    refetchAppointments: () => void,
-    isFetchingAppointments: boolean,
-    isRefetchingAppointments: boolean,
-}
+  summaries: Map<number, AppointmentSummary>;
+  refetchAppointments: () => Promise<void>;
+  isFetchingAppointments: boolean;
+  isRefetchingAppointments: boolean;
+};
+
 export default function AppointmentCalendar({
-    summaries,
-    refetchAppointments,
-    isFetchingAppointments,
-    isRefetchingAppointments
+  summaries,
+  refetchAppointments,
+  isFetchingAppointments,
+  isRefetchingAppointments,
 }: AppointmentCalendarProps) {
   const { appointmentId, date } = useLocalSearchParams();
   const agendaRef = useRef<Agenda>(null);
@@ -62,59 +75,63 @@ export default function AppointmentCalendar({
   const loadAppointments = useBusinessStore((state) => state.loadBusinessAppointments);
   const isLoading = useBusinessStore((state) => state.loading);
 
-  const appointments = Array.from(appointmentsMap.values());
+  // Memoize the array of appointments to avoid unnecessary recalculations.
+  const appointments = useMemo(() => Array.from(appointmentsMap.values()), [appointmentsMap]);
+
+  const minDate = useMemo(() => 
+    appointments.length > 0
+      ? Math.min(...appointments.map(app => new Date(app.start_time).getTime()))
+      : new Date().getTime(),
+    [appointments]
+  );
+
+  const maxDate = useMemo(() => 
+    appointments.length > 0
+      ? Math.max(...appointments.map(app => new Date(app.end_time).getTime()))
+      : new Date().getTime(),
+    [appointments]
+  );
 
   const { height: screenHeight } = useWindowDimensions();
-
-  const extraData = [appointments, summaries]
-
   const isIPad = Platform.OS === 'ios' && Platform.isPad;
-
   const [refreshing, setRefreshing] = useState(false);
-  const [items, setItems] = useState<Record<string, Appointment[]>>(parseAgendaItems([]))
-  const [height, setHeight] = useState(isIPad ? screenHeight*1.0001:"100%");
+  const [height, setHeight] = useState(isIPad ? screenHeight * 1.0001 : "100%");
 
+  // Compute agenda items only when appointments change.
+  const items = useMemo(() => parseAgendaItems(appointments), [appointments]);
+
+  // Extra data for the Agenda to trigger re-render only when necessary.
+  const extraData = useMemo(() => [appointments, summaries], [appointments, summaries]);
+
+  // Simplified refresh function.
   const refresh = useCallback(async () => {
     setRefreshing(true);
-    await refetchAppointments();
-    await loadAppointments();
-    setItems(parseAgendaItems(appointments));
+    await Promise.all([refetchAppointments(), loadAppointments()]);
     setRefreshing(false);
-  }, [refetchAppointments, loadAppointments, appointments]);
+  }, [refetchAppointments, loadAppointments]);
 
-
-  // Update the items when the appointments are fetched
+  // For iPad, fix height issues after appointments are fetched.
   useEffect(() => {
-    if (!isFetchingAppointments && !isLoading) {
-      setRefreshing(true);
-      setItems(parseAgendaItems(appointments));
-      setRefreshing(false);
-    }
-  }, [isFetchingAppointments, isLoading, isRefetchingAppointments]);
-
-  // Update the height when the appointments are fetched (iPad only) because the height is not calculated correctly
-  useEffect(() => {
-    if (!isFetchingAppointments && !isLoading) {
+    if (!isFetchingAppointments && !isLoading && isIPad) {
       setTimeout(() => {
-        if (isIPad) {
-          setHeight("100%");
-        }
+        setHeight("100%");
       }, 1);
     }
-  }, [isFetchingAppointments, isLoading, isRefetchingAppointments]);
+  }, [isFetchingAppointments, isLoading, isIPad]);
 
+  // Automatically select a day if appointmentId and date are provided.
   useEffect(() => {
     if (agendaRef.current && appointmentId && date) {
+      const bookingDate = new Date(typeof date === "string" ? date : date[0]);
       const yearFromNow = new Date();
       yearFromNow.setFullYear(yearFromNow.getFullYear() + 1);
-
       const yearBeforeNow = new Date();
       yearBeforeNow.setFullYear(yearBeforeNow.getFullYear() - 1);
 
-      const bookingDate = new Date(typeof date === "string" ? date : date[0]);
-
-      // If the date is over a year ago or over a year from now, do not select it
-      if (bookingDate.getTime() < yearBeforeNow.getTime() || bookingDate.getTime() > yearFromNow.getTime()) {
+      if (
+        bookingDate.getTime() < yearBeforeNow.getTime() ||
+        bookingDate.getTime() > yearFromNow.getTime()
+      ) {
         return;
       }
 
@@ -124,64 +141,87 @@ export default function AppointmentCalendar({
         day: bookingDate.getDate(),
         timestamp: bookingDate.getTime(),
         dateString: bookingDate.toISOString().split('T')[0],
-      }
+      };
       agendaRef.current.chooseDay(dateData, true);
     }
-  }, [date, appointmentId, agendaRef.current]);
+  }, [date, appointmentId]);
+
+  // Memoize render callbacks.
+  const renderItem = useCallback((item: Appointment) => (
+    <AppointmentItem appointment={item} summary={summaries.get(item.id)} />
+  ), [summaries]);
+
+  const renderEmptyData = useCallback(() => (
+    <View
+      height={100}
+      width="100%"
+      justifyContent="flex-start"
+      alignItems="flex-start"
+    >
+      <View
+        height={1}
+        width="99%"
+        backgroundColor={theme.gray5.val}
+        opacity={0.8}
+      />
+    </View>
+  ), [theme.gray5.val]);
+
+  const RenderSeparator = useCallback(() => <Separator />, []);
+
+  if (isLoading && isFetchingAppointments && !isRefetchingAppointments) {
+    return <PageSpinner />;
+  }
 
   return (
-    <View height={height} width={"100%"} backgroundColor={theme.background.val} position='relative'>
-    {isLoading && isFetchingAppointments && !isRefetchingAppointments ? <PageSpinner/>: (
-    <Agenda
+    <View height={height} width="100%" backgroundColor={theme.background.val} position="relative">
+      <Agenda
         ref={agendaRef}
+        disableAllTouchEventsForInactiveDays
+        disableAllTouchEventsForDisabledDays
         refreshControl={
-        <RefreshControl
+          <RefreshControl
             refreshing={refreshing || isRefetchingAppointments}
             onRefresh={refresh}
             tintColor={theme.color.val}
             colors={[theme.color.val]}
-        />
+          />
         }
         items={items}
         extraData={extraData}
         selected={new Date().toISOString().split('T')[0]}
-        renderItem={(item: Appointment) => <AppointmentItem appointment={item} summary={summaries.get(item.id)} />}
-        renderEmptyData={Separator}
-        renderEmptyDate={() => {
-        return(
-            <View height={100} width={"100%"} justifyContent="flex-start" alignItems="flex-start">
-            <View height={1} width={"99%"} backgroundColor={theme.gray5.val} opacity={0.8} />
-            </View>
-        )
-        }}
-        pastScrollRange={200}
-        futureScrollRange={200}
+        renderItem={renderItem}
+        renderEmptyData={RenderSeparator}
+        renderEmptyDate={renderEmptyData}
+        pastScrollRange={1}
+        futureScrollRange={1}
+        minDate={new Date(minDate).toISOString().split('T')[0]}
+        maxDate={new Date(maxDate).toISOString().split('T')[0]}
         theme={{
-        "stylesheet.agenda.main": {
+          "stylesheet.agenda.main": {
             reservations: {
-            paddingTop: 130,
-            backgroundColor: theme.background.val,
+              paddingTop: 130,
+              backgroundColor: theme.background.val,
             },
-        },
-        backgroundColor: theme.background.val,
-        agendaBackground: theme.background.val,
-        calendarBackground: theme.background.val,
-        textSectionTitleColor: '#b6c1cd',
-        selectedDayBackgroundColor: '#00adf5',
-        todayTextColor: theme.orangeRed.val,
-        dayTextColor: '#2d4150',
-        textDisabledColor: '#dd99ee',
-        borderColor: theme.section.val,
-        agendaTodayColor: theme.orangeRed.val,
-        agendaKnobColor: theme.section.val,
-        dotColor: theme.orangeRed.val,
+          },
+          backgroundColor: theme.background.val,
+          agendaBackground: theme.background.val,
+          calendarBackground: theme.background.val,
+          textSectionTitleColor: '#b6c1cd',
+          selectedDayBackgroundColor: '#00adf5',
+          todayTextColor: theme.orangeRed.val,
+          dayTextColor: '#2d4150',
+          textDisabledColor: '#dd99ee',
+          borderColor: theme.section.val,
+          agendaTodayColor: theme.orangeRed.val,
+          agendaKnobColor: theme.section.val,
+          dotColor: theme.orangeRed.val,
         }}
         dayLabelsWrapper={{
-        borderBottomWidth: 2,
-        borderTopWidth: 2,
+          borderBottomWidth: 2,
+          borderTopWidth: 2,
         }}
-    />
-    )}
+      />
     </View>
   );
 }
@@ -189,9 +229,8 @@ export default function AppointmentCalendar({
 const Separator = () => {
   const theme = useTheme();
   return (
-    <View height={1} width={"100%"} justifyContent="flex-start" alignItems="flex-start">
-      <View height={1} width={"99%"} backgroundColor={theme.gray5.val} opacity={0.6} />
+    <View height={1} width="100%" justifyContent="flex-start" alignItems="flex-start">
+      <View height={1} width="99%" backgroundColor={theme.gray5.val} opacity={0.6} />
     </View>
   );
-}
-
+};

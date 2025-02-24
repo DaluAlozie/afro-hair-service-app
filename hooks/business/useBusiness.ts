@@ -9,7 +9,7 @@ export function useBusiness(businessId: number) {
     ): Promise<Business> => {
         const [, { businessId }] = queryKey;
         const supabase = await supabaseClient;
-        const { data, error } = await supabase.rpc('fetch_business', { bid: businessId });
+        const { data, error } = await supabase.rpc('get_business', { bid: businessId });
         if (error) {
             console.log(error);
             return {} as Business;

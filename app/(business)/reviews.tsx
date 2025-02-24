@@ -13,9 +13,10 @@ import { FlashList } from '@shopify/flash-list';
 export default function Reviews() {
   const theme = useTheme();
   const styles = makeStyles(theme);
+  const loadingReviews = useBusinessStore((state) => state.loadingReviews);
   const reviews = useBusinessStore((state) => state.reviews);
   return (
-    <BusinessWrapper>
+    <BusinessWrapper loading={loadingReviews}>
       {reviews.size <= 0 ? (
         <ThemedView style={styles.container}>
           <ThemedText style={styles.fadedText}>No Reviews</ThemedText>

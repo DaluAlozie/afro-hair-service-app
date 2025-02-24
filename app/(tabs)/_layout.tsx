@@ -120,15 +120,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   headerRight: {
-    marginRight: 11,
+    marginRight: 7,
     justifyContent: "center",
-    alignContent: "center",
-    display:"flex"
+    alignItems: "flex-end",
+    height: 50,
+    width: 50,
   },
   headerLeft: {
     marginLeft: 7,
     justifyContent: "center",
-    alignContent: "center",
-    display:"flex"
+    alignItems: "flex-start",
+    height: 50,
+    width: 50
   }
 })

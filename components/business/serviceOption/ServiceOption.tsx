@@ -2,13 +2,12 @@ import React, { useCallback } from 'react'
 import { View } from 'react-native'
 import { ServiceOption as ServiceOptionProps } from '../types'
 import { Text, XStack, YStack, Switch, useTheme, ScrollView } from 'tamagui'
-import { StyleSheet } from 'react-native'
-import { UseThemeResult } from '@tamagui/web'
 import Pressable from '@/components/utils/Pressable'
 import Feather from '@expo/vector-icons/Feather'
 import { useBusinessStore } from '@/utils/stores/businessStore'
 import confirm from '@/components/utils/Alerts/Confirm'
 import { useRouter } from 'expo-router'
+import { makeStyles } from '../utils'
 
 export default function ServiceOption(
   { id, name, description, enabled, service_id  }: ServiceOptionProps) {
@@ -106,44 +105,3 @@ function Separator() {
   const styles = makeStyles(theme);
   return <View style={styles.separator} />
 }
-
-const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
-  container: {
-    width: '100%',
-    alignItems: "stretch",
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    backgroundColor: theme.section.val,
-    margin: 10,
-    alignSelf: 'center',
-  },
-  title: {
-    fontSize: 15,
-  },
-  section: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 50,
-    width: '100%',
-  },
-  separator: {
-    height: 1,
-    width: '100%',
-    backgroundColor: theme.gray5.val,
-  },
-  content: {
-    alignSelf: 'flex-end',
-    width: '50%',
-    justifyContent: "flex-end",
-  },
-  contentText: {
-    fontSize: 14,
-    textAlign: "right"
-  },
-  pressable: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-end",
-  }
-});

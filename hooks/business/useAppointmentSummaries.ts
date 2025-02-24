@@ -34,7 +34,7 @@ export function useAppointmentSummaries(appointment_ids: number[]) {
         }
         const supabase = await supabaseClient;
         const { data, error } = await supabase
-            .rpc('appointment_details', {
+            .rpc('get_appointment_summaries', {
               appointment_ids: appointment_ids
             })
         if (error) {
