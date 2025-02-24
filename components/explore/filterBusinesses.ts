@@ -7,7 +7,7 @@ const toRadians = (degrees: number): number => {
     return degrees * (Math.PI / 180);
 };
 
-const calculateDistance = (
+export const calculateDistance = (
     latitude1: number,
     longitude1: number,
     latitude2: number,

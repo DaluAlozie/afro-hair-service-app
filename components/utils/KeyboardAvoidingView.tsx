@@ -1,18 +1,25 @@
 import React from 'react'
-import { ScrollView } from 'tamagui'
+import { ScrollView, Sheet } from 'tamagui'
 
 import { KeyboardAvoidingView as RNKeyboardAvoidingView, Platform } from 'react-native';
 
-export default function KeyboardAvoidingView({ children }: { children: React.ReactNode }) {
+export default function KeyboardAvoidingView({ children, sheet = false }: { children: React.ReactNode, sheet?: boolean }) {
   return (
     <RNKeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ height: '100%', width: '100%' }}
           keyboardVerticalOffset={100}
         >
-        <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" keyboardDismissMode="interactive">
-            {children}
-        </ScrollView>
+          {
+          sheet ? (
+            <Sheet.ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" keyboardDismissMode="interactive">
+                {children}
+            </Sheet.ScrollView>
+          ) :
+            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" keyboardDismissMode="interactive">
+              {children}
+            </ScrollView>
+          }
     </RNKeyboardAvoidingView>
   )
 }

@@ -82,8 +82,9 @@ export function AddBusinessLocationForm() {
   },[address]);
 
   return (
-    <DismissKeyboard onPress={() => setResultsVisible(false)}>
-      <KeyboardAvoidingView>
+    <KeyboardAvoidingView>
+      <DismissKeyboard onPress={() => setResultsVisible(false)}>
+
         <Form
           alignItems="center"
           alignSelf='center'
@@ -176,7 +177,7 @@ export function AddBusinessLocationForm() {
             </SubmitButton>
           </YStack>
         </Form>
-      </KeyboardAvoidingView>
-    </DismissKeyboard>
+      </DismissKeyboard>
+    </KeyboardAvoidingView>
   )
 }

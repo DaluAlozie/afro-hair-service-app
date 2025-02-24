@@ -1,13 +1,17 @@
 import {
-    AddOn as AddOnType,
-    ServiceOption as ServiceOptionType,
-    Variant as VariantType,
-    CustomizableOption
+    AddOn,
+    ServiceOption,
+    Variant,
+    CustomizableOption,
+    Service,
+    Business
   } from "@/components/business/types";
 
 export type BookingInfo = {
-  serviceOption: ServiceOptionType | null,
-  variants: VariantType[],
-  addOns: AddOnType[],
+  business: Business | undefined,
+  service: Service | undefined,
+  serviceOption: ServiceOption | undefined,
+  variants: Variant[],
+  addOns: AddOn[],
   customizableOptions: CustomizableOption[]
 }

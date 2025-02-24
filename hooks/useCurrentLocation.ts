@@ -45,6 +45,7 @@ export const useCurrentLocation = () => {
             city: getAddressPart('postal_town', addressComponents),
             postcode: getAddressPart('postal_code', addressComponents),
             country: getAddressPart('country', addressComponents),
+            locality: getAddressPart('locality', addressComponents),
             longitude: location.lng,
             latitude: location.lat,
         };

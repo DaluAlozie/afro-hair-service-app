@@ -7,26 +7,53 @@ import {
   Business as BusinessType,
 } from "@/components/business/types";
 import ScrollTabs from '@/components/utils/ui/scrollTabBar/ScrollTabs'
-import { useBusiness } from '@/hooks/useBusiness';
+import { useBusiness } from '@/hooks/business/useBusiness';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useCallback, useLayoutEffect, useState } from 'react'
-import { Sheet, View, useTheme } from 'tamagui'
+import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
+import { View, useTheme } from 'tamagui'
 import { UseThemeResult } from '@tamagui/core';
 import { StyleSheet, Text } from 'react-native';
 import { Image } from 'expo-image';
 import emptyProfile from "@/assets/images/empty-profile.png";
 import AuthWrapper from "@/components/auth/AuthWrapper";
 import Pressable from "@/components/utils/Pressable";
+import { BookingInfo } from "@/components/business/booking/types";
 import { BookingForm } from "@/components/business/booking/BookingForm";
-import { BookingInfo } from "../../components/business/booking/types";
+import { useServices } from "@/hooks/business/useServices";
+import { useServiceOptions } from "@/hooks/business/useServiceOptions";
+import { useVariants } from "@/hooks/business/useVariants";
+import { useAddOns } from "@/hooks/business/useAddOns";
+import { useCustomizations } from "@/hooks/business/useCustomizations";
+import SheetModal from "@/components/utils/ui/SheetModal";
 
 export default function BusinessPage() {
-  const { businessName, businessId } = useLocalSearchParams();
-  const parsedId = Array.isArray(businessId) ? parseInt(businessId[0]) : parseInt(businessId);
   const theme = useTheme();
   const navigation = useNavigation();
   const [open, setOpen] = useState(false);
-  const [optionInfo, setOptionInfo] = useState<BookingInfo>({ serviceOption: null, variants: [], addOns: [], customizableOptions: [] });
+
+  const { businessName, businessId } = useLocalSearchParams();
+  const parsedId = Array.isArray(businessId) ? parseInt(businessId[0]) : parseInt(businessId);
+
+  const { business, profilePictureUrl, refetchBusiness, isRefetchingBusiness } = useBusiness(parsedId);
+  const { services } = useServices(parsedId);
+  const { serviceOptions } = useServiceOptions(services.map(service => service.id));
+  const serviceOptionIds = Array.from(serviceOptions.values()).flat().map(option => option.id);
+  const { variants } = useVariants(serviceOptionIds);
+  const { addOns } = useAddOns(serviceOptionIds);
+  const { customizableOptions } = useCustomizations(serviceOptionIds);
+
+  const [optionInfo, setOptionInfo] = useState<BookingInfo>({
+    business: business,
+    service: undefined,
+    serviceOption: undefined,
+    variants: [],
+    addOns: [],
+    customizableOptions: []
+  });
+
+  useEffect(() => {
+    setOptionInfo({...optionInfo, business: business});
+  }, [business]);
 
   useLayoutEffect(() => {
     if (businessName) {
@@ -34,18 +61,11 @@ export default function BusinessPage() {
     }
   }, [businessName]);
 
-  const {
-    business,
-    services,
-    serviceOptions,
-    variants,
-    addOns,
-    customizableOptions,
-    profilePictureUrl
-  } = useBusiness(parsedId);
 
   const openBookingModal = useCallback((option: ServiceOptionType) => {
     setOptionInfo({
+      business: business,
+      service: services.find(service => service.id === option.service_id),
       serviceOption: option,
       variants: variants.get(option.id) || [],
       addOns: addOns.get(option.id) || [],
@@ -58,7 +78,10 @@ export default function BusinessPage() {
     <AuthWrapper>
       <BookingModal open={open} setOpen={(val: boolean) => setOpen(val)} {...optionInfo} />
       <View width={"100%"} alignSelf="center" backgroundColor={theme.background.val}>
-        <ScrollTabs header={() => <Header business={business} profilePictureUrl={profilePictureUrl} />}>
+        <ScrollTabs
+          refreshing={isRefetchingBusiness}
+          refresh={async () => {await refetchBusiness()}}
+          header={() => <Header business={business} profilePictureUrl={profilePictureUrl} />}>
           {services.map(service => (
             <ScrollTabs.Section key={service.id} label={service.name}>
               <View width={"100%"} alignSelf="center" alignItems="center">
@@ -144,6 +167,7 @@ type ServiceOptionProps = {
 const ServiceOption = ({ serviceOption, variants, book }: ServiceOptionProps) => {
   const theme = useTheme();
   const styles = makeStyles(theme);
+  variants.sort((a, b) => a.price - b.price);
   return (
     <View style={styles.serviceOptionContainer}>
       <View style={styles.serviceOptionHeader}>
@@ -215,38 +239,17 @@ const BookingModal = ({ open, setOpen, ...rest }: {
   } & BookingInfo
 ) => {
   const snapPoints = [75];
-  const snapPointsMode = 'percent';
-  const modal = true;
   const theme = useTheme();
-  return (
-    <Sheet
-      forceRemoveScrollEnabled={open}
-      modal={modal}
-      open={open}
-      onOpenChange={setOpen}
-      snapPoints={snapPoints}
-      snapPointsMode={snapPointsMode}
-      dismissOnSnapToBottom
-      position={0}
-      zIndex={100_000}
-      animationConfig={{ type: 'spring', mass: 0.1 }}
-    >
-      <Sheet.Overlay
-        animation="lazy"
-        enterStyle={{ opacity: 0 }}
-        exitStyle={{ opacity: 0 }}
-      />
 
-      <Sheet.Handle backgroundColor={theme.section.val}/>
-      <Sheet.Frame padding="$4" justifyContent="center" alignItems="flex-start" gap="$5">
-        <View style={{ height: '100%', width: "100%", gap: 20, padding: 20, }}>
-          <View>
-            <Text style={{ fontSize: 24, fontWeight: 'bold', color: theme.color.val }}>Booking</Text>
-          </View>
-          <BookingForm {...rest} />
+  return (
+    <SheetModal open={open} setOpen={setOpen} snapPoints={snapPoints}>
+      <View style={{ height: '100%', width: "100%", gap: 20, padding: 20, }}>
+        <View>
+          <Text style={{ fontSize: 24, fontWeight: 'bold', color: theme.color.val }}>Booking</Text>
         </View>
-      </Sheet.Frame>
-    </Sheet>
+        <BookingForm {...rest} close={() => setOpen(false)} />
+      </View>
+    </SheetModal>
   )
 }
 

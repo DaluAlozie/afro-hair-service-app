@@ -8,7 +8,7 @@ import { UseThemeResult } from "@tamagui/core";
 import { router, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
-import { View, Text, useTheme, XStack, ScrollView, Sheet, RadioGroup } from "tamagui";
+import { View, Text, useTheme, XStack, RadioGroup } from "tamagui";
 import { StyleSheet } from "react-native";
 import { formatAddress } from "@/components/explore/utils";
 import { filterBusiness } from "@/components/explore/utils";
@@ -19,45 +19,50 @@ import { RadioGroupItemWithLabel } from "@/components/utils/form/inputs";
 import { SortBy } from "@/components/explore/types";
 import { Image } from "expo-image";
 import emptyProfile from "@/assets/images/empty-profile.png";
+import { FlashList } from "@shopify/flash-list";
+import { RefreshControl } from "react-native";
+import SheetModal from "@/components/utils/ui/SheetModal";
 
 export default function Explore() {
   const theme  = useTheme();
-  const searchInput = useCustomerStore(state => state.searchFilters.searchInput);
-  const setSearchInput = useCustomerStore(state => state.setSearchInput);
   return (
     <AuthWrapper>
     <View marginTop={20} paddingHorizontal={20} flex={1} gap={40} backgroundColor={theme.background.val}>
-        <View gap={20}>
-          <XStack gap={10} height={50}>
-            <View width={"90%"}>
-              <SearchBar
-                input={searchInput}
-                setInput={(val) => {
-                  setSearchInput(val);
-                }}
-                showResults={() => {}}
-                placeholder="Search for businesses"
-                />
-            </View>
-              <View width={"10%"} height={"100%"} alignItems="center" >
-                <Pressable
-                  onPress={() => router.push('/searchFilters')}
-                  style={{ justifyContent: 'center' }}
-                  activeOpacity={0.8}
-                  scale={0.85}
-                  >
-                <MaterialIcons name="filter-list-alt" size={30} color={theme.color.val} />
-                </Pressable>
-              </View>
-          </XStack>
-          <SelectLocation/>
-          <SortByButton/>
-        </View>
         <Results/>
       </View>
       <AddMapButton/>
     </AuthWrapper>
   );
+}
+
+const BusinessSearch = () => {
+  const searchInput = useCustomerStore(state => state.searchFilters.searchInput);
+  const setSearchInput = useCustomerStore(state => state.setSearchInput);
+  const theme = useTheme();
+  return (
+    <XStack gap={10} height={60}>
+    <View width={"90%"}>
+      <SearchBar
+        input={searchInput}
+        setInput={(val) => {
+          setSearchInput(val);
+        }}
+        showResults={() => {}}
+        placeholder="Search for businesses"
+        />
+    </View>
+      <View width={"10%"} height={"100%"} alignItems="center" >
+        <Pressable
+          onPress={() => router.push('/searchFilters')}
+          style={{ justifyContent: 'center' }}
+          activeOpacity={0.8}
+          scale={0.85}
+          >
+        <MaterialIcons name="filter-list-alt" size={30} color={theme.color.val} />
+        </Pressable>
+      </View>
+  </XStack>
+  )
 }
 
 const SelectLocation = () => {
@@ -100,7 +105,7 @@ const SelectLocation = () => {
                     </XStack>
                 </Pressable>
             </View>
-            <View width={"100%"} height={1} backgroundColor={theme.color.val} opacity={0.5}/>
+            <View width={"100%"} height={1} backgroundColor={theme.color.val} opacity={0.4}/>
         </View>
     )
 }
@@ -131,31 +136,50 @@ const AddMapButton = () => {
 
 const Results = () => {
   const theme = useTheme();
-  const { businessDetails } = useBusinessSummaries();
+  const { businessDetails, refetchDetails, isRefetchingDetails } = useBusinessSummaries();
   const filters = useCustomerStore(state => state.searchFilters);
   const filteredBusinesses = filterBusiness(Array.from(businessDetails.values()), filters);
+  const [open, setOpen] = useState(false);
+
   return (
-    <ScrollView showsVerticalScrollIndicator={false}>
-      <RNText
-        style={{
-          color: theme.color.val,
-          fontSize: 16,
-          opacity: 0.4,
-          marginBottom: 10,
-          fontStyle: 'italic'
-        }}
-      >
-        Results ({filteredBusinesses.length}):
-      </RNText>
-      <View>
-        {filteredBusinesses.map((business, i) => (
-          <Business key={business[0].id} index={i} business={business[0]} distance={business[1]}/>
-        ))}
-      </View>
-      <View height={150}></View>
-    </ScrollView>
-  )
-}
+    <View flex={1}>
+      <SortByModal open={open} setOpen={setOpen}/>
+      <FlashList
+        data={filteredBusinesses}
+        keyExtractor={(item) => item[0].id.toString()}
+        estimatedItemSize={100}
+        refreshControl={
+          <RefreshControl refreshing={isRefetchingDetails} onRefresh={refetchDetails} />
+        }
+        ListHeaderComponent={() => (
+          <View style={{ paddingTop: 10 }}>
+            {/* Space below sticky search */}
+            <BusinessSearch />
+            <SelectLocation />
+            <SortByButton setOpen={setOpen} />
+            <RNText
+              style={{
+                color: theme.color.val,
+                fontSize: 16,
+                opacity: 0.4,
+                marginBottom: 10,
+                fontStyle: "italic",
+                marginTop: 20
+              }}
+            >
+              Results ({filteredBusinesses.length}):
+            </RNText>
+          </View>
+        )}
+        renderItem={({ item, index }) => (
+          <Business key={item[0].id} index={index} business={item[0]} distance={item[1]} />
+        )}
+        ListFooterComponent={<View height={150} />}
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
+  );
+};
 
 const isNotEmpty = (str: string) => {
   return str !== "" && str !== null && str !== undefined
@@ -262,18 +286,16 @@ const capitalise = (str: string) => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const SortByButton = () => {
+const SortByButton = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
   const theme = useTheme();
   const styles = makeStyles(theme)
   const sortBy = useCustomerStore(state => state.searchFilters.sortBy);
-  const [open, setOpen] = useState(false);
 
   return (
     <>
-      <SortByModal open={open} setOpen={setOpen}/>
-      <View>
+      <View marginTop={10}>
         <Pressable
-          onPress={() => setOpen(true)}
+          onPress={() => {setOpen(true)}}
           style={styles.sortButton}
           activeOpacity={0.8}
           scale={0.95}>
@@ -287,52 +309,33 @@ const SortByButton = () => {
 
 const SortByModal = ({ open, setOpen }: { open: boolean, setOpen: (val: boolean) => void}) => {
   const snapPoints = [50];
-  const snapPointsMode = 'percent';
-  const modal = true;
   const sortBy = useCustomerStore(state => state.searchFilters.sortBy);
   const setSortBy = useCustomerStore(state => state.setSearchSortBy);
-  const theme = useTheme();
   return (
-    <Sheet
-      forceRemoveScrollEnabled={open}
-      modal={modal}
-      open={open}
-      onOpenChange={setOpen}
+    <SheetModal
       snapPoints={snapPoints}
-      snapPointsMode={snapPointsMode}
-      dismissOnSnapToBottom
-      position={0}
-      zIndex={100_000}
-      animation="medium"
+      open={open}
+      setOpen={setOpen}
     >
-      <Sheet.Overlay
-        animation="lazy"
-        enterStyle={{ opacity: 0 }}
-        exitStyle={{ opacity: 0 }}
-      />
-
-      <Sheet.Handle backgroundColor={theme.section.val} opacity={0.7}/>
-      <Sheet.Frame padding="$4" justifyContent="center" alignItems="center" gap="$5" backgroundColor={"$section"}>
-        <View style={{ width: '100%', height: '100%', gap: 20, padding: 20 }}>
-          <Text fontSize={18} fontWeight={"bold"} alignSelf="center">Sort By</Text>
-          <View>
-            <RadioGroup
-              defaultValue={sortBy}
-              value={sortBy}
-              onValueChange={(val: string) => {
-                if (['recommended', 'distance', 'rating'].includes(val))
-                  setSortBy(val as SortBy)
-                }}
-                gap={"$4"}
-            >
-              <RadioGroupItemWithLabel selectedValue={sortBy} value="recommended" label="Recommended" size={24} />
-              <RadioGroupItemWithLabel selectedValue={sortBy} value="distance" label="Distance" size={24}/>
-              <RadioGroupItemWithLabel selectedValue={sortBy} value="rating" label="Rating" size={24}/>
-            </RadioGroup>
-          </View>
+      <View style={{ width: '100%', height: '100%', gap: 20, padding: 20 }}>
+        <Text fontSize={18} fontWeight={"bold"} alignSelf="center">Sort By</Text>
+        <View>
+          <RadioGroup
+            defaultValue={sortBy}
+            value={sortBy}
+            onValueChange={(val: string) => {
+              if (['recommended', 'distance', 'rating'].includes(val))
+                setSortBy(val as SortBy)
+              }}
+              gap={"$4"}
+          >
+            <RadioGroupItemWithLabel selectedValue={sortBy} value="recommended" label="Recommended" size={24} />
+            <RadioGroupItemWithLabel selectedValue={sortBy} value="distance" label="Distance" size={24}/>
+            <RadioGroupItemWithLabel selectedValue={sortBy} value="rating" label="Rating" size={24}/>
+          </RadioGroup>
         </View>
-      </Sheet.Frame>
-    </Sheet>
+      </View>
+    </SheetModal>
   )
 }
 

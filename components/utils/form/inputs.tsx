@@ -2,7 +2,7 @@
 import { Colors } from '@/constants/Colors'
 import React, { ReactNode, useId, useState } from 'react'
 import { Control, Controller } from 'react-hook-form'
-import { KeyboardTypeOptions, Platform, TextInputIOSProps, TouchableOpacity, useColorScheme } from 'react-native'
+import { DimensionValue, KeyboardTypeOptions, Platform, TextInputIOSProps, useColorScheme } from 'react-native'
 import {
   View,
   Input as InputSkeleton,
@@ -18,8 +18,7 @@ import { Text, StyleSheet } from 'react-native'
 import DateTimePicker, { AndroidNativeProps } from '@react-native-community/datetimepicker';
 import { SizeTokens, UseThemeResult } from '@tamagui/core';
 import Pressable from '../Pressable'
-import { PickerIOS as RNPickerIOS, Picker as RNPicker } from '@react-native-picker/picker';
-import { Modal } from '../ui/Modal'
+import { Picker as RNPicker } from '@react-native-picker/picker';
 
 type InputProps = {
   name: string,
@@ -264,7 +263,7 @@ export const TimePicker = ({
                 mode={mode}
                 display="default"
                 is24Hour
-                minuteInterval={15}
+                minuteInterval={5}
                 style={{
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -306,15 +305,27 @@ type PickerProps = {
   control: Control<any, any>;
   label: string;
   items: { label: string; value: string | number }[];
+  placeholder: string,
   gap?: string | number | undefined;
   disabled?: boolean | undefined;
   defaultValue?: string | number | undefined;
+  width?: DimensionValue | undefined,
+  noItemsMessage?: string | undefined,
 };
 
-export const Picker = ({ control, name, label, items, gap, disabled, defaultValue }: PickerProps) => {
+export const Picker = ({
+  control,
+  name,
+  label,
+  items,
+  gap,
+  disabled,
+  defaultValue,
+  placeholder,
+  noItemsMessage = "No items available",
+}: PickerProps) => {
   const id = React.useId();
   const theme = useTheme();
-  const [show, setShow] = useState(false);
   return (
     <Controller
       control={control}
@@ -325,75 +336,23 @@ export const Picker = ({ control, name, label, items, gap, disabled, defaultValu
           <Label style={{ fontSize: 15, fontWeight: 800, color: theme.color.val }} htmlFor={id}>
             <Text style={{ fontWeight: 'bold' }}>{label}</Text>
           </Label>
-          <Modal
-            open={show}
-            setOpen={setShow}
-          >
-            <TouchableOpacity activeOpacity={1} style={{
-              height: 200,
-              width: "90%",
-              alignItems: 'center',
-              justifyContent: 'center',
-              backgroundColor: theme.section.val,
+          <RNPicker
+            selectedValue={value}
+            onValueChange={onChange}
+            placeholder={placeholder}
+            style={{
+              width: '100%',
+              color: theme.color.val,
+              overflow: 'hidden',
               borderRadius: 10,
-              padding: 20,
-             }}>
-              {
-              Platform.OS === 'ios' ?
-                <RNPickerIOS
-                  selectedValue={value}
-                  onValueChange={onChange}
-                  style={{
-                    width: '100%',
-                    color: theme.color.val,
-                    overflow: 'hidden',
-                    borderRadius: 10,
-                    height: 130,
-                  }}
-                  >
-                  {items.map((item) => (
-                    <RNPickerIOS.Item key={item.value} label={item.label} value={item.value} />
-                  ))}
-                </RNPickerIOS>
-                :
-                <RNPicker
-                  selectedValue={value}
-                  onValueChange={onChange}
-                  style={{
-                    width: '100%',
-                    color: theme.color.val,
-                    overflow: 'hidden',
-                    borderRadius: 10,
-                    height: 130,
-                  }}
-                  >
-                  {items.map((item) => (
-                    <RNPicker.Item key={item.value} label={item.label} value={item.value} />
-                  ))}
-                </RNPicker>
-              }
-            </TouchableOpacity>
-          </Modal>
-          <View>
-            <Pressable
-              onPress={() => setShow(true)}
-              scale={0.99}
-              activeOpacity={0.7}
-              style={{
-                alignItems: 'flex-start',
-                borderRadius: 8,
-                borderWidth: 1,
-                borderColor: theme.gray3.val,
-                justifyContent: 'center',
-                height: 45,
-                width: '100%',
-                backgroundColor: theme.gray1Dark.val,
-              }}
-              disabled={disabled}
+              height: 200,
+            }}
             >
-              <Text style={{ marginLeft: 10, color: theme.color.val, fontWeight: 500, fontSize: 16 }}>{items.find((item) => item.value === value)?.label}</Text>
-            </Pressable>
-          </View>
+              {items.length === 0 && <RNPicker.Item label={noItemsMessage} value={-1} enabled={false} />}
+            {items.map((item) => (
+              <RNPicker.Item key={item.value} label={item.label} value={item.value} />
+            ))}
+          </RNPicker>
         </View>
       )}
     />

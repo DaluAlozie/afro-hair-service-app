@@ -28,7 +28,7 @@ export const Modal: React.FC<ModalProps> = ({ children, open, setOpen }) => {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: theme.green1.val,
+        backgroundColor: "auto",
         height: "100%",
         width: "100%",
         padding: 100,

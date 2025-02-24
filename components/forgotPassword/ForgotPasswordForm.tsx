@@ -14,12 +14,10 @@ import DismissKeyboard from '../utils/DismissKeyboard';
 import { Input, InputError } from '../utils/form/inputs';
 import React, { useCallback } from 'react';
 import SubmitButton from '../utils/form/SubmitButton';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useToastController } from '@tamagui/toast';
-import { showToast } from '../utils/Toast/CurrentToast';
 import Link from '../utils/Link';
 import KeyboardAvoidingView from '../utils/KeyboardAvoidingView';
 import { useWindowDimensions } from 'react-native';
+import useToast from '@/hooks/useToast';
 
 const schema = yup.object().shape({
   email: yup.string().required('Email is required').email("Please enter a valid email"),
@@ -32,28 +30,23 @@ export function ForgotPasswordForm() {
   });
 
   const forgotPassword = useAuthStore((state) => state.forgotPassword);
-  const toast = useToastController();
-  const headerHeight = useHeaderHeight();
   const { height } = useWindowDimensions();
+  const { showToast } = useToast();
 
   const onSubmit = useCallback(async (data: { email: string }) => {
     const { error } = await forgotPassword(data.email);
     if (error) {
       showToast(
-        toast,
         'Something went wrong',
         error.message,
         "error",
-        headerHeight
       )
       return;
     }
     showToast(
-      toast,
       "Recovery link sent to email",
       "Check your inbox",
       "info",
-      headerHeight
     );
     reset()
   },[]);

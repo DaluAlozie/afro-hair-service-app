@@ -1,4 +1,4 @@
-import { Toast, useToastController, useToastState } from '@tamagui/toast';
+import { Toast, useToastState } from '@tamagui/toast';
 import React from 'react';
 import { View } from 'tamagui';
 import { ThemedText } from '../ThemedText';
@@ -57,6 +57,7 @@ export function CurrentToast() {
 
   return (
     <Toast
+    zIndex={1000000000000000}
       key={currentToast.id}
       duration={currentToast.duration}
       enterStyle={{ opacity: 0, y: -40 }}
@@ -122,16 +123,4 @@ export function CurrentToast() {
       </View>
     </Toast>
   );
-}
-
-export const showToast = (
-  toast:  ReturnType<typeof useToastController>,
-  title: string,
-  message: string,
-  type: string,
-  headerHeight: number) => {
-    toast.show(title, {
-      message: message ?? "",
-      customData: { type: type, headerHeight }
-  })
 }

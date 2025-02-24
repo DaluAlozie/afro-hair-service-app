@@ -52,7 +52,7 @@ export default function SubmitButton({ children, onPress, isSubmitting, disabled
                                 animation="quick"
                                 enterStyle={{
                                     opacity: 1,
-                                    scale: 0.5,
+                                    scale: 1,
                                 }}
                                 exitStyle={{
                                     opacity: 1,

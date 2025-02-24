@@ -8,6 +8,7 @@ import { makeRedirectUri } from 'expo-auth-session'
 export type AuthProps = {
   error?: AuthError | undefined
 }
+
 export interface AuthStore {
   user: User | null;
   isLoggedIn: boolean;

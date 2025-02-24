@@ -1,5 +1,5 @@
 import React, { isValidElement, ReactElement, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { View, ViewStyle, NativeScrollEvent, NativeSyntheticEvent } from 'react-native';
+import { View, ViewStyle, NativeScrollEvent, NativeSyntheticEvent, RefreshControl } from 'react-native';
 import { ScrollView } from 'tamagui';
 import { TabBar } from './TabBar';
 
@@ -7,10 +7,12 @@ import { TabBar } from './TabBar';
 type ScrollTabsProps = {
     children: ReactNode;
     header: () => ReactNode;
+    refreshing: boolean;
+    refresh: () => void | Promise<void>;
 };
 
 // Main ScrollTabs component
-export default function ScrollTabs({ children, header }: ScrollTabsProps) {
+export default function ScrollTabs({ children, header, refresh, refreshing }: ScrollTabsProps) {
     // Refs for tabs, scroll view, and scroll container
     const tabRefs = useRef<(View | null)[]>([]);
     const scrollRef = useRef<ScrollView>(null);
@@ -104,6 +106,7 @@ export default function ScrollTabs({ children, header }: ScrollTabsProps) {
                     onScrollBeginDrag={() => setIsDrag(true)}
                     onMomentumScrollEnd={() => setIsDrag(false)}
                     stickyHeaderIndices={[1]}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
                 >
                     { header() }
                     {/* TabBar component for navigation */}

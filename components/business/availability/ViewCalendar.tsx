@@ -10,12 +10,16 @@ type CalendarProps = {
   date: Date | undefined;
   setDate: (date: Date | undefined) => void;
   disabledDates: Date[] | ((date: Date) => boolean);
+  minDate?: Date | undefined;
+  maxDate?: Date | undefined;
 }
 
 export default function ViewCalendar({
   date,
   setDate,
   disabledDates,
+  minDate,
+  maxDate
 }: CalendarProps) {
 
   const theme = useTheme();
@@ -75,6 +79,8 @@ export default function ViewCalendar({
           padding: 0,
           backgroundColor: theme.gray3.val,
         }}
+        minDate={minDate}
+        maxDate={maxDate}
         />
     </View>
   );
@@ -90,9 +96,10 @@ const makeStyles = (theme: UseThemeResult) =>
     },
     calendar: {
       width: '100%',
+      maxWidth: 600,
       borderRadius: 10,
       alignSelf: 'center',
-      backgroundColor: theme.section.val,
-      padding: 20,
+      backgroundColor: theme.background.val,
+      padding: 1,
     },
   });

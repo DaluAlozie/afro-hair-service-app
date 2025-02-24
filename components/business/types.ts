@@ -9,7 +9,7 @@ interface Business {
     online: boolean,
     tags: string[],
     rating: number,
-    owner_id: number
+    owner_id: string
 }
 
 interface Service {
@@ -97,14 +97,15 @@ interface Rating {
 interface Appointment {
     id: number,
     start_time: Date,
-    endTime: Date,
-    street_address: string,
-    city: string,
-    postcode: string,
-    country: string,
-    addOns: Map<number, AddOn>[],
-    at_home: boolean,
-    accepted: boolean
+    end_time: Date,
+    customer_id: string,
+    variant_id: number,
+    business_id: number,
+    total_price: number,
+    paid: boolean,
+    cancelled: boolean,
+    addOns: Map<number, AddOn>,
+    customizableOptions: Map<number, CustomizableOption>
 }
 
 interface Notification {

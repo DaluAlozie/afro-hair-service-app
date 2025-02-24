@@ -98,6 +98,13 @@ export default function AppStack() {
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
             }} />
+            <Stack.Screen name="myBusiness/rescheduleBooking" options={{
+                title: "Reschedule Appointment",
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
+                gestureDirection: "vertical",
+                animation:"slide_from_bottom",
+                headerLeft: HeaderLeftAlt
+            }} />
             <Stack.Screen name="myBusiness/availability" options={{
                 title: "Availability",
                 presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
@@ -151,6 +158,20 @@ export default function AppStack() {
                 }} />
             <Stack.Screen name="business/[businessId]" options={{
                 title: "Business"
+            }} />
+            <Stack.Screen name="booking/selectTime" options={{
+                title: "Book an Appointment",
+            }} />
+            <Stack.Screen name="booking/selectLocation" options={{
+                title: "Book an Appointment",
+            }} />
+            <Stack.Screen name="booking/confirmBooking" options={{
+                title: "Book an Appointment",
+            }} />
+            <Stack.Screen name="booking/rescheduleBooking" options={{
+                title: "Reschedule Appointment",
+                presentation: (Platform.OS === "ios" && Platform.isPad)? "card": "modal",
+                animation:"slide_from_bottom",
             }} />
             <Stack.Screen name="resetPassword" options={{ title: 'Reset Password' }} />
             <Stack.Screen name="settings" options={{ title: 'Settings' }} />

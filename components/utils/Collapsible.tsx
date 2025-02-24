@@ -1,14 +1,15 @@
 import React, { PropsWithChildren, useRef, useState } from 'react';
-import { Animated, StyleSheet, View, LayoutChangeEvent, useColorScheme } from 'react-native';
+import { Animated, StyleSheet, View, LayoutChangeEvent, useColorScheme, StyleProp, ViewStyle } from 'react-native';
 import { ThemedView } from '@/components/utils/ThemedView';
 import { IconSymbol } from '@/components/utils/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import Pressable from './Pressable';
 import { useTheme } from 'tamagui';
 
-export function Collapsible({ children, defaultOpen, header }: PropsWithChildren & {
+export function Collapsible({ children, defaultOpen, header, style }: PropsWithChildren & {
   defaultOpen?: boolean | undefined;
   header? : React.ReactNode | undefined;
+  style?: StyleProp<ViewStyle> | undefined;
 }) {
   const [isOpen, setIsOpen] = useState(defaultOpen ?? false);
   const [contentHeight, setContentHeight] = useState(0); // Store the measured height of children
@@ -18,10 +19,9 @@ export function Collapsible({ children, defaultOpen, header }: PropsWithChildren
 
   const toggleCollapse = () => {
     setIsOpen((prev) => !prev);
-
     Animated.timing(animation, {
       toValue: isOpen ? 0 : 1,
-      duration: 300,
+      duration: contentHeight * 0.1 + 200,
       useNativeDriver: false, // Required for animating height
     }).start();
   };
@@ -44,7 +44,7 @@ export function Collapsible({ children, defaultOpen, header }: PropsWithChildren
   };
 
   return (
-    <ThemedView style={{ borderRadius: 10, backgroundColor: theme.background.val }}>
+    <ThemedView style={[{ borderRadius: 10, backgroundColor: theme.background.val }, style]}>
       <Pressable
         style={styles.heading}
         onPress={toggleCollapse}

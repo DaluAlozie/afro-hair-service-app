@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { View, useTheme } from 'tamagui';
 import { StyleSheet } from 'react-native';
 import { UseThemeResult } from '@tamagui/core';
@@ -9,26 +9,26 @@ import Calendar, { getDate } from './Calendar';
 
 
 export default function RemoveAvailability() {
-
-  const { handleSubmit, formState: { isSubmitting }} = useForm({
-  });
-
-  const availability = useBusinessStore((state) => state.availability);
-
-  const removeAvailability = useBusinessStore((state) => state.removeAvailability);
-  const timeSlots = Array.from(availability.values()).map(({ from }) => {
-    const d = new Date(from);
-    d.setHours(0, 0, 0, 0);
-    return d;
-  });
-
   const theme = useTheme();
   const styles = makeStyles(theme);
   const [startDate, setStartDate] = useState<Date|undefined>(undefined);
   const [endDate,setEndDate] = useState<Date|undefined>(undefined);
 
-  const onSubmit = useCallback(async () => {
+  const yearFromNow = new Date();
+  yearFromNow.setFullYear(yearFromNow.getFullYear() + 1);
 
+  const { handleSubmit, formState: { isSubmitting }} = useForm({
+  });
+  const availability = useBusinessStore((state) => state.availability);
+
+  const removeAvailability = useBusinessStore((state) => state.removeAvailability);
+  const timeSlots = useMemo(() => Array.from(availability.values()).map(({ from }) => {
+    const d = new Date(from);
+    d.setHours(0, 0, 0, 0);
+    return d;
+  }), [availability]);
+
+  const onSubmit = useCallback(async () => {
     if (!startDate) return;;
 
     const timeSlotsIds: number[] = [];
@@ -64,6 +64,7 @@ export default function RemoveAvailability() {
         setStartDate={setStartDate}
         setEndDate={setEndDate}
         disabledDates={(date: Date) => !timeSlots.some((timeSlot) => getDate(timeSlot)?.getTime() === date.getTime())}
+        maxDate={yearFromNow}
         />
       <View marginTop={30}>
         <SubmitButton
@@ -81,8 +82,10 @@ const makeStyles = (theme: UseThemeResult) =>
   StyleSheet.create({
     container: {
       width: '100%',
+      height: '90%',
       maxWidth: 600,
       alignSelf: 'center',
+      justifyContent: 'space-between',
       paddingTop: 20,
       gap: 20,
     },

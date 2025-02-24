@@ -3,43 +3,33 @@ import { StyleSheet, Text } from 'react-native';
 import Pressable from './Pressable'; // Ensure this points to your Pressable component
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/utils/stores/authStore';
-import { useHeaderHeight } from '@react-navigation/elements';
-import { useToastController } from '@tamagui/toast';
 import { useTheme } from 'tamagui';
-import { showToast } from './Toast/CurrentToast';
 import { UseThemeResult } from '@tamagui/web';
-import { useBusinessStore } from '@/utils/stores/businessStore';
-import { useCustomerStore } from '@/utils/stores/customerStore';
+import useResetStores from '@/hooks/useResetStores';
+import useToast from '@/hooks/useToast';
 
 export default function SignOutButton() {
     const theme = useTheme();
     const router = useRouter();
-    const toast = useToastController();
-    const headerHeight = useHeaderHeight();
     const signOut = useAuthStore((state) => state.signOut);
-    const resetAuth = useAuthStore((state) => state.reset);
-    const resetBusiness = useBusinessStore((state) => state.reset);
-    const resetCustomer = useCustomerStore((state) => state.reset);
+    const resetStores  = useResetStores();
+    const { showToast } = useToast();
 
     const [disabled, setDisabled] = useState(false);
     const styles  = makeStyle(theme);
     const onPress = async () => {
         setDisabled(true);
+        await resetStores();
         const { error } = await signOut();
         if (error) {
             showToast(
-            toast,
             'Something went wrong',
             error.message,
             "error",
-            headerHeight
             )
             setDisabled(false);
             return;
         }
-        resetAuth();
-        resetBusiness();
-        resetCustomer();
         if (router.canDismiss()) router.dismissAll();
         router.replace("/login")
         setDisabled(false);

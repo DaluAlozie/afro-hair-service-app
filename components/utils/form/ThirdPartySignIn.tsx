@@ -1,13 +1,11 @@
 import { AuthProps } from '@/utils/stores/authStore'
-import { useHeaderHeight } from '@react-navigation/elements'
-import { useToastController } from '@tamagui/toast'
 import { useRouter } from 'expo-router'
 import React, { useState } from 'react'
 import { Button, useTheme, XStack } from 'tamagui'
-import { showToast } from '../Toast/CurrentToast'
 import Pressable from '../Pressable'
 import { UseThemeResult } from '@tamagui/web'
 import { StyleSheet } from 'react-native'
+import useToast from '@/hooks/useToast'
 
 type ThirdPartySignInProps = {
     name: string
@@ -17,11 +15,10 @@ type ThirdPartySignInProps = {
 
 export default function ThirdPartySignIn({ name, children, onPress }: ThirdPartySignInProps) {
   const router = useRouter();
-  const toast = useToastController();
-  const headerHeight = useHeaderHeight();
   const theme = useTheme();
   const [disabled, setDisabled] = useState(false);
   const styles = makeStyle(theme);
+  const { showToast } = useToast();
 
   const onClick = async () => {
     setDisabled(true);
@@ -30,11 +27,9 @@ export default function ThirdPartySignIn({ name, children, onPress }: ThirdParty
 
     if (error) {
       showToast(
-        toast,
         'Something went wrong',
         error.message,
         "error",
-        headerHeight
       )
       return;
     }

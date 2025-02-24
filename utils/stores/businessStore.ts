@@ -116,6 +116,7 @@ export interface BusinessStore {
     removeAddOn: (serviceId: number, serviceOptionId: number, addOnId: number) => Promise<BusinessProps>
     removeVariant: (serviceId: number, serviceOptionId: number, variantId: number) => Promise<BusinessProps>
     removeCustomizableOption: (serviceId: number, serviceOptionId: number, customizableOptionId: number) => Promise<BusinessProps>
+    rescheduleAppointment: (appointmentId: number, newStartTime: Date, newEndTime: Date) => Promise<BusinessProps>,
     cancelAppointment: (appointmentId: number) => Promise<BusinessProps>
     editBusinessName: (newName: string) => Promise<BusinessProps>
     editBusinessPhoneNumber: (newNumber: string | null) => Promise<BusinessProps>
@@ -194,11 +195,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 set({ loading: false })
                 return {};
             }
-            await get().loadProfilePicture();
-            await get().loadAvailability();
+            get().loadProfilePicture();
+            get().loadAvailability();
+            get().loadBusinessAppointments();
+            get().loadBusinessLocations();
+
             await get().loadServices();
-            await get().loadBusinessLocations();
-            await get().loadBusinessAppointments();
             const serviceIds = Array.from(get().services.keys());
             // Load service options and add-ons for each service
             for (const id of serviceIds) {
@@ -410,7 +412,11 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }
         const appointments = new Map<number, Appointment>()
         data?.forEach((appointment: Appointment) => {
-            appointments.set(appointment.id, appointment)
+            appointments.set(appointment.id, {
+                ...appointment,
+                start_time: new Date(appointment.start_time),
+                end_time: new Date(appointment.end_time)
+            })
         })
         set({ appointments })
         return {};
@@ -905,20 +911,39 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         });
         return {};
     },
-    cancelAppointment: async (appointmentId: number) => {
+    rescheduleAppointment: async (appointmentId: number, newStartTime: Date, newEndTime: Date) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('Appointment')
-            .delete()
+            .update({ start_time: newStartTime, end_time: newEndTime })
             .eq('id', appointmentId)
         if (error) {
             return { error };
         }
-        set((state) => {
-            const appointments = new Map(state.appointments);
-            appointments.delete(appointmentId);
-            return { appointments };
-        });
+        const appointment = get().appointments.get(appointmentId);
+        if (!appointment) return {};
+        appointment.start_time = newStartTime;
+        appointment.end_time = newEndTime;
+        set((state) => ({
+            appointments: new Map(state.appointments).set(appointmentId, appointment)
+        }));
+        return {};
+    },
+    cancelAppointment: async (appointmentId: number) => {
+        const supabase = await supabaseClient;
+        const { error } = await supabase
+            .from('Appointment')
+            .update({ cancelled: true })
+            .eq('id', appointmentId)
+        if (error) {
+            return { error };
+        }
+        const appointment = get().appointments.get(appointmentId);
+        if (!appointment) return {};
+        appointment.cancelled = true;
+        set((state) => ({
+            appointments: new Map(state.appointments).set(appointmentId, appointment)
+        }));
         return {};
     },
     editBusinessName: async (newName: string) => {

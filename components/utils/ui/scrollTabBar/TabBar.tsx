@@ -41,7 +41,7 @@ export const TabBar = ({ labels, activeTab, setActiveTab }: TabBarProps) => {
     }, [activeTab, labels, width]);
 
     return (
-        <View>
+        <View style={{ marginLeft: "5%" }}>
             {/* Horizontal scrollable tab bar */}
             <ScrollView
                 height={"auto"}
