@@ -6,19 +6,19 @@ import { useTheme, UseThemeResult } from '@tamagui/web';
 import React from 'react'
 import { StyleSheet } from 'react-native'
 import { FlashList } from "@shopify/flash-list";
-import { Service as ServiceProps } from '@/components/business/types';
 import { View, YStack } from 'tamagui';
 import Pressable from '@/components/utils/Pressable';import { useRouter } from 'expo-router';
 import ServiceCover from '@/components/business/service/ServiceCover';
 
 export default function Services() {
   const theme = useTheme();
+  const loadingServices = useBusinessStore((state) => state.loadingServices);
   const services = useBusinessStore((state) => state.services);
   const items = Array.from(services.values());
   const styles = makeStyles(theme);
 
   return (
-    <BusinessWrapper>
+    <BusinessWrapper loading={loadingServices}>
       <YStack width={"100%"} height={"100%"} padding={20}>
         {services.size <= 0 ? (
           <>
@@ -31,9 +31,7 @@ export default function Services() {
             <FlashList
               ListFooterComponent={() => <HeaderComponent /> }
               data={items}
-              renderItem={({ item: { id, name, description} }: { item: ServiceProps}) =>
-                <ServiceCover id={id} name={name} description={description} key={id}
-              />}
+              renderItem={ ({ item: { id, name, description} }) => <ServiceCover id={id} name={name} description={description} key={id}/>}
               ItemSeparatorComponent={Separator}
               estimatedItemSize={100}
               extraData={services}

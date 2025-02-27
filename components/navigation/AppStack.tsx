@@ -5,7 +5,7 @@ import { ThemedText } from '../utils';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Pressable from '../utils/Pressable';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import emptyProfile from '@/assets/images/empty-profile.png';
 import { useBusinessStore } from '@/utils/stores/businessStore';
@@ -63,7 +63,7 @@ export default function AppStack() {
             <Stack.Screen name="(business)" options={{
                 title: 'Your Business',
                 headerLeft: () => (
-                    <Pressable onPress={() => router.dismissTo("/(tabs)")} style={{ marginTop: 5 }}>
+                    <Pressable onPress={() => router.dismissTo("/(tabs)")} style={[styles.headerLeft]}>
                         <MaterialIcons name="arrow-back-ios-new" size={24} color={theme.color.val} />
                     </Pressable>
                 ),
@@ -184,7 +184,7 @@ function HeaderLeftAlt() {
     const router = useRouter();
     const theme = useTheme();
     return (
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => router.back()} style={styles.headerLeft}>
             <Ionicons name="close" size={24} color={theme.color.val} />
         </Pressable>
     )
@@ -211,6 +211,15 @@ function BusinessHeaderRight() {
         </Pressable>
     )
 }
+
+const styles = StyleSheet.create({
+    headerLeft: {
+        justifyContent: "center",
+        alignItems: "flex-start",
+        height: 50,
+        width: 50,
+    }
+})
 
 export const UnprotectedRoutes = [
   "/login",

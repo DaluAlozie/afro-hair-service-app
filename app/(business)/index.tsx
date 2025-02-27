@@ -4,12 +4,14 @@ import { useTheme } from 'tamagui';
 import { UseThemeResult } from '@tamagui/web';
 import { StyleSheet } from 'react-native';
 import BusinessWrapper from '@/components/business/BusinessWrapper';
+import { useBusinessStore } from '@/utils/stores/businessStore';
 
 export default function Overview() {
   const theme = useTheme();
   const styles = makeStyles(theme);
+  const loading = useBusinessStore((state) => state.loading)
   return (
-    <BusinessWrapper>
+    <BusinessWrapper loading={loading}>
       <ThemedView style={styles.container}>
         <ThemedText>Overview</ThemedText>
       </ThemedView>

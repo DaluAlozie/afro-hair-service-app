@@ -15,7 +15,9 @@
       "bundleIdentifier": "com.afrohairservice.app",
       "infoPlist": {
         "CFBundleAllowMixedLocalizations": true,
-        "CFBundleLocalizations": ["en"]
+        "CFBundleLocalizations": [
+          "en"
+        ]
       }
     },
     "android": {

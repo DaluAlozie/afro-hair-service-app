@@ -1,12 +1,11 @@
 import React, { useCallback } from 'react'
 import { Variant as VariantProps } from '@/components/business/types';
 import { ScrollView, View, Text, useTheme, Switch, XStack } from 'tamagui';
-import { StyleSheet } from 'react-native';
-import { UseThemeResult } from '@tamagui/core';
 import Pressable from '@/components/utils/Pressable';
 import Feather from '@expo/vector-icons/Feather';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import confirm from '@/components/utils/Alerts/Confirm';
+import { makeStyles } from '../utils';
 
 export default function Variant({ id, name, price, duration, enabled, service_id, service_option_id, editVariantPrice}:
     VariantProps & { editVariantPrice: (id: number) => void }) {
@@ -76,7 +75,7 @@ export default function Variant({ id, name, price, duration, enabled, service_id
       <Separator />
       <View justifyContent='center' style={styles.section}>
         <Pressable
-          activeOpacity={0.85} scale={0.99} onPress={deleteVariant} style={{ justifyContent: "center", alignItems: "center" }}>
+          activeOpacity={0.85} scale={0.99} onPress={deleteVariant} style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Text color={theme.danger.val} fontSize={16}>
             Remove Variant
           </Text>
@@ -91,44 +90,3 @@ const Separator = () => {
     const styles = makeStyles(theme);
     return <View style={styles.separator} />;
 }
-
-const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
-  container: {
-    width: '100%',
-    alignItems: "stretch",
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    backgroundColor: theme.section.val,
-    margin: 10,
-    alignSelf: 'center',
-  },
-  title: {
-    fontSize: 15,
-  },
-  section: {
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    height: 50,
-    width: '100%',
-  },
-  separator: {
-    height: 1,
-    width: '100%',
-    backgroundColor: theme.gray5.val,
-  },
-  content: {
-    alignSelf: 'flex-end',
-    width: '50%',
-    justifyContent: "flex-end",
-  },
-  contentText: {
-    fontSize: 15,
-    textAlign: "right",
-    fontWeight: "bold"
-  },
-  pressable: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "flex-end",
-  }
-});

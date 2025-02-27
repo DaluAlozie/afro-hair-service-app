@@ -15,15 +15,16 @@ import PageSpinner from '../utils/loading/PageSpinner';
 type BusinessWrapperProps = {
   children: React.ReactNode,
   suspense?: React.ReactNode | undefined,
-  loading?: boolean | undefined
+  loading: boolean
 }
 export default function BusinessWrapper({
   children,
+  loading
+
 }: BusinessWrapperProps) {
     const theme = useTheme();
     const styles = makeStyles(theme);
     const hasBusiness = useBusinessStore((state) => state.hasBusiness)
-    const loading = useBusinessStore((state) => state.loading)
     const scheme = useColorScheme();
     return (
       <AuthWrapper>

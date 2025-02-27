@@ -59,6 +59,7 @@ export const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'space-between',
       height: 60,
+      width: '100%',
       gap: 20,
     },
     sectionItemText: {
@@ -76,6 +77,10 @@ export const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
       textAlign: "right",
       color: theme.color.val,
       opacity: 0.4,
+      overflow: "hidden",
+      maxWidth: 200,
+      textOverflow: "ellipsis",
+      marginRight: 10,
     },
 })
 

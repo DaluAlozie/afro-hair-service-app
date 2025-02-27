@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Colors } from '@/constants/Colors'
-import React, { ReactNode, useId, useState } from 'react'
+import React, { ReactNode, useId, useMemo, useState } from 'react'
 import { Control, Controller } from 'react-hook-form'
 import { DimensionValue, KeyboardTypeOptions, Platform, TextInputIOSProps, useColorScheme } from 'react-native'
 import {
@@ -349,9 +349,9 @@ export const Picker = ({
             }}
             >
               {items.length === 0 && <RNPicker.Item label={noItemsMessage} value={-1} enabled={false} />}
-            {items.map((item) => (
+            {useMemo(() => items.map((item) => (
               <RNPicker.Item key={item.value} label={item.label} value={item.value} />
-            ))}
+            )), [items])}
           </RNPicker>
         </View>
       )}

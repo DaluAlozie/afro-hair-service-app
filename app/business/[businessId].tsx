@@ -9,8 +9,8 @@ import {
 import ScrollTabs from '@/components/utils/ui/scrollTabBar/ScrollTabs'
 import { useBusiness } from '@/hooks/business/useBusiness';
 import { useLocalSearchParams, useNavigation } from 'expo-router';
-import React, { useCallback, useEffect, useLayoutEffect, useState } from 'react'
-import { View, useTheme } from 'tamagui'
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react'
+import { View, XStack, useTheme } from 'tamagui'
 import { UseThemeResult } from '@tamagui/core';
 import { StyleSheet, Text } from 'react-native';
 import { Image } from 'expo-image';
@@ -25,6 +25,8 @@ import { useVariants } from "@/hooks/business/useVariants";
 import { useAddOns } from "@/hooks/business/useAddOns";
 import { useCustomizations } from "@/hooks/business/useCustomizations";
 import SheetModal from "@/components/utils/ui/SheetModal";
+import * as Linking from 'expo-linking';
+import { Ionicons } from "@expo/vector-icons";
 
 export default function BusinessPage() {
   const theme = useTheme();
@@ -37,7 +39,7 @@ export default function BusinessPage() {
   const { business, profilePictureUrl, refetchBusiness, isRefetchingBusiness } = useBusiness(parsedId);
   const { services } = useServices(parsedId);
   const { serviceOptions } = useServiceOptions(services.map(service => service.id));
-  const serviceOptionIds = Array.from(serviceOptions.values()).flat().map(option => option.id);
+  const serviceOptionIds = useMemo(() => Array.from(serviceOptions.values()).flat().map(option => option.id), [serviceOptions]);
   const { variants } = useVariants(serviceOptionIds);
   const { addOns } = useAddOns(serviceOptionIds);
   const { customizableOptions } = useCustomizations(serviceOptionIds);
@@ -105,6 +107,15 @@ export default function BusinessPage() {
 const Header  = ({ business, profilePictureUrl }: { business: BusinessType, profilePictureUrl: string  }) => {
   const theme = useTheme();
   const styles = makeStyles(theme);
+  const twitterUrl= `twitter://user?screen_name=${business.twitter}`;
+  const instagramUrl = `instagram://user?username=${business.instagram}`;
+  const facebookUrl = `fb://profile/${business.facebook}`
+  const textUrl = `sms:${business.phone_number}`
+
+  const twitterFallback = `https://twitter.com/${business.twitter}`;
+  const instagramFallback = `https://instagram.com/${business.instagram}`;
+  const facebookFallback = `https://facebook.com/${business.facebook}`
+
   return (
     <View alignItems="center" gap={20} marginBottom={30} width={"90%"} alignSelf="center">
       <View style={styles.profileImageContainer}>
@@ -116,11 +127,40 @@ const Header  = ({ business, profilePictureUrl }: { business: BusinessType, prof
           transition={400}
         />
       </View>
-      <Text style={styles.businessName}>{business.name}</Text>
-      <View style={styles.aboutUsContainer}>
-        <Text style={styles.sectionTitle}>About Us</Text>
-        <Text style={styles.businessDescription}>{business.description}</Text>
+      <View alignItems="center" justifyContent="center" gap={20}>
+        <Text style={styles.businessName}>{business.name}</Text>
+        { business.phone_number && (
+        <SocialLink url={textUrl} fallback={"/"}>
+          <XStack gap={5} opacity={0.7}>
+            <Ionicons name="call" size={16} color={theme.color.val} />
+            <Text style={{ color: theme.color.val, fontSize: 12 }}>{business.phone_number}</Text>
+          </XStack>
+        </SocialLink>
+          )}
       </View>
+      <XStack justifyContent="space-between" width={"100%"} gap={20}>
+        <View style={styles.aboutUsContainer}>
+          <Text style={styles.sectionTitle}>About Us</Text>
+          <Text style={styles.businessDescription}>{business.description}</Text>
+        </View>
+          <XStack gap={20}>
+            { business.twitter &&(
+              <SocialLink url={twitterUrl} fallback={twitterFallback}>
+                <Ionicons name="logo-twitter" size={30} color={theme.color.val} />
+              </SocialLink>
+            )}
+            { business.instagram &&(
+              <SocialLink url={instagramUrl} fallback={instagramFallback}>
+                <Ionicons name="logo-instagram" size={30} color={theme.color.val} />
+              </SocialLink>
+            )}
+            { business.facebook &&(
+              <SocialLink url={facebookUrl} fallback={facebookFallback}>
+                <Ionicons name="logo-facebook" size={30} color={theme.color.val} />
+              </SocialLink>
+            )}
+          </XStack>
+      </XStack>
     </View>
   )
 }
@@ -195,6 +235,21 @@ const ServiceOption = ({ serviceOption, variants, book }: ServiceOptionProps) =>
         </Pressable>
       </View>
     </View>
+  )
+}
+
+const SocialLink = ({ url, fallback, children }: { url: string, fallback: string, children: React.ReactNode }) => {
+  const onPress = useCallback(async () => {
+    try {
+      await Linking.openURL(url);
+    } catch {
+      await Linking.openURL(fallback);
+    }
+  }, [url, fallback]);
+  return (
+    <Pressable onPress={onPress} style={{ flexDirection: 'row', alignItems: 'center' }}>
+      {children}
+    </Pressable>
   )
 }
 
@@ -275,8 +330,7 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     textAlign: 'center',
   },
   aboutUsContainer: {
-    width: '100%',
-    // paddingHorizontal: 20,
+    width: "auto"
   },
   sectionTitle: {
     fontSize: 20,
@@ -288,7 +342,10 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     fontSize: 16,
     color: theme.color.val,
     lineHeight: 24,
+    wordWrap: 'break-word',
+    height: "auto",
     opacity: 0.7,
+    maxWidth: 250,
   },
   serviceContainer: {
     paddingVertical: 20,

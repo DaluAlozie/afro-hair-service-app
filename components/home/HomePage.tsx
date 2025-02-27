@@ -37,7 +37,7 @@ export default function HomePage() {
       <Collapsible
           defaultOpen={false}
           header={
-            <Text style={{ fontSize: 14,  color: theme.color.val, opacity: 0.7}}>
+            <Text style={{ fontSize: 14,  color: theme.color.val, opacity: 0.7, width: "90%"}}>
               Past Appointments
             </Text>
           }>
@@ -53,7 +53,7 @@ export default function HomePage() {
         <Collapsible
           defaultOpen={false}
           header={
-            <Text style={{ fontSize: 14,  color: theme.color.val, opacity: 0.7}}>
+            <Text style={{ fontSize: 14,  color: theme.color.val, opacity: 0.7, width: "90%"}}>
               Cancelled Appointments
             </Text>
           }>

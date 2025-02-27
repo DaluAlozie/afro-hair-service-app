@@ -8,6 +8,7 @@ import { Collapsible } from '@/components/utils';
 import Pressable from '@/components/utils/Pressable';
 import CustomizableOption from '@/components/business/customizableOption/CustomizableOption';
 import MyServiceOptionWrapper from '@/components/business/serviceOption/MyServiceOptionWrapper';
+import { SectionTitle } from '../..';
 
 export default function CustomizableOptions() {
   const { serviceId, serviceOptionId } = useLocalSearchParams();
@@ -22,12 +23,13 @@ export default function CustomizableOptions() {
       {services && serviceOption !== undefined && (
         <>
           <ScrollView
-            style={{ flex: 1, backgroundColor: theme.background.val}}
+            style={{ flex: 1, backgroundColor: theme.background.val, paddingTop: 20 }}
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           >
             {serviceOption && (
-              <Collapsible defaultOpen={true}>
+              <Collapsible defaultOpen={true} style={{ width: '100%', }}
+              header={<SectionTitle title="Customizable Options" />}>
                 {customizableOptions.map((option) => (
                   <CustomizableOption key={option.id} {...option} />
                 ))}

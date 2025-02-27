@@ -28,7 +28,8 @@ const modifiedDarkTheme = {
   calendarSelected: "rgb(64, 64, 64)",
   overlay: "rgba(0, 0, 0, 0.8)",
   tameOverlay: "rgba(0, 0, 0, 0.5)",
-  orangeRed: "#fc2803"
+  orangeRed: "#fc2803",
+  accent: "#4e149c",
 };
 
 // Extend the existing themes with the modified light theme
