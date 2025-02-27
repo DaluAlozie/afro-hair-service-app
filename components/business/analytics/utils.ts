@@ -377,9 +377,9 @@ export const filterAppointments = (appointments: Appointment[], summaries: Map<n
     filteredData = filterByRange(filteredData, filter.range);
   }
   // Filter further by service (and service option if specified)
-  if (filter.service !== "all") {
+  if (filter.service && filter.service !== "all") {
     filteredData = filterByService(filteredData, summaries, filter.service);
-    if (filter.serviceOption !== "all") {
+    if (filter.serviceOption && filter.serviceOption !== "all") {
       filteredData = filterByServiceOption(filteredData, summaries, filter.service, filter.serviceOption);
     }
   }

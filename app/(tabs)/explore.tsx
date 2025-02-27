@@ -7,9 +7,8 @@ import { FontAwesome, FontAwesome5, Ionicons, MaterialIcons } from "@expo/vector
 import { UseThemeResult } from "@tamagui/core";
 import { router, useRouter } from "expo-router";
 import React, { useEffect, useMemo, useState } from "react";
-import { useColorScheme } from "react-native";
 import { View, Text, useTheme, XStack, RadioGroup } from "tamagui";
-import { StyleSheet } from "react-native";
+import { Platform, StyleSheet } from "react-native";
 import { formatAddress } from "@/components/explore/utils";
 import { filterBusiness } from "@/components/explore/utils";
 import { useBusinessSummaries } from "@/hooks/useBusinessSummaries";
@@ -51,7 +50,7 @@ const BusinessSearch = () => {
         placeholder="Search for businesses"
         />
     </View>
-      <View width={"10%"} height={"100%"} alignItems="center" >
+      <View width={"10%"} height={"100%"} alignItems="center" justifyContent="center">
         <Pressable
           onPress={() => router.push('/searchFilters')}
           style={{ justifyContent: 'center' }}
@@ -83,52 +82,49 @@ const SelectLocation = () => {
     const address = (searchAddress || currentAddress) ? formatAddress(searchAddress ?? currentAddress):  "Choose a location";
 
     return (
-        <View marginBottom={10} width={"100%"}>
-            <View height={50} width={"100%"}>
-                <Pressable
-                  activeOpacity={0.8}
-                  scale={0.95}
-                  style={{
-                      width: "100%",
-                      justifyContent: 'center',
-                      alignItems:"center",
-                  }}
-                  onPress={() => router.push('/search')}>
-                    <XStack justifyContent="space-between" alignItems='center' width={"99%"}>
-                      <XStack gap={20} alignItems='center'>
-                        <View marginBottom={5}>
-                          <FontAwesome5 name="map-marker-alt" size={24} color={theme.color.val} />
-                        </View>
-                        <Text style={styles.sectionContentText}>{address}</Text>
-                      </XStack>
-                        <Ionicons color={theme.color.val} size={24} name="chevron-forward"/>
+      <View marginVertical={10} width={"100%"}>
+          <View height={50} width={"100%"}>
+              <Pressable
+                activeOpacity={0.8}
+                scale={0.95}
+                style={{
+                    width: "100%",
+                    justifyContent: 'center',
+                    alignItems:"center",
+                }}
+                onPress={() => router.push('/search')}>
+                  <XStack justifyContent="space-between" alignItems='center' width={"99%"}>
+                    <XStack gap={20} alignItems='center'>
+                      <View marginBottom={5}>
+                        <FontAwesome5 name="map-marker-alt" size={24} color={theme.color.val} />
+                      </View>
+                      <Text style={styles.sectionContentText}>{address}</Text>
                     </XStack>
-                </Pressable>
-            </View>
-            <View width={"100%"} height={1} backgroundColor={theme.color.val} opacity={0.4}/>
-        </View>
+                      <Ionicons color={theme.color.val} size={24} name="chevron-forward"/>
+                  </XStack>
+              </Pressable>
+          </View>
+          <View width={"100%"} height={1} backgroundColor={theme.color.val} opacity={0.4}/>
+      </View>
     )
 }
 
 const AddMapButton = () => {
-  const inverseTheme = useTheme({ inverse: true });
-  const scheme = useColorScheme();
-  const router = useRouter();
   const theme = useTheme();
   return (
-    <View position='absolute' bottom={100} right={20}>
+    <View position='absolute' bottom={Platform.OS === "android" ? 20 : 100} right={20}>
     <Pressable onPress={() => router.push('/map')} activeOpacity={0.99} style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: scheme === 'light' ? theme.section.val : inverseTheme.background.val,
+        backgroundColor: theme.accent.val,
         width: 130,
         height: 55,
         justifyContent: 'center',
         gap: 12,
         borderRadius: 100,
       }}>
-      <Text fontSize={18} fontWeight={"bold"} color={scheme === 'light' ? theme.color.val : inverseTheme.color.val}>Map</Text>
-      <FontAwesome5 name="map-marker-alt" size={24} color={ scheme === 'light' ? theme.color.val : inverseTheme.color.val} />
+      <Text fontSize={18} fontWeight={"bold"} color={theme.white1.val}>Map</Text>
+      <FontAwesome5 name="map-marker-alt" size={24} color={theme.white1.val} />
     </Pressable>
   </View>
   )
@@ -186,7 +182,7 @@ const isNotEmpty = (str: string) => {
 }
 
 const Business = ({ business, distance, index }:
-{ business: BusinessSummary, distance: number, index: number }
+  { business: BusinessSummary, distance: number, index: number }
 ) => {
   const theme = useTheme();
   const styles = makeStyles(theme)
@@ -202,7 +198,7 @@ const Business = ({ business, distance, index }:
       style={{
         width: '100%',
         minHeight: 220,
-        maxHeight: 250,
+        maxHeight: 280,
         overflow: 'hidden',
 
         justifyContent: 'space-between',
@@ -235,7 +231,7 @@ const Business = ({ business, distance, index }:
                 </View>
                 }
                 {tags.length !== 0 &&
-                <XStack gap={10} maxWidth={"100%"} flexWrap="wrap" overflow="hidden">
+                <XStack gap={10} maxWidth={"100%"} flexWrap="wrap" overflow="hidden" maxHeight={70}>
                   {
                     tags.map(tag =>
                       <View key={tag} style={styles.tag}>
@@ -261,7 +257,7 @@ const Business = ({ business, distance, index }:
                 </Text>
               </View>
               {/* // Profile Picture */}
-              <View width={120} height={120} borderRadius={100} overflow='hidden'>
+              <View width={120} height={120} borderRadius={100} overflow='hidden' borderWidth={3} borderColor={theme.secondaryAccent.val}>
                 <Image
                   style={{
                     flex: 1,
@@ -299,8 +295,8 @@ const SortByButton = ({ setOpen }: { setOpen: (open: boolean) => void }) => {
           style={styles.sortButton}
           activeOpacity={0.8}
           scale={0.95}>
-          <Text fontWeight={"bold"} fontSize={13}>Sort by:  {capitalise(sortBy)}</Text>
-          <Ionicons color={theme.color.val} size={16} name="chevron-down"/>
+          <Text fontWeight={"bold"} fontSize={13} color={theme.white1.val}>Sort by:  {capitalise(sortBy)}</Text>
+          <Ionicons color={theme.white1.val} size={20} name="chevron-down"/>
         </Pressable>
       </View>
     </>
@@ -374,7 +370,7 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
       gap: 5,
       width: 200,
       height: 50,
-      backgroundColor: theme.section.val,
+      backgroundColor: theme.accent.val,
       padding: 10,
       borderRadius: 10
     },

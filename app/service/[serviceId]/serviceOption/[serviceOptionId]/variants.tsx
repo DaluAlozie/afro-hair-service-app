@@ -1,20 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ScrollView, useTheme, Text } from 'tamagui';
+import { ScrollView, useTheme } from 'tamagui';
 import { View } from '@tamagui/core';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import Variant from '@/components/business/variant/Variant';
 import { Collapsible } from '@/components/utils';
-import Pressable from '@/components/utils/Pressable';
 import EditVariantPriceModal from '@/components/business/variant/EditVariantPriceModal';
-import { SectionTitle } from '../..';
+import { AddButton, SectionTitle } from '../..';
 import { makeContainerStyles } from '@/components/business/utils';
 
 export default function Variants() {
   const { serviceId, serviceOptionId } = useLocalSearchParams();
   const parsedServiceId = parseInt(serviceId as string);
   const parsedServiceOptionId = parseInt(serviceOptionId as string);
-  const router = useRouter();
   const services = useBusinessStore((state) => state.services);
   const serviceOption = services.get(parsedServiceId)?.service_options.get(parsedServiceOptionId);
 
@@ -59,6 +57,10 @@ export default function Variants() {
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           >
+            <AddButton
+                href={`/service/${serviceId}/serviceOption/${serviceOptionId}/addVariant`}
+                text={"Add Variant"}
+            />
             {serviceOption && (
               <Collapsible defaultOpen={true} style={{ width: '100%' }}
               header={<SectionTitle title="Variants" />}>
@@ -67,17 +69,6 @@ export default function Variants() {
                 )), [variants])}
               </Collapsible>
             )}
-            <Pressable
-              onPress={() =>
-                router.push(`/service/${serviceId}/serviceOption/${serviceOptionId}/addVariant`)
-              }
-              activeOpacity={0.85}
-              scale={0.99}
-              style={styles.addButton}
-              pressedStyle={{ backgroundColor: theme.onPressStyle.val }}
-            >
-              <Text>Add Variant</Text>
-            </Pressable>
             <View height={50}/>
           </ScrollView>
         </>

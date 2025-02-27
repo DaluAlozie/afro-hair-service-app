@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Appointment } from "@/components/business/types";
 import { AppointmentSummary } from "@/hooks/business/useAppointmentSummaries";
 import { useTheme, useWindowDimensions, View, XStack } from "tamagui";
-import { Text, StyleSheet } from "react-native";
+import { Text, StyleSheet, Platform } from "react-native";
 import { formatDateDifference, hasPast, isToday, isTomorrow } from "../utils";
 import Status from "@/assets/icons/status";
 import Pulse from "@/components/utils/ui/Pulse";
@@ -13,6 +13,8 @@ import { Image } from "expo-image";
 import { UseThemeResult } from "@tamagui/core";
 import CustomerRescheduleButton from "./RescheduleButton";
 import CustomerCancelButton from "./CancelButton";
+import Pressable from "@/components/utils/Pressable";
+import * as Linking from 'expo-linking';
 
 interface AppointmentItemProps {
     appointment: Appointment;
@@ -36,10 +38,25 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
       summary.postal_code,
     ]
       .filter(Boolean)
+      .filter((x) => x?.trim() !== "")
       .join(', ');
 
     // Extract add-ons from the appointment
     const addOns = Array.from(summary.add_ons.values() || []);
+
+    const openMaps = useCallback(() => {
+      const lat = summary.latitude;
+      const lng = summary.longitude;
+      const scheme = Platform.select({
+        ios: summary.street_address ? `maps://?q=${location}` : `maps://?q=${location}&ll=${lat},${lng}`,
+        android: `geo:${lat},${lng}?q=${lat},${lng}(${location})`,
+      });
+      if (scheme) {
+        Linking.openURL(scheme).catch(err =>
+          console.error('Error opening map: ', err),
+        );
+      }
+    }, [location, summary]);
 
     return (
       <View
@@ -52,7 +69,9 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
               <View>
               <Text style={styles.date}>{formatDate(appointment.start_time)}</Text>
               <Text style={styles.time}>{formatTime(appointment.start_time)} - {formatTime(appointment.end_time)}</Text>
-              <Text style={styles.location}>{location}</Text>
+              <Pressable style={{ alignSelf: "flex-start" }} onPress={openMaps}>
+                <Text style={styles.location}>{location}</Text>
+              </Pressable>
 
               {/* Time & Service Details */}
               <XStack alignItems="center" justifyContent="space-between" marginTop={20}>
@@ -115,7 +134,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
               )}
               <View>
                   <Text style={styles.business}>{summary.business}</Text>
-                  <View height={70} width={70} borderWidth={1} borderColor={theme.color.val} borderRadius={100}>
+                  <View height={70} width={70} borderWidth={3} borderColor={theme.secondaryAccent.val} borderRadius={100}>
                       <Image
                       style={{
                           borderRadius: 100,
@@ -132,7 +151,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
               </View>
           </View>
         </XStack>
-        { !appointment.cancelled && (
+        { !appointment.cancelled && !hasPast(appointment.start_time)  && (
         <XStack height={"5%"} width={"100%"} justifyContent="space-between" alignItems="flex-end" marginTop={10}>
           <CustomerRescheduleButton
               appointmentId={summary.id}
@@ -161,9 +180,11 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
       marginBottom: 10,
       borderRadius: 8,
       borderWidth: 1,
-      borderLeftWidth: 4,
-      borderColor: theme.borderColor.val,
-      borderLeftColor: theme.borderColor.val,
+      borderLeftWidth: 10,
+      borderColor: theme.accent.val + '10',
+      borderLeftColor: theme.accent.val,
+      borderTopLeftRadius: 20,
+      borderBottomLeftRadius: 20,
       shadowColor: theme.shadowColor?.val || '#000',
       shadowOffset: { width: 0, height: 1 },
       shadowOpacity: 0.08,

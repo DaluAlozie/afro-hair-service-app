@@ -35,8 +35,14 @@ export default function Tags() {
     }
 
     return (
-        <View width={"95%"} height={"100%"} alignItems="center" justifyContent='center' alignSelf='center'>
-            <XStack gap={20} width={"100%"} height={80} alignItems="center" justifyContent='space-between'>
+        <View
+            width={"100%"}
+            height={"100%"}
+            alignItems="center"
+            justifyContent='center'
+            alignSelf='center'
+            backgroundColor={theme.background.val}>
+            <XStack gap={20} width={"95%"} height={80} alignItems="center" justifyContent='space-between'>
                 <Animated.View style={[{ width: "80%" },rStyle]}>
                     <Input
                         style={{ height: 50, borderRadius: 100 }}
@@ -46,13 +52,11 @@ export default function Tags() {
                         placeholder="Add a tag"
                     />
                 </Animated.View>
-                <View width={50} height={50} borderRadius={100} backgroundColor={theme.section.val} alignItems="center" justifyContent="center">
-                    <Pressable onPress={addNewTag} style={{ justifyContent: 'center' }}>
-                        <Entypo name="plus" size={24} color={theme.color.val} />
-                    </Pressable>
-                </View>
+                <Pressable onPress={addNewTag} style={styles.addButton} pressedStyle={{ opacity: 0.8 }}>
+                    <Entypo name="plus" size={24} color={theme.white1.val} />
+                </Pressable>
             </XStack>
-            <ScrollView style={{ width:"100%" }} contentContainerStyle={styles.container}>
+            <ScrollView style={{ width:"95%" }} contentContainerStyle={styles.container}>
                 {tags.map(tag => (
                     <Tag key={tag} tag={tag} />
                 ))}
@@ -110,7 +114,7 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
         alignItems: 'center',
     },
     tagText: {
-        color: theme.color.val,
+        color: theme.white1.val,
         justifyContent: 'center',
         alignItems: 'center',
         height: "auto",
@@ -118,5 +122,13 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
         alignSelf: 'center',
         fontWeight: "bold",
         marginHorizontal: 6,
+    },
+    addButton: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        backgroundColor: theme.accent.val,
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 })

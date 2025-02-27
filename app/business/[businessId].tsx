@@ -230,8 +230,10 @@ const ServiceOption = ({ serviceOption, variants, book }: ServiceOptionProps) =>
         <Pressable
           onPress={() => book(serviceOption)}
           style={styles.bookButton}
+          scale={0.98}
+          pressedStyle={{ backgroundColor: theme.accent.val, opacity: 0.8 }}
         >
-          <Text style={{ color: theme.background.val, fontWeight: 'bold' }}>Book</Text>
+          <Text style={{ color: theme.white1.val, fontWeight: 'bold' }}>Book</Text>
         </Pressable>
       </View>
     </View>
@@ -316,7 +318,7 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     overflow: 'hidden',
     alignSelf: 'center',
     borderWidth: 3,
-    borderColor: theme.color.val,
+    borderColor: theme.secondaryAccent.val,
   },
   profileImage: {
     flex: 1,
@@ -352,9 +354,6 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     backgroundColor: theme.background.val,
     borderRadius: 10,
     marginVertical: 10,
-    shadowColor: theme.color.val,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
     height: "auto",
     width: "90%",
   },
@@ -459,7 +458,7 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
   },
   bookButton: {
     width: '100%',
-    backgroundColor: theme.color.val,
+    backgroundColor: theme.accent.val,
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',

@@ -19,7 +19,8 @@ type BusinessWrapperProps = {
 }
 export default function BusinessWrapper({
   children,
-  loading
+  loading,
+  suspense
 
 }: BusinessWrapperProps) {
     const theme = useTheme();
@@ -30,7 +31,7 @@ export default function BusinessWrapper({
       <AuthWrapper>
         <ThemedView style={styles.container}>
             {
-              loading ?<PageSpinner/> :
+              loading ? ( suspense || <PageSpinner /> ) :
                 hasBusiness ?
                   children : (
                     <>

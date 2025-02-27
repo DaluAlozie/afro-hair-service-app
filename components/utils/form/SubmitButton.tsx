@@ -2,36 +2,36 @@ import React from 'react';
 import { AnimatePresence, Button, Spinner, useTheme } from 'tamagui';
 import Pressable from '../Pressable';
 import { View, StyleSheet } from 'react-native';
-import { UseThemeResult } from '@tamagui/core';
+import { StyleProps } from 'react-native-reanimated';
 
 type SubmitButtonProps = {
     children?: string | React.ReactNode;
     onPress: () => void;
     isSubmitting: boolean;
     disabled?: boolean;
+    style?: StyleProps | undefined;
 };
 
-export default function SubmitButton({ children, onPress, isSubmitting, disabled = false }: SubmitButtonProps) {
+export default function SubmitButton({ children, onPress, isSubmitting, style, disabled = false }: SubmitButtonProps) {
     const theme = useTheme();
-    const inverseTheme = useTheme({ inverse: true });
-    const styles = makeStyles(theme);
     return (
         <View style={styles.container}>
             <Pressable
                 onPress={onPress}
                 disabled={isSubmitting || disabled}
                 activeOpacity={1}
-                style={{
-                    backgroundColor: inverseTheme.background.val,
-                    height: 45,
+                style={[{
+                    backgroundColor: theme.accent.val,
+                    height: 50,
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignSelf: 'center',
                     width: '100%',
-                    borderRadius: 7,
-                }}
+                    borderRadius: 200,
+                    opacity: isSubmitting || disabled ? 0.5: 1,
+                }, style]}
                 pressedStyle={{
-                    backgroundColor: inverseTheme.onPressStyle?.val,
+                    opacity: 0.7,
                 }}
             >
                 <View
@@ -45,24 +45,24 @@ export default function SubmitButton({ children, onPress, isSubmitting, disabled
                     {isSubmitting ? (
                         <AnimatePresence>
                             <Spinner
-                                color={inverseTheme.gray12.val}
+                                color={theme.white1.val}
                                 key="loading-spinner"
-                                opacity={1}
+                                opacity={0.8}
                                 scale={1}
                                 animation="quick"
                                 enterStyle={{
-                                    opacity: 1,
+                                opacity: 1,
                                     scale: 1,
                                 }}
                                 exitStyle={{
                                     opacity: 1,
-                                    scale: 0.5,
+                                    scale: 1,
                                 }}
                             />
                         </AnimatePresence>
                     ) : (
                         typeof children === 'string' ? (
-                            <Button.Text style={{ color: inverseTheme.color.val }}>{children}</Button.Text>
+                            <Button.Text style={{ color: theme.white1.val, fontSize: 16 }}>{children}</Button.Text>
                         ) : (
                             children
                         )
@@ -70,25 +70,13 @@ export default function SubmitButton({ children, onPress, isSubmitting, disabled
                 </View>
             </Pressable>
             {/* Dim overlay when the button is disabled */}
-            {disabled && (
-                <View style={styles.overlay} pointerEvents="none" />
-            )}
         </View>
     );
 }
 
-const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
+const styles = StyleSheet.create({
     container: {
         position: 'relative',
         width: '100%',
-    },
-    overlay: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        backgroundColor: theme.overlay.val, // Semi-transparent dim effect
-        borderRadius: 5,
     },
 });

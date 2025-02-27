@@ -41,7 +41,7 @@ const parseAgendaItems = (appointments: Appointment[]): Record<string, Appointme
 
   const items: Record<string, Appointment[]> = {};
   // Iterate through every day between adjustedMin and adjustedMax
-  for (let time = adjustedMin.getTime(); time <= adjustedMin.getTime(); time += 86400000) {
+  for (let time = adjustedMin.getTime(); time <= adjustedMax.getTime(); time += 86400000) {
     const dateKey = new Date(time).toISOString().split('T')[0];
     if (groups[dateKey]) {
       items[dateKey] = groups[dateKey].sort(
@@ -67,6 +67,7 @@ export default function AppointmentCalendar({
   isFetchingAppointments,
   isRefetchingAppointments,
 }: AppointmentCalendarProps) {
+
   const { appointmentId, date } = useLocalSearchParams();
   const agendaRef = useRef<Agenda>(null);
   const theme = useTheme();
@@ -78,14 +79,14 @@ export default function AppointmentCalendar({
   // Memoize the array of appointments to avoid unnecessary recalculations.
   const appointments = useMemo(() => Array.from(appointmentsMap.values()), [appointmentsMap]);
 
-  const minDate = useMemo(() => 
+  const minDate = useMemo(() =>
     appointments.length > 0
       ? Math.min(...appointments.map(app => new Date(app.start_time).getTime()))
       : new Date().getTime(),
     [appointments]
   );
 
-  const maxDate = useMemo(() => 
+  const maxDate = useMemo(() =>
     appointments.length > 0
       ? Math.max(...appointments.map(app => new Date(app.end_time).getTime()))
       : new Date().getTime(),
@@ -147,27 +148,29 @@ export default function AppointmentCalendar({
   }, [date, appointmentId]);
 
   // Memoize render callbacks.
-  const renderItem = useCallback((item: Appointment) => (
-    <AppointmentItem appointment={item} summary={summaries.get(item.id)} />
-  ), [summaries]);
+  const renderItem = useMemo(() => function Item(item: Appointment) {
+    return <AppointmentItem appointment={item} summary={summaries.get(item.id)} />;
+  }, []);
 
-  const renderEmptyData = useCallback(() => (
-    <View
-      height={100}
-      width="100%"
-      justifyContent="flex-start"
-      alignItems="flex-start"
-    >
+  const renderEmptyData = useMemo(() => function EmptyData() {
+    return (
       <View
-        height={1}
-        width="99%"
-        backgroundColor={theme.gray5.val}
-        opacity={0.8}
-      />
-    </View>
-  ), [theme.gray5.val]);
+        height={100}
+        width="100%"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+      >
+        <View
+          height={1}
+          width="99%"
+          backgroundColor={theme.gray5.val}
+          opacity={0.8}
+        />
+      </View>
+    );
+  }, [theme.gray5.val]);
 
-  const RenderSeparator = useCallback(() => <Separator />, []);
+  const RenderSeparator = useMemo(() => function Line(){ return <Separator /> }, []);
 
   if (isLoading && isFetchingAppointments && !isRefetchingAppointments) {
     return <PageSpinner />;
@@ -194,7 +197,7 @@ export default function AppointmentCalendar({
         renderEmptyData={RenderSeparator}
         renderEmptyDate={renderEmptyData}
         pastScrollRange={1}
-        futureScrollRange={1}
+        futureScrollRange={3}
         minDate={new Date(minDate).toISOString().split('T')[0]}
         maxDate={new Date(maxDate).toISOString().split('T')[0]}
         theme={{
@@ -208,10 +211,10 @@ export default function AppointmentCalendar({
           agendaBackground: theme.background.val,
           calendarBackground: theme.background.val,
           textSectionTitleColor: '#b6c1cd',
-          selectedDayBackgroundColor: '#00adf5',
+          selectedDayBackgroundColor: theme.accent.val,
           todayTextColor: theme.orangeRed.val,
-          dayTextColor: '#2d4150',
-          textDisabledColor: '#dd99ee',
+          dayTextColor: theme.color.val,
+          textDisabledColor: theme.gray5.val,
           borderColor: theme.section.val,
           agendaTodayColor: theme.orangeRed.val,
           agendaKnobColor: theme.section.val,

@@ -48,7 +48,7 @@ export default function ThirdPartySignIn({ name, children, onPress }: ThirdParty
             <Button.Icon>
                 { children }
             </Button.Icon>
-            <Button.Text>Continue with { name } </Button.Text>
+            <Button.Text style={styles.buttonText}>Continue with { name } </Button.Text>
         </XStack>
     </Pressable>
   )
@@ -56,15 +56,19 @@ export default function ThirdPartySignIn({ name, children, onPress }: ThirdParty
 
 const makeStyle = (theme: UseThemeResult) => StyleSheet.create({
   button: {
-    backgroundColor: theme.gray6.val,
+    backgroundColor: theme.section.val,
     height: 45,
     flexDirection:'row',
     justifyContent:'center',
     alignSelf: "center",
     width: "100%",
-    borderRadius: 7,
+    borderRadius: 100,
   },
   buttonPressed: {
-    backgroundColor: theme.gray7.val,
+    opacity: 0.7,
+  },
+  buttonText: {
+    color: theme.color.val,
+    fontSize: 14,
   },
 });

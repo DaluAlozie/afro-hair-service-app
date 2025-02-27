@@ -77,8 +77,7 @@ import {
           <Form alignItems="center" backgroundColor={theme.background.val}>
             <YStack
               alignItems="stretch"
-              justifyContent="flex-start"
-              marginTop="$14"
+              justifyContent="space-between"
               minWidth="60%"
               width="100%"
               maxWidth="100%"
@@ -87,7 +86,6 @@ import {
               padding="$7"
               paddingVertical="$6"
               $gtSm={{
-                paddingVertical: '$4',
                 width: 400,
               }}
             >
@@ -104,6 +102,7 @@ import {
                 </YStack>
                 <YStack gap="$2">
                   <Picker
+                    placeholder='Select a type'
                     control={control}
                     label="Type"
                     name="type"

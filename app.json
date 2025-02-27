@@ -7,9 +7,9 @@
     "scheme": "afro-hair-service",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "icon": "./assets/logo/app_logo.png",
+    "icon": "./assets/logo/crownLogoIos.png",
     "ios": {
-      "icon": "./assets/logo/app_logo.png",
+      "icon": "./assets/logo/crownLogoIos.png",
       "supportsTablet": true,
       "usesAppleSignIn": true,
       "bundleIdentifier": "com.afrohairservice.app",
@@ -21,9 +21,9 @@
       }
     },
     "android": {
-      "icon": "./assets/logo/app_logo_android.png",
+      "icon": "./assets/logo/crownLogoAndroid.png",
       "adaptiveIcon": {
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#330670"
       },
       "package": "com.afrohairservice.app",
       "permissions": [
@@ -62,12 +62,8 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#FFFFFF",
-          "image": "./assets/logo/dark_logo.png",
-          "dark": {
-            "image": "./assets/logo/light_logo.png",
-            "backgroundColor": "#000000"
-          },
+          "backgroundColor": "#330670",
+          "image": "./assets/logo/crownLogoSplashScreen.png",
           "imageWidth": 200
         }
       ],

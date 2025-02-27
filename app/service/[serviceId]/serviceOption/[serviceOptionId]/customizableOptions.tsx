@@ -1,21 +1,19 @@
 import React from 'react';
-import { ScrollView, useTheme, Text } from 'tamagui';
-import { StyleSheet } from 'react-native';
-import { UseThemeResult } from '@tamagui/core';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { ScrollView, useTheme } from 'tamagui';
+
+import { useLocalSearchParams } from 'expo-router';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import { Collapsible } from '@/components/utils';
-import Pressable from '@/components/utils/Pressable';
 import CustomizableOption from '@/components/business/customizableOption/CustomizableOption';
 import MyServiceOptionWrapper from '@/components/business/serviceOption/MyServiceOptionWrapper';
-import { SectionTitle } from '../..';
+import { AddButton, SectionTitle } from '../..';
+import { makeContainerStyles } from '@/components/business/utils';
 
 export default function CustomizableOptions() {
   const { serviceId, serviceOptionId } = useLocalSearchParams();
-  const router = useRouter();
   const services = useBusinessStore((state) => state.services);
   const theme = useTheme();
-  const styles = makeStyles(theme);
+  const styles = makeContainerStyles(theme);
   const serviceOption = services.get(parseInt(serviceId as string))?.service_options.get(parseInt(serviceOptionId as string));
   const customizableOptions = Array.from(serviceOption?.customizableOptions.values() || []);
   return (
@@ -23,10 +21,13 @@ export default function CustomizableOptions() {
       {services && serviceOption !== undefined && (
         <>
           <ScrollView
-            style={{ flex: 1, backgroundColor: theme.background.val, paddingTop: 20 }}
+            style={{ flex: 1, backgroundColor: theme.background.val }}
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           >
+            <AddButton
+              href={`/service/${serviceId}/serviceOption/${serviceOptionId}/addCustomizableOption`}
+              text="Add Customization" />
             {serviceOption && (
               <Collapsible defaultOpen={true} style={{ width: '100%', }}
               header={<SectionTitle title="Customizable Options" />}>
@@ -35,40 +36,9 @@ export default function CustomizableOptions() {
                 ))}
               </Collapsible>
             )}
-            <Pressable
-              onPress={() =>
-                router.push(`/service/${serviceId}/serviceOption/${serviceOptionId}/addCustomizableOption`)
-              }
-              activeOpacity={0.85}
-              scale={0.99}
-              style={styles.addButton}
-              pressedStyle={{ backgroundColor: theme.onPressStyle.val }}
-            >
-              <Text>Add Customizable Options</Text>
-            </Pressable>
           </ScrollView>
         </>
       )}
     </MyServiceOptionWrapper>
   );
 }
-
-const makeStyles = (theme: UseThemeResult) =>
-  StyleSheet.create({
-    container: {
-      width: '90%',
-      alignItems: 'center',
-      alignSelf: 'center',
-      borderRadius: 10,
-    },
-    addButton: {
-      flexDirection: 'row',
-      alignSelf: 'center',
-      height: 50,
-      justifyContent: 'center',
-      backgroundColor: theme.section.val,
-      width: '100%',
-      borderRadius: 10,
-      marginVertical: 20,
-    },
-  });

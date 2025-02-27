@@ -60,15 +60,15 @@ export default function ViewCalendar({
             setDate(undefined);
           }
         }}
-        calendarTextStyle	={{ color: theme.color.val }}
+        calendarTextStyle	={{ color: theme.white1.val }}
         headerTextStyle={{ color: theme.color.val }}
         selectedRangeBackgroundColor={theme.calendarSelectedRange.val}
         headerButtonColor={theme.color.val}
         weekDaysTextStyle={{ color: theme.color.val }}
         monthContainerStyle={{ backgroundColor: theme.section.val }}
         yearContainerStyle={{ backgroundColor: theme.section.val }}
-        selectedItemColor={theme.calendarSelected.val}
-        selectedTextStyle={{ color: theme.color.val }}
+        selectedItemColor={theme.tertiaryAccent.val}
+        selectedTextStyle={{ color: theme.white1.val }}
         todayContainerStyle={{ backgroundColor: "none", borderWidth: 0 }}
         todayTextStyle={{ color: theme.color.val, fontWeight: 900 }}
         dayContainerStyle={{
@@ -77,7 +77,7 @@ export default function ViewCalendar({
           minHeight: 40,
           width: width > 600 ? 60 : 40,
           padding: 0,
-          backgroundColor: theme.gray3.val,
+          backgroundColor: theme.accent.val,
         }}
         minDate={minDate}
         maxDate={maxDate}
@@ -101,5 +101,6 @@ const makeStyles = (theme: UseThemeResult) =>
       alignSelf: 'center',
       backgroundColor: theme.background.val,
       padding: 1,
+      marginBottom: 20,
     },
   });

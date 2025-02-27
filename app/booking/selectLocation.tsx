@@ -68,10 +68,12 @@ export default function SelectLocation() {
             Select a Location
         </Text>
         <Picker
-          itemStyle={{ fontSize: 16 }}
+          mode="dialog"
+          itemStyle={{ fontSize: 16}}
           selectedValue={selectedLocationId}
           onValueChange={(itemValue) => setSelectedLocationId(itemValue)}
-          style={Platform.OS === 'ios' ? { fontSize: 16 } : {}}
+          style={[{ color: theme.color.val },Platform.OS === 'ios' ? { fontSize: 16 } : {}]}
+          dropdownIconColor={theme.color.val}
         >
           {locations.length === 0 && (
             <Picker.Item label="No locations available" value={undefined} enabled={false}/>

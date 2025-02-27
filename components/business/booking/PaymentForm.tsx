@@ -41,6 +41,10 @@ export default function Payment() {
       applePay: {
         merchantCountryCode: "GB",
       },
+      googlePay: {
+        merchantCountryCode: 'GB',
+        testEnv: true, // use test environment
+      },
       returnURL: Linking.createURL("stripe-redirect"),
     });
     if (error) {

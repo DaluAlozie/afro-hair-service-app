@@ -31,14 +31,14 @@ export default function Variant({ id, name, price, duration, enabled, service_id
     )
   return (
     <View style={styles.container}>
-        <XStack style={styles.section}>
+      <XStack style={styles.section}>
             <Text>Name</Text>
             <ScrollView contentContainerStyle={styles.content}>
                 <Text style={styles.contentText}>{name}</Text>
             </ScrollView>
-        </XStack>
-        <Separator />
-        <XStack style={styles.section}>
+      </XStack>
+      <Separator />
+      <XStack style={styles.section}>
           <Text style={styles.title}>Price</Text>
           <ScrollView contentContainerStyle={styles.content}>
             <Pressable
@@ -60,7 +60,12 @@ export default function Variant({ id, name, price, duration, enabled, service_id
       </XStack>
       <Separator />
       <XStack style={styles.section}>
-        <Text style={styles.title}>Enabled</Text>
+        <View>
+          <Text style={styles.title}>Enabled</Text>
+          <Text style={styles.enabledText}>
+            {enabled ? "Yes" : "No"}
+          </Text>
+        </View>
         <Switch
           defaultChecked={enabled}
           onCheckedChange={
@@ -73,7 +78,7 @@ export default function Variant({ id, name, price, duration, enabled, service_id
         </Switch>
       </XStack>
       <Separator />
-      <View justifyContent='center' style={styles.section}>
+      <View justifyContent='center' style={styles.deleteSection}>
         <Pressable
           activeOpacity={0.85} scale={0.99} onPress={deleteVariant} style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Text color={theme.danger.val} fontSize={16}>

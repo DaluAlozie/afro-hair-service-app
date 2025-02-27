@@ -1,7 +1,7 @@
 import { FontAwesome } from '@expo/vector-icons';
 import React from 'react'
 import { ViewStyle } from 'react-native';
-import { Input, useTheme, useWindowDimensions, View, XStack } from 'tamagui';
+import { Input, useTheme, View, XStack } from 'tamagui';
 
 type SearchBarProps = {
     input: string;
@@ -12,7 +12,6 @@ type SearchBarProps = {
 }
 
 export default function SearchBar({ input, setInput, showResults, placeholder, style }: SearchBarProps) {
-    const { width } = useWindowDimensions();
     const theme = useTheme();
     return (
         <XStack style={[{
@@ -26,12 +25,12 @@ export default function SearchBar({ input, setInput, showResults, placeholder, s
             paddingHorizontal: 20,
             alignItems: 'center',
         }, style]}>
-            <View style={{ alignItems: 'flex-start', justifyContent: 'center', width: "5%" }}>
-                <FontAwesome name="search" size={width <= 500 ? 16 : 20} color={theme.gray9.val} />
+            <View style={{ alignItems: 'flex-start', justifyContent: 'center', width: 20 }}>
+                <FontAwesome name="search" size={20} color={theme.gray9.val} />
             </View>
             <Input
                 style={{
-                    width: '95%',
+                    flex: 1,
                     backgroundColor: "none",
                     borderWidth: 0,
                     borderColor: "none",

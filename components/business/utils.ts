@@ -5,15 +5,15 @@ export const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
   container: {
     width: '100%',
     alignItems: "stretch",
-    paddingHorizontal: 20,
-    borderRadius: 10,
-    backgroundColor: theme.section.val,
-    margin: 10,
+    paddingLeft: 20,
+    backgroundColor: theme.background.val,
+    borderLeftWidth: 5,
+    borderColor: theme.accent.val,
+    marginTop: 20,
     alignSelf: 'center',
   },
   title: {
-    fontSize: 15,
-    opacity: 0.7
+    fontSize: 16,
   },
   section: {
     flexDirection: 'row',
@@ -22,10 +22,17 @@ export const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     height: 50,
     width: '100%',
   },
+  deleteSection: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 20,
+    width: '100%',
+  },
   separator: {
     height: 1,
     width: '100%',
-    backgroundColor: theme.gray5.val,
+    backgroundColor: theme.background.val,
   },
   content: {
     alignSelf: 'flex-end',
@@ -33,10 +40,14 @@ export const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     justifyContent: "flex-end",
   },
   contentText: {
-    fontSize: 15,
+    fontSize: 16,
     textAlign: "right",
-    fontWeight: "bold",
+    opacity: 0.7,
     textOverflow: "ellipsis",
+  },
+  enabledText: {
+    marginTop: 5,
+    opacity: 0.4,
   },
   pressable: {
     flex: 1,
@@ -56,12 +67,14 @@ export const makeContainerStyles = (theme: UseThemeResult) =>
       },
       addButton: {
         flexDirection: 'row',
-        alignSelf: 'center',
+        alignSelf: 'flex-end',
         height: 50,
-        justifyContent: 'center',
-        backgroundColor: theme.section.val,
-        width: '100%',
-        borderRadius: 10,
-        marginVertical: 20,
+        justifyContent: 'flex-end',
+        backgroundColor: theme.background.val,
+        borderRadius: 100,
+      },
+      addButtonText: {
+        color: theme.color.val,
+        fontSize: 16,
       },
 });

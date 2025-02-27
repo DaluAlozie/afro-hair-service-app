@@ -87,7 +87,7 @@ export default function AddAvailability() {
         maxDate={yearFromNow}
         />
 
-      <View width={"100%"} gap={15}>
+      <View width={"100%"} gap={15} justifyContent='space-between' height={"45%"}>
         <XStack justifyContent='space-between'>
           <YStack flex={1}alignItems='flex-start'>
             <TimePicker control={control} name="start" label="Start Time" disabled={startDate === undefined} />

@@ -81,7 +81,7 @@ export default function CustomizableOption({  id, name, type, lower_bound, upper
         )
       }
       <Separator />
-      <View justifyContent='center' style={styles.section}>
+      <View justifyContent='center' style={styles.deleteSection}>
         <Pressable
           activeOpacity={0.85} scale={0.99} onPress={deleteCustomizableOption} style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Text style={{ color: theme.danger.val, fontSize: 16 }}>

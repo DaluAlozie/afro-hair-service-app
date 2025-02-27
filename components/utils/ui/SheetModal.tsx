@@ -1,5 +1,5 @@
 import React from 'react'
-import { Sheet, useTheme } from 'tamagui'
+import { Sheet } from 'tamagui'
 
 type SheetModalProps = {
     open: boolean
@@ -9,29 +9,28 @@ type SheetModalProps = {
 }
 
 export default function SheetModal({ open, setOpen, snapPoints, children }: SheetModalProps) {
-    const theme = useTheme();
     return (
         <Sheet
-            forceRemoveScrollEnabled={open}
-            modal={false}
+            native={false}
+            modal
+            dismissOnSnapToBottom
+            animation="medium"
+            animationConfig={{ type: 'spring', mass: 0.1 }}
+            snapPointsMode={"percent"}
+            snapPoints={snapPoints}
             open={open}
             onOpenChange={setOpen}
-            snapPoints={snapPoints}
-            snapPointsMode={"percent"}
-            dismissOnSnapToBottom
-            position={0}
-            zIndex={100_000}
-            animationConfig={{ type: 'spring', mass: 0.1 }}
         >
+            <Sheet.Frame padding="$4" gap="$5" backgroundColor={"$section"}>
+            {children}
+            </Sheet.Frame>
             <Sheet.Overlay
+            backgroundColor="$shadowColor"
             animation="lazy"
             enterStyle={{ opacity: 0.5 }}
             exitStyle={{ opacity: 0.5 }}
             />
-            <Sheet.Handle backgroundColor={theme.section.val} opacity={0.7}/>
-            <Sheet.Frame padding="$4" justifyContent="center" alignItems="center" gap="$5" backgroundColor={"$section"}>
-                {children}
-            </Sheet.Frame>
         </Sheet>
+
     )
 }

@@ -1,15 +1,14 @@
 import React, { useCallback, useMemo, useState } from 'react';
-import { ScrollView, useTheme, Text } from 'tamagui';
+import { ScrollView, useTheme } from 'tamagui';
 
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import { Collapsible } from '@/components/utils';
-import Pressable from '@/components/utils/Pressable';
 import AddOn from '@/components/business/addon/AddOn';
 import EditAddOnPriceModal from '@/components/business/addon/EditAddOnPriceModal';
 import { AddOn as AddOnProps } from '@/components/business/types';
 import { makeContainerStyles } from '@/components/business/utils';
-import { SectionTitle } from '../..';
+import { AddButton, SectionTitle } from '../..';
 
 export default function AddOns() {
   const { serviceId, serviceOptionId } = useLocalSearchParams();
@@ -64,6 +63,9 @@ export default function AddOns() {
             contentContainerStyle={styles.container}
             showsVerticalScrollIndicator={false}
           >
+            <AddButton
+              href={`/service/${serviceId}/serviceOption/${serviceOptionId}/addAddOn`}
+              text="Add Add On" />
             {serviceOption && (
               <Collapsible defaultOpen={true} style={{ width: "100%" }}
               header={<SectionTitle title={"Add Ons"} />}
@@ -77,17 +79,6 @@ export default function AddOns() {
                 }, [addOns]))}
               </Collapsible>
             )}
-            <Pressable
-              onPress={() =>
-                router.push(`/service/${serviceId}/serviceOption/${serviceOptionId}/addAddOn`)
-              }
-              activeOpacity={0.85}
-              scale={0.99}
-              style={styles.addButton}
-              pressedStyle={{ backgroundColor: theme.onPressStyle.val }}
-            >
-              <Text>Create Add on</Text>
-            </Pressable>
           </ScrollView>
         </>
       )}

@@ -9,6 +9,7 @@ import { filterAppointments, formatMoney, generateFakeData, getChangePercentage,
 import { Select } from '@/components/utils/inputs/Selector';
 import { Appointment } from '@/components/business/types';
 import { useAppointmentSummaries } from '@/hooks/business/useAppointmentSummaries';
+import { hasPast } from '@/components/home/utils';
 
 export default function Analytics() {
   const theme = useTheme();
@@ -17,8 +18,8 @@ export default function Analytics() {
   const appointmentMap = useBusinessStore((state) => state.appointments);
   // Convert Map to array once.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const appointments = useMemo(() => Array.from(appointmentMap.values()), [appointmentMap]);
-  const appointmentIds = useMemo(() => Array.from(appointmentMap.keys()), [appointmentMap]);
+  const appointments = useMemo(() => Array.from(appointmentMap.values()).filter(a => !a.cancelled && hasPast(a.start_time)), [appointmentMap]);
+  const appointmentIds = useMemo(() => appointments.map(a => a.id), [appointments]);
   const services = useBusinessStore((state) => state.services);
   const serviceList = useMemo(() => Array.from(services.values()), [services]);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -121,7 +122,7 @@ const TimeFilterHeader = ({ appointments, filter, setFilters }: TimeFilterHeader
       width="100%"
       height={50}
       justifyContent="space-between"
-      $sm={{ flexDirection: "column", height: 110 }}
+      $sm={{ flexDirection: "column", height: 110, gap: 20 }}
       backgroundColor={"$background"}
       paddingHorizontal={20}
     >
@@ -134,6 +135,7 @@ const TimeFilterHeader = ({ appointments, filter, setFilters }: TimeFilterHeader
             setFilters({ ...filter, year: parseInt(year), range: undefined })
           }
           width={90}
+          height={50}
         />
         <Select
           label="Month"
@@ -158,6 +160,7 @@ const TimeFilterHeader = ({ appointments, filter, setFilters }: TimeFilterHeader
             setFilters({ ...filter, month, range: undefined })
           }
           width={130}
+          height={50}
         />
       </XStack>
       <XStack height={50} gap="$4" justifyContent="flex-start">
@@ -179,6 +182,7 @@ const TimeFilterHeader = ({ appointments, filter, setFilters }: TimeFilterHeader
               range: range === "all" ? "all" : parseInt(range) as 1 | 3 | 6 | 12,
             })
           }
+          height={50}
           width={150}
         />
       </XStack>
@@ -248,13 +252,30 @@ const ServiceFiltersHeader = ({ filter, setFilters }: ServiceFiltersProps) => {
   );
 };
 
-type RevenueHeaderProps = {
+type RevenueProps = {
   appointments: Appointment[];
   unfilteredAppointments: Appointment[];
   filter: Filter;
+  titleFontSize?: number;
 };
 
-const RevenueHeader = ({ appointments, unfilteredAppointments, filter }: RevenueHeaderProps) => {
+const RevenueHeader = (props: RevenueProps) => {
+
+  return (
+    <View
+      width="100%"
+      height={70}
+      justifyContent="center"
+      paddingLeft={10}
+      backgroundColor={"$background"}
+      marginVertical={20}
+      paddingHorizontal={20}>
+        <Revenue {...props} />
+    </View>
+  );
+};
+
+export const Revenue = ({ appointments, unfilteredAppointments, filter, titleFontSize }: RevenueProps) => {
   // Sum revenue from filtered appointments.
   const revenue = useMemo(
     () =>
@@ -270,15 +291,8 @@ const RevenueHeader = ({ appointments, unfilteredAppointments, filter }: Revenue
   const styles = makeStyles(theme);
 
   return (
-    <View
-      width="100%"
-      height={70}
-      justifyContent="center"
-      paddingLeft={10}
-      backgroundColor={"$background"}
-      marginVertical={20}
-      paddingHorizontal={20}>
-      <Text style={styles.fadedText}>Revenue</Text>
+    <View>
+      <Text style={[styles.fadedText, { fontSize: titleFontSize! ?? styles.fadedText.fontSize! }]}>Revenue</Text>
       <Text style={styles.revenue}>£{formatMoney(revenue)}</Text>
       <XStack gap="$2" alignItems="center">
         <View>
@@ -294,6 +308,7 @@ const RevenueHeader = ({ appointments, unfilteredAppointments, filter }: Revenue
     </View>
   );
 };
+
 
 const makeStyles = (theme: UseThemeResult) =>
   StyleSheet.create({

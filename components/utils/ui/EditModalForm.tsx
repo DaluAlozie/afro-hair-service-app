@@ -9,7 +9,7 @@ export default function EditModalForm({ children }: { children: React.ReactNode 
       alignItems="center"
       alignSelf='center'
       justifyContent='center'
-      height={250}
+      height={220}
       maxWidth={400}
       width={"100%"}
       backgroundColor={theme.background.val}

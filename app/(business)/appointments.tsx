@@ -6,7 +6,6 @@ import { useBusinessStore } from '@/utils/stores/businessStore'
 import { Entypo } from '@expo/vector-icons'
 import { useRouter } from 'expo-router'
 import React, { useMemo } from 'react'
-import { useColorScheme } from 'react-native'
 import { useTheme, View, Text } from 'tamagui'
 
 export default function Appointments() {
@@ -36,22 +35,21 @@ export default function Appointments() {
 const AvailabilityButton = () => {
   const router = useRouter();
   const theme = useTheme();
-  const inverseTheme = useTheme({ inverse: true });
-  const scheme = useColorScheme();
   return (
     <View position='absolute' bottom={50} right={20} zIndex={1000}>
       <Pressable onPress={() => router.push('/myBusiness/availability')} activeOpacity={0.99} style={{
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: scheme === 'light' ? theme.section.val : inverseTheme.background.val,
+        backgroundColor: theme.accent.val,
         width: 130,
         height: 55,
         justifyContent: 'center',
         gap: 10,
         borderRadius: 100,
         }}>
-          <Entypo name="calendar" size={24} color={ scheme === 'light' ? theme.color.val : inverseTheme.color.val} />
-          <Text color={scheme === 'light' ? theme.color.val : inverseTheme.color.val}>Availability</Text>
+          <Entypo name="calendar" size={24} color={theme.white1.val} />
+          <Text color={theme.white1.val}>Availability</Text>
+
       </Pressable>
     </View>
   )
