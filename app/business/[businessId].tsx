@@ -26,7 +26,9 @@ import { useAddOns } from "@/hooks/business/useAddOns";
 import { useCustomizations } from "@/hooks/business/useCustomizations";
 import SheetModal from "@/components/utils/ui/SheetModal";
 import * as Linking from 'expo-linking';
-import { Ionicons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons } from "@expo/vector-icons";
+import ReviewModal from "@/components/business/review/ReviewModal";
+import { useReviews } from "@/hooks/business/useReviews";
 
 export default function BusinessPage() {
   const theme = useTheme();
@@ -80,25 +82,28 @@ export default function BusinessPage() {
     <AuthWrapper>
       <BookingModal open={open} setOpen={(val: boolean) => setOpen(val)} {...optionInfo} />
       <View width={"100%"} alignSelf="center" backgroundColor={theme.background.val}>
-        <ScrollTabs
-          refreshing={isRefetchingBusiness}
-          refresh={async () => {await refetchBusiness()}}
-          header={() => <Header business={business} profilePictureUrl={profilePictureUrl} />}>
-          {services.map(service => (
-            <ScrollTabs.Section key={service.id} label={service.name}>
-              <View width={"100%"} alignSelf="center" alignItems="center">
-                <Service
-                  key={service.id}
-                  service={service}
-                  serviceOptions={serviceOptions.get(service.id) || []}
-                  addOns={addOns}
-                  variants={variants}
-                  book={openBookingModal}
-                />
-              </View>
-            </ScrollTabs.Section>
-          ))}
-        </ScrollTabs>
+        { useMemo(() => (
+          <ScrollTabs
+            refreshing={isRefetchingBusiness}
+            refresh={async () => {await refetchBusiness()}}
+            header={() => <Header business={business} profilePictureUrl={profilePictureUrl} />}>
+            {services.map(service => (
+              <ScrollTabs.Section key={service.id} label={service.name}>
+                <View width={"100%"} alignSelf="center" alignItems="center">
+                  <Service
+                    key={service.id}
+                    service={service}
+                    serviceOptions={serviceOptions.get(service.id) || []}
+                    addOns={addOns}
+                    variants={variants}
+                    book={openBookingModal}
+                  />
+                </View>
+              </ScrollTabs.Section>
+            ))}
+          </ScrollTabs>
+        ), [services, serviceOptions, addOns, variants])
+      }
       </View>
     </AuthWrapper>
   )
@@ -116,8 +121,29 @@ const Header  = ({ business, profilePictureUrl }: { business: BusinessType, prof
   const instagramFallback = `https://instagram.com/${business.instagram}`;
   const facebookFallback = `https://facebook.com/${business.facebook}`
 
+  const [openReviewModal, setOpenReviewModal] = useState(false);
+  const { reviews, refetchReviews, isRefetchingReviews } = useReviews(business.id);
+
   return (
-    <View alignItems="center" gap={20} marginBottom={30} width={"90%"} alignSelf="center">
+    <>
+    <ReviewModal
+      open={openReviewModal}
+      setOpen={setOpenReviewModal}
+      reviews={reviews}
+      refresh={async () => { refetchReviews() }}
+      refreshing={isRefetchingReviews}
+      />
+    <View alignItems="center" gap={20} marginBottom={30} width={"90%"} alignSelf="center" position="relative">
+      <View position="absolute" top={0} right={0} alignSelf="center" zIndex={100}>
+        <View alignItems='flex-end' alignSelf="flex-end" marginBottom={10}>
+          <View alignSelf='flex-end' marginRight={-10} marginBottom={-5}>
+              <FontAwesome name="star" size={10} color="#FFD43B" />
+          </View>
+          <Text numberOfLines={1} style={{ color: theme.color.val, fontSize: 14, textAlign: "left"}}>
+              {business.rating ? `${business.rating.toFixed(1)}` : "4.5"}
+          </Text>
+      </View>
+      </View>
       <View style={styles.profileImageContainer}>
         <Image
           style={styles.profileImage}
@@ -140,21 +166,30 @@ const Header  = ({ business, profilePictureUrl }: { business: BusinessType, prof
       </View>
       <XStack justifyContent="space-between" width={"100%"} gap={20}>
         <View style={styles.aboutUsContainer}>
-          <Text style={styles.sectionTitle}>About Us</Text>
+          <XStack alignItems="center" gap={10} marginBottom={10}>
+            <Text style={styles.sectionTitle}>About Us</Text>
+            <View>
+              <Pressable onPress={() => setOpenReviewModal(true)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{ color: theme.color.val, fontSize: 12, opacity: 0.7, textDecorationLine: 'underline' }}>
+                  Reviews
+                </Text>
+              </Pressable>
+            </View>
+          </XStack>
           <Text style={styles.businessDescription}>{business.description}</Text>
         </View>
           <XStack gap={20}>
-            { business.twitter &&(
+            { business.twitter && (
               <SocialLink url={twitterUrl} fallback={twitterFallback}>
                 <Ionicons name="logo-twitter" size={30} color={theme.color.val} />
               </SocialLink>
             )}
-            { business.instagram &&(
+            { business.instagram && (
               <SocialLink url={instagramUrl} fallback={instagramFallback}>
                 <Ionicons name="logo-instagram" size={30} color={theme.color.val} />
               </SocialLink>
             )}
-            { business.facebook &&(
+            { business.facebook && (
               <SocialLink url={facebookUrl} fallback={facebookFallback}>
                 <Ionicons name="logo-facebook" size={30} color={theme.color.val} />
               </SocialLink>
@@ -162,6 +197,7 @@ const Header  = ({ business, profilePictureUrl }: { business: BusinessType, prof
           </XStack>
       </XStack>
     </View>
+    </>
   )
 }
 
@@ -332,13 +368,13 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     textAlign: 'center',
   },
   aboutUsContainer: {
+    position: 'relative',
     width: "auto"
   },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: theme.color.val,
-    marginBottom: 10,
   },
   businessDescription: {
     fontSize: 16,

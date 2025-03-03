@@ -83,17 +83,12 @@ interface ServiceLocation {
 
 interface Review {
     id: number,
-    description: string,
+    content: string,
+    rating: number,
     business_rating_id: number,
     business_id: number
+    created_at: Date
 }
-interface Rating {
-    id: number,
-    score: number,
-    service_id: number,
-    business_id: number
-}
-
 interface Appointment {
     id: number,
     start_time: Date,
@@ -139,7 +134,6 @@ export {
     Location,
     ServiceLocation,
     Review,
-    Rating,
     Appointment,
     Notification,
     NotificationType,

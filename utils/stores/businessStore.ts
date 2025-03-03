@@ -15,6 +15,7 @@ import {
 } from '@/components/business/types'
 import { PostgrestError } from '@supabase/supabase-js'
 import { decode } from 'base64-arraybuffer'
+import { refundBooking } from './bookingStore'
 
 export type BusinessProps = {
   error?: PostgrestError | PostgrestError | undefined
@@ -355,17 +356,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
     },
     loadReviews: async () => {
         const supabase = await supabaseClient;
-        const { data, error } = await supabase
-            .from('Review')
-            .select('*')
-            .eq('business_id', get().id)
+        const { data, error } = await supabase.rpc('get_business_reviews', { bid: get().id });
         if (error) {
-            throw { error };
+            console.log(error);
+            return [] as Review[];
         }
-        const reviews = new Map<number, Review>()
-        data?.forEach((review: Review) => {
-            reviews.set(review.id, review)
-        })
+        const reviews = data.map((review: Review) => ({ ...review, created_at: new Date(review.created_at) }));
         set({ reviews });
         return {};
     },
@@ -981,13 +977,16 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
     },
     cancelAppointment: async (appointmentId: number) => {
         const supabase = await supabaseClient;
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('Appointment')
             .update({ cancelled: true })
             .eq('id', appointmentId)
+            .select("payment_intent_id")
+            .single()
         if (error) {
             return { error };
         }
+        await refundBooking(data.payment_intent_id);
         const appointment = get().appointments.get(appointmentId);
         if (!appointment) return {};
         appointment.cancelled = true;

@@ -55,8 +55,9 @@ export default function Payment() {
 
   const onBookingSuccess = useCallback(async () => {
     if (
-      !booking.business || !booking.variant || !booking.startTime || !booking.endTime||
-      !booking.location || !booking.customizableOptions || !booking.totalPrice || !userId
+      !booking.business || !booking.variant || !booking.startTime || !booking.endTime ||
+      !booking.location || !booking.customizableOptions || !booking.totalPrice || !userId ||
+      !params.paymentIntentId
     ) {
       await booking.refundBooking(params?.paymentIntentId);
       notify('Error', 'Booking details are missing');
@@ -73,7 +74,8 @@ export default function Payment() {
       booking.customizableOptions,
       booking.totalPrice,
       true,
-      userId
+      userId,
+      params.paymentIntentId
     );
     if (error) {
       await booking.refundBooking(params?.paymentIntentId);
@@ -94,7 +96,7 @@ export default function Payment() {
     router.dismissTo("/(tabs)");
     booking.reset();
     setIsSubmitting(false);
-  }, [booking, userId]);
+  }, [booking, userId, params]);
 
 
   useEffect(() => {

@@ -5,6 +5,7 @@ import { Appointment, Notification } from '@/components/business/types'
 import { Address } from '@/components/business/businessLocation/types'
 import { Filters, Radius, Rating, SortBy } from '@/components/explore/types'
 import { formatAddress } from '@/components/explore/utils'
+import { refundBooking } from './bookingStore'
 export interface CustomerStore {
     appointments: Map<number, Appointment>,
     notifications: Map<number, Notification>,
@@ -31,7 +32,8 @@ export interface CustomerStore {
         customizableOptions: Map<number, string>,
         totalPrice: number,
         paid: boolean,
-        customerId: string
+        customerId: string,
+        paymentIntentId: string
     ) => Promise<{ data?: Appointment | undefined, error?: AuthError | PostgrestError | Error }>,
 rescheduleAppointment: (
         appointmentId: number,
@@ -102,7 +104,8 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
         customizableOptions: Map<number, string>,
         totalPrice: number,
         paid: boolean,
-        customerId: string
+        customerId: string,
+        paymentIntentId: string
     ) => {
         const supabase = await supabaseClient;
         const { data, error } = await supabase.from('Appointment').insert({
@@ -113,7 +116,8 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
             end_time: endTime,
             total_price: totalPrice,
             paid: paid,
-            customer_id: customerId
+            customer_id: customerId,
+            payment_intent_id: paymentIntentId,
         })
         .select()
         .single();
@@ -158,14 +162,17 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
     },
     cancelAppointment: async (appointmentId: number) => {
         const supabase = await supabaseClient;
-        const { error } = await supabase
+        const { data, error } = await supabase
             .from('Appointment')
             .update({ cancelled: true })
-            .eq('id', appointmentId);
+            .eq('id', appointmentId)
+            .select("payment_intent_id")
+            .single();
         if (error) {
             console.log(error);
             return { error };
         }
+        await refundBooking(data?.payment_intent_id);
         const appointment = get().appointments.get(appointmentId);
         if (!appointment) return { error: new Error("Appointment not found") };
         appointment.cancelled = true;
