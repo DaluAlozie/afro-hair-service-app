@@ -3,15 +3,15 @@ import { Service as ServiceProp, ServiceOption as ServiceOptionProps } from '@/c
 import { Collapsible } from '@/components/utils';
 import Pressable from '@/components/utils/Pressable';
 import { useBusinessStore } from '@/utils/stores/businessStore';
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
+import { Href, useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useState } from 'react'
-import { ScrollView, Text, useTheme, XStack, YStack, Switch, View } from 'tamagui'
-import { UseThemeResult } from '@tamagui/web'
-import { StyleSheet } from 'react-native'
+import { ScrollView, Text, useTheme, XStack, Switch, View } from 'tamagui'
 import confirm from '@/components/utils/Alerts/Confirm';
 import Feather from '@expo/vector-icons/Feather';
 import EditDescriptionModal from '@/components/business/service/modals/EditDescriptionModal';
 import EditNameModal from '@/components/business/service/modals/EditNameModal';
+import { makeContainerStyles, makeStyles } from '@/components/business/utils';
+import { AntDesign } from '@expo/vector-icons';
 
 export default function ServicePage() {
     const { serviceId } = useLocalSearchParams();
@@ -35,7 +35,7 @@ export default function ServicePage() {
         return null;
     }
     return (
-        <ScrollView backgroundColor={"$background"}>
+        <ScrollView backgroundColor={"$background"} padding={20}>
             <ServiceOptions serviceId={parsedId} serviceOptions={service.service_options ?? new Map()}/>
             <General service={service}/>
         </ScrollView>
@@ -45,45 +45,31 @@ export default function ServicePage() {
 export function SectionTitle({ title }: { title: string }) {
     const theme = useTheme();
     return (
-            <Text
-                width={"93%"}
-                color={theme.gray11Dark.val}
-                fontWeight={"regular"}
-                fontSize={16}
-                fontStyle='italic'
-            >
-                {title}
-            </Text>
+        <Text
+            width={"93%"}
+            color={theme.gray11Dark.val}
+            fontWeight={"regular"}
+            fontSize={16}
+            fontStyle='italic'
+        >
+            {title}
+        </Text>
 
     )
 }
 
 function ServiceOptions({ serviceId, serviceOptions }: { serviceId: number, serviceOptions: Map<number, ServiceOptionProps> }) {
-    const theme = useTheme();
-    const styles = makeStyles(theme);
-    const router = useRouter();
     const items =Array.from(serviceOptions.values());
     return (
         <>
-        <View style={styles.section}>
+        <View>
+            <AddButton href={`/service/${serviceId}/addServiceOption`} text={"Add Service Option"}/>
             <Collapsible defaultOpen={true}
-            header={<SectionTitle title={"Service Options"}/>}
-            
-            >
+            header={<SectionTitle title={"Service Options"}/>}>
                 {useMemo(() => items.map((item) => (
                     <ServiceOption key={item.id} {...item}/>
                 )),[items])}
             </Collapsible>
-            <Pressable
-                onPress={() => router.push(`/service/${serviceId}/addServiceOption`)}
-                activeOpacity={0.85}
-                scale={0.99}
-                style={styles.addButton}
-                pressedStyle={{ backgroundColor: theme.onPressStyle.val }}
-
-                >
-                <Text>Add Service Option</Text>
-            </Pressable>
         </View>
 
         </>
@@ -130,10 +116,12 @@ function General({ service }: { service: ServiceProp | null }) {
         <>
         <EditNameModal serviceId={service.id} open={nameModalOpen} setOpen={setNameModalOpen} />
         <EditDescriptionModal serviceId={service.id} open={openModalDescription} setOpen={setOpenModalDescription} />
-        <YStack style={styles.section} gap={20}>
+        <View marginTop={50}>
             <SectionTitle title={"General"}/>
-            <XStack style={styles.generalSection}>
-                <Text style={styles.generalTitle}>Service Title</Text>
+        </View>
+        <View marginTop={30} style={styles.container}>
+            <XStack style={styles.section}>
+                <Text style={styles.title}>Service Title</Text>
                 <ScrollView contentContainerStyle={styles.content}>
                     <Pressable
                     onPress={openNameModal}
@@ -150,8 +138,8 @@ function General({ service }: { service: ServiceProp | null }) {
                     </Pressable>
                 </ScrollView>
             </XStack>
-            <XStack style={styles.generalSection}>
-                <Text style={styles.generalTitle}>Service Description</Text>
+            <XStack style={styles.section}>
+                <Text style={styles.title}>Service Description</Text>
                 <ScrollView contentContainerStyle={styles.content}>
                     <Pressable
                     onPress={openDescriptionModal}
@@ -168,8 +156,13 @@ function General({ service }: { service: ServiceProp | null }) {
                     </Pressable>
                 </ScrollView>
             </XStack>
-            <XStack style={styles.generalSection}>
-                <Text style={styles.generalTitle}>Enabled</Text>
+            <XStack style={styles.section}>
+                <View>
+                    <Text style={styles.title}>Enabled</Text>
+                    <Text style={styles.enabledText}>
+                        {service.enabled ? "Yes" : "No"}
+                    </Text>
+                </View>
                 <Switch
                     defaultChecked={service.enabled} native
                     onCheckedChange={
@@ -181,56 +174,44 @@ function General({ service }: { service: ServiceProp | null }) {
                     <Switch.Thumb/>
                 </Switch>
             </XStack>
-            <Pressable activeOpacity={0.85} scale={0.999} onPress={deleteService}>
-                <Text
-                    color={theme.danger.val}
-                    fontWeight={"bold"}
-                    fontSize={16}>
-                    Delete Service
-                </Text>
-            </Pressable>
-        </YStack>
+            <View style={styles.deleteSection}>
+                <Pressable activeOpacity={0.85} scale={0.999} onPress={deleteService}>
+                    <Text
+                        color={theme.danger.val}
+                        fontWeight={"bold"}
+                        fontSize={16}>
+                        Delete Service
+                    </Text>
+                </Pressable>
+            </View>
+        </View>
+        <View height={50}></View>
+
         </>
     )
 }
-const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
-    addButton: {
-        flexDirection: "row",
-        alignSelf: "center",
-        height: 50,
-        justifyContent: "center",
-        backgroundColor: theme.section.val,
-        width: "100%",
-        borderRadius: 10,
-        marginVertical: 20
-    },
-    section: {
-        width: "90%",
-        justifyContent: "center",
-        alignSelf: "center",
-        borderRadius: 10,
-        marginTop: 30,
-        height: "auto",
-    },
-    pressedStyle: {
-        backgroundColor: theme.onPressStyle.val
-    },
-    content: {
-    },
-    contentText: {
-    },
-    generalSection: {
-        backgroundColor: theme.section.val,
-        height: 50,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        alignItems: "center",
-        justifyContent: "space-between",
-    },
-    generalTitle: {
-        color: theme.gray11Dark.val,
-        fontWeight: "regular",
-        fontSize: 16,
-        fontStyle: "italic",
-    }
-})
+
+type AddOnProps = {
+    href: Href;
+    text: string;
+}
+export function AddButton({ href, text }: AddOnProps) {
+    const router = useRouter();
+    const theme = useTheme();
+    const styles = makeContainerStyles(theme);
+    return (
+        <Pressable
+            onPress={() => router.push(href)}
+            activeOpacity={0.85}
+            scale={0.99}
+            style={styles.addButton}
+            pressedStyle={{ opacity: 0.7 }}
+
+            >
+            <XStack gap={2} alignItems='center' justifyContent='center'>
+            <AntDesign name="plus" size={20} color={theme.secondaryAccent.val} />
+            <Text style={styles.addButtonText}>{text}</Text>
+            </XStack>
+        </Pressable>
+    )
+}

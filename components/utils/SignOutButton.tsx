@@ -31,7 +31,7 @@ export default function SignOutButton() {
             return;
         }
         if (router.canDismiss()) router.dismissAll();
-        router.replace("/login")
+        router.replace("/landing")
         setDisabled(false);
     }
     return (

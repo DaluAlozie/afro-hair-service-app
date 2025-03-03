@@ -12,7 +12,6 @@ import DismissKeyboard from '../../../utils/DismissKeyboard';
 import { Input, InputError } from '../../../utils/form/inputs';
 import React, { useCallback } from 'react';
 import SubmitButton from '../../../utils/form/SubmitButton';
-import { useTheme } from 'tamagui';
 import { useRouter } from 'expo-router';
 import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
 
@@ -33,7 +32,6 @@ export function AddServiceForm() {
     resolver: yupResolver(schema),
   });
 
-  const theme = useTheme();
   const addService = useBusinessStore((state) => state.addService)
   const onSubmit = useCallback(async (data: { name: string, description: string }) => {
     const { name, description } = data
@@ -46,11 +44,10 @@ export function AddServiceForm() {
   return (
       <KeyboardAvoidingView>
         <DismissKeyboard>
-          <Form alignItems="center" backgroundColor={theme.background}>
+          <Form alignItems="center">
             <YStack
               alignItems="stretch"
-              justifyContent="flex-start"
-              marginTop="$14"
+              justifyContent="space-between"
               minWidth="60%"
               width="100%"
               maxWidth="100%"
@@ -59,7 +56,6 @@ export function AddServiceForm() {
               padding="$7"
               paddingVertical="$6"
               $gtSm={{
-                paddingVertical: '$4',
                 width: 400,
               }}
             >

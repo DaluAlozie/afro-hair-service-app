@@ -35,8 +35,8 @@ export default function BusinessLayout() {
           justifyContent: 'center',
         },
         tabBarIndicatorStyle: {
-          backgroundColor: theme.color.val, // Sensible, theme-aligned underline colour
-          height: 10, // Thin underline
+          backgroundColor: theme.secondaryAccent.val, // Sensible, theme-aligned underline colour
+          height: 11, // Thin underline
           alignSelf: 'center', // Center the underline beneath the text
         },
         tabBarIndicatorContainerStyle: {
@@ -54,6 +54,7 @@ export default function BusinessLayout() {
         },
         tabBarItemStyle: {
             width: "auto",
+            height: 47,
             minWidth: overflow ? undefined : width/numberOfTabs,
         }
       }}

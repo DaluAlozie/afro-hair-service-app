@@ -395,7 +395,7 @@ export function RadioGroupItemWithLabel(props: {
         justifyContent="flex-start"
         alignItems="flex-start"
         backgroundColor={isSelected ? "auto" : "auto"}
-        borderColor={"$color"}
+        borderColor={"$secondaryAccent"}
         borderWidth={isSelected ? 2 : 1}
         opacity={isSelected ? 1 : 0.2}
         paddingLeft={"$4"}

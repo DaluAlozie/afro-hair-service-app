@@ -144,15 +144,15 @@ export default function Calendar({
             }
           }
         }}
-        calendarTextStyle	={{ color: theme.color.val }}
+        calendarTextStyle	={{ color: theme.white1.val }}
         headerTextStyle={{ color: theme.color.val }}
-        selectedRangeBackgroundColor={theme.gray3.val}
+        selectedRangeBackgroundColor={theme.secondaryAccent.val + "70"}
         headerButtonColor={theme.color.val}
         weekDaysTextStyle={{ color: theme.color.val }}
         monthContainerStyle={{ backgroundColor: theme.section.val }}
         yearContainerStyle={{ backgroundColor: theme.section.val }}
-        selectedItemColor={theme.calendarSelected.val}
-        selectedTextStyle={{ color: theme.color.val }}
+        selectedItemColor={theme.tertiaryAccent.val}
+        selectedTextStyle={{ color: theme.white1.val }}
         todayContainerStyle={{ backgroundColor: "none", borderWidth: 0 }}
         todayTextStyle={{ color: theme.color.val, fontWeight: 900 }}
         dayContainerStyle={{
@@ -161,7 +161,7 @@ export default function Calendar({
           minHeight: 40,
           width: width > 600 ? 60 : 40,
           padding: 0,
-          backgroundColor: theme.gray3.val,
+          backgroundColor: theme.accent.val,
         }}
         minDate={minDate}
         maxDate={maxDate}

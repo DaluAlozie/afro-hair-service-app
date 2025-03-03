@@ -77,7 +77,12 @@ export default function ServiceOption(
       </Pressable>
       <Separator/>
       <XStack style={styles.section}>
-        <Text style={styles.title}>Enabled</Text>
+        <View>
+          <Text style={styles.title}>Enabled</Text>
+          <Text style={styles.enabledText}>
+            {enabled ? "Yes" : "No"}
+          </Text>
+        </View>
         <Switch
           defaultChecked={enabled} native
           onCheckedChange={
@@ -90,7 +95,7 @@ export default function ServiceOption(
         </Switch>
       </XStack>
       <Separator/>
-      <XStack style={[styles.section, { justifyContent: "center", alignItems: "center" }]}>
+      <XStack style={styles.deleteSection}>
         <Pressable
         activeOpacity={0.6} scale={0.99} style={{ justifyContent: "center", alignItems: "center" }} onPress={deleteOption}>
           <Text style={[styles.title, { color: theme.danger.val }]}>Remove Service Option</Text>

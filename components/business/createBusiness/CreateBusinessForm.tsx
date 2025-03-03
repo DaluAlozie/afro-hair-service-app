@@ -55,8 +55,7 @@ export function CreateBusinessForm() {
       <Form alignItems="center" backgroundColor={theme.background}>
         <YStack
           alignItems="stretch"
-          justifyContent="flex-start"
-          marginTop="$14"
+          justifyContent="space-between"
           minWidth="60%"
           width="100%"
           maxWidth="100%"

@@ -4,6 +4,7 @@ import type { SelectProps as TSelectProps } from 'tamagui';
 import {  Sheet, XStack, YStack, Text, View, useTheme } from 'tamagui';
 import Pressable from '../Pressable';
 import { DimensionValue } from 'react-native';
+import SheetModal from '../ui/SheetModal';
 
 type SelectProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -26,7 +27,7 @@ export function Select(props: SelectProps) {
 }
 
 export function SelectSkeleton({ label, items, val, setVal, width, disabled, ...props}: SelectProps) {
-  const theme = useTheme()
+  const theme = useTheme();
   const [open, setOpen] = useState(false);
 
   const [selectedLabelValue, setSelectedLabelValue] = useState(items.find((item) => `${item.value}` == `${val}`)?.label);
@@ -34,38 +35,31 @@ export function SelectSkeleton({ label, items, val, setVal, width, disabled, ...
     <View>
       <Pressable
         disabled={disabled}
+        pressedStyle={{
+          opacity: 0.7,
+        }}
         style={{
-          borderRadius: 5,
-          borderWidth: 1,
-          borderColor: theme.gray4Dark.val,
+          borderRadius: 2000,
           height: props.height ?? 40,
           width: width,
           justifyContent: 'center',
           alignItems: 'center',
-          backgroundColor: theme.gray2.val,
+          backgroundColor: theme.section.val,
         }}
         activeOpacity={0.9}
         scale={0.95}
         onPress={() => setOpen(true)}
       >
         <XStack justifyContent='space-between' alignItems='center' width='100%' paddingHorizontal={15}>
-          <Text numberOfLines={2}>{val === undefined ? label : selectedLabelValue}</Text>
-          {open ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          <Text color={theme.color.val} numberOfLines={2}>{val === undefined ? label : selectedLabelValue}</Text>
+          {open ? <ChevronUp color={theme.color.val} size={20} /> : <ChevronDown color={theme.color.val} size={20} />}
         </XStack>
       </Pressable>
-      <Sheet
-          native={!!props.native}
-          modal
-          dismissOnSnapToBottom
-          animation="medium"
-          animationConfig={{ type: 'spring', mass: 0.1 }}
-          snapPointsMode={"percent"}
-          snapPoints={[40]}
-          open={open}
-          onOpenChange={setOpen}
-
+      <SheetModal
+        open={open}
+        setOpen={setOpen}
+        snapPoints={[40]}
         >
-          <Sheet.Frame padding="$4" gap="$5" backgroundColor={"$section"}>
           <Sheet.ScrollView>
             <HeaderComponent title={label} />
           {useMemo(
@@ -87,14 +81,7 @@ export function SelectSkeleton({ label, items, val, setVal, width, disabled, ...
             [items, val, setVal]
           )}
           </Sheet.ScrollView>
-          </Sheet.Frame>
-          <Sheet.Overlay
-            backgroundColor="$shadowColor"
-            animation="lazy"
-            enterStyle={{ opacity: 0.5 }}
-            exitStyle={{ opacity: 0.5 }}
-          />
-        </Sheet>
+        </SheetModal>
     </View>
   );
 }
@@ -125,10 +112,10 @@ const SelectItem = ({
         height: 50,
         justifyContent: 'center',
         alignItems: 'flex-start',
-        backgroundColor: `${selectedValue}` == `${value}` ?  theme.gray1.val : theme.section.val,
+        backgroundColor: `${selectedValue}` == `${value}` ?  theme.accent.val : theme.section.val,
         borderRadius: 5,
       }}
-      pressedStyle={{ backgroundColor: theme.gray5.val }}
+      pressedStyle={{ backgroundColor: theme.accent.val, opacity: 0.3 }}
       activeOpacity={0.2}
       scale={0.999}
       onPress={() => {
@@ -136,7 +123,14 @@ const SelectItem = ({
         setLabel(label);
       }}
     >
-      <Text numberOfLines={2} marginLeft={20} width={"100%"} textOverflow="ellipsis">{label}</Text>
+      <Text
+        numberOfLines={2}
+        marginLeft={20}
+        width={"100%"}
+        color={`${selectedValue}` == `${value}` ? theme.white1.val : theme.color.val}
+        textOverflow="ellipsis">
+          {label}
+      </Text>
     </Pressable>
   );
 };

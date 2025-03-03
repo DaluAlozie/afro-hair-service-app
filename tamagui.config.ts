@@ -14,7 +14,10 @@ const modifiedLightTheme = {
   calendarSelected: "rgb(220, 219, 219)",
   overlay: "rgba(243, 242, 246, 0.9)",
   tameOverlay: "rgba(243, 242, 246, 0.6)",
-  orangeRed: "#fc2803"
+  orangeRed: "#fc2803",
+  accent: "#4e149c",
+  secondaryAccent: "#7a26eb",
+  tertiaryAccent: "#8d3afc",
 };
 
 const modifiedDarkTheme = {
@@ -29,7 +32,9 @@ const modifiedDarkTheme = {
   overlay: "rgba(0, 0, 0, 0.8)",
   tameOverlay: "rgba(0, 0, 0, 0.5)",
   orangeRed: "#fc2803",
-  accent: "#4e149c",
+  accent: "#330670",
+  secondaryAccent: "#4e149c",
+  tertiaryAccent: "#8d3afc",
 };
 
 // Extend the existing themes with the modified light theme

@@ -95,7 +95,9 @@ export default function AreaChart({ data, filter }: AreaChartProps) {
 
   const labelColor = theme.color.val;
   const lineColor = scheme === "dark" ? theme.gray2Dark.val : theme.gray4Light.val;
-  const gradientColors = ["#007aff", "rgba(0,122,255,0.5)"];
+  const gradientColors = scheme === "dark"
+    ? [theme.accent.val, theme.secondaryAccent.val+"70", theme.tertiaryAccent.val+"30"]
+    : [theme.accent.val, theme.secondaryAccent.val+"50"];
   const xTickCount = increment === "date" ? 30 : increment === "month" ? 30 : 100;
   const min = useMemo(() => Math.min(...groupedData.map(item => item.y)), [groupedData]);
   const max = useMemo(() => Math.max(...groupedData.map(item => item.y)), [groupedData]);
@@ -145,7 +147,7 @@ export default function AreaChart({ data, filter }: AreaChartProps) {
             />
             <Line
               points={points.y}
-              color="#007aff"
+              color={theme.accent.val+"40"}
               strokeWidth={3}
               animate={{ type: "timing", duration: 500 }}
             />
@@ -169,5 +171,6 @@ export default function AreaChart({ data, filter }: AreaChartProps) {
 }
 
 function ToolTip({ x, y }: { x: SharedValue<number>; y: SharedValue<number> }) {
-  return <Circle cx={x} cy={y} r={8} color="#004cff" opacity={0.8} />;
+  const theme = useTheme();
+  return <Circle cx={x} cy={y} r={8} color={theme.secondaryAccent.val} opacity={0.8} />;
 }

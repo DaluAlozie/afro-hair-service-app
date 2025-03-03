@@ -4,9 +4,11 @@ import {
   View,
   TouchableWithoutFeedback,
   StyleSheet,
+  Platform,
 } from 'react-native';
 import { useTheme } from 'tamagui';
 import { UseThemeResult } from '@tamagui/core';
+import CustomModal from './CustomModal';
 
 interface ModalProps {
   children: React.ReactNode;
@@ -19,6 +21,12 @@ export const Modal: React.FC<ModalProps> = ({ children, open, setOpen }) => {
   const styles = makeStyles(theme);
 
   return (
+    <>
+    { Platform.OS === "android" ?
+    <CustomModal visible={open} onRequestClose={() => setOpen(false)}>
+      {children}
+    </CustomModal>
+    :
     <RNModal
       transparent={true}
       visible={open}
@@ -42,6 +50,8 @@ export const Modal: React.FC<ModalProps> = ({ children, open, setOpen }) => {
         </View>
       </TouchableWithoutFeedback>
     </RNModal>
+    }
+    </>
   );
 };
 

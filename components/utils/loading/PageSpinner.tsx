@@ -15,12 +15,12 @@ export default function PageSpinner() {
             // position="absolute"
             enterStyle={{
                 opacity: 0,
-                scale: 0.5,
+                scale: 1,
             }}
             size='large'
             exitStyle={{
                 opacity: 0,
-                scale: 0.5,
+                scale: 1,
             }}
         />
         </AnimatePresence>

@@ -54,18 +54,14 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
             <Form alignItems="center" backgroundColor={theme.background}>
               <YStack
                 alignItems="stretch"
-                justifyContent="flex-start"
-                marginTop="$14"
+                justifyContent="space-between"
                 minWidth="60%"
                 width="100%"
                 maxWidth="100%"
                 height="100%"
-                gap="$5"
                 padding="$7"
-                paddingVertical="$6"
                 $gtSm={{
-                paddingVertical: '$4',
-                maxWidth: 400,
+                 maxWidth: 400,
                 }}
               >
                 <YStack gap="$3" width={"100%"}>

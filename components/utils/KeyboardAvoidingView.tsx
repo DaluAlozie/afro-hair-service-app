@@ -12,11 +12,19 @@ export default function KeyboardAvoidingView({ children, sheet = false }: { chil
         >
           {
           sheet ? (
-            <Sheet.ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" keyboardDismissMode="interactive">
+            <Sheet.ScrollView
+              contentContainerStyle={{ minHeight: '100%' }}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="always"
+              keyboardDismissMode="interactive">
                 {children}
             </Sheet.ScrollView>
           ) :
-            <ScrollView showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="always" keyboardDismissMode="interactive">
+            <ScrollView
+              contentContainerStyle={{ minHeight: '100%' }}
+              showsVerticalScrollIndicator={false}
+              keyboardShouldPersistTaps="always"
+              keyboardDismissMode="interactive">
               {children}
             </ScrollView>
           }

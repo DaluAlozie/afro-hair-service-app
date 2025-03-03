@@ -19,7 +19,7 @@ export default function useAvailableTimeSlots(businessId: number | undefined, du
         const slots = [] as Date[];
         // Find the availability slot that matches the selected date
         const selectedDate = availability.find(
-        (slot) => getDate(slot.from)?.getTime() === getDate(date)?.getTime()
+            (slot) => getDate(slot.from)?.getTime() === getDate(date)?.getTime()
         );
         // If no matching date is found, return empty slots
         if (selectedDate === undefined) return slots;
@@ -32,8 +32,8 @@ export default function useAvailableTimeSlots(businessId: number | undefined, du
         // Generate time slots in 5-minute intervals
         let currentTime = new Date(from);
         while (currentTime.getTime() <= to.getTime()) {
-        slots.push(new Date(currentTime));
-        currentTime = new Date(currentTime.getTime() + 5 * 60000); // Increment by 15 minutes
+            slots.push(new Date(currentTime));
+            currentTime = new Date(currentTime.getTime() + 5 * 60000); // Increment by 15 minutes
         }
         return slots;
     }, [date, availability]);

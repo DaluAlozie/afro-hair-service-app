@@ -30,12 +30,13 @@ export const Indicator = ({ activeLabelRef }: IndicatorProps) => {
     const animatedStyle = useAnimatedStyle(() => ({
         width: width.value,          // Animate width dynamically
         marginLeft: marginLeft.value, // Animate left position dynamically
-        height: 2,
-        backgroundColor: theme.color.val,
+        height: 3,
+        borderRadius: 100,
+        backgroundColor: theme.secondaryAccent.val,
     }));
 
     return (
-        <View style={{ height: 2, width: "100%" }}>
+        <View style={{ height: 3, width: "100%" }}>
             <Animated.View style={animatedStyle} />
         </View>
     );

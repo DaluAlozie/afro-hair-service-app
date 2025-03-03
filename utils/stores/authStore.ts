@@ -70,7 +70,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       const userInfo = await GoogleSignin.signIn()
 
       if (!(userInfo?.data?.idToken)) {
-        console.error('No idToken');
+        console.log('No idToken');
         return {};
       }
       const { data: { user }, error } = await supabase.auth.signInWithIdToken({
@@ -96,7 +96,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
       })
       // Sign in via Supabase Auth.
       if (!credential.identityToken) {
-        console.error('No identityToken');
+        console.log('No identityToken');
         return {};
       };
       const { error, data: { user }, } = await supabase.auth.signInWithIdToken({

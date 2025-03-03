@@ -4,14 +4,13 @@ import * as SplashScreen from 'expo-splash-screen';
 import Entypo from '@expo/vector-icons/Entypo'
 import React, { useCallback, useEffect, useState } from 'react';
 import 'react-native-reanimated';
-import { TamaguiProvider } from 'tamagui';
+import { TamaguiProvider, View } from 'tamagui';
 import config from '../tamagui.config'
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { useAuthStore } from '@/utils/stores/authStore';
 
 import { ToastProvider, ToastViewport } from '@tamagui/toast'
-import { ThemedView } from '@/components/utils';
 import { supabaseClient } from '@/utils/auth/supabase';
 import { CurrentToast } from '@/components/utils/Toast/CurrentToast';
 import { Colors } from '@/constants/Colors';
@@ -108,7 +107,7 @@ export default function RootLayout() {
         if (router.canDismiss()){
           router.dismissAll();
         }
-        router.replace("/login");
+        router.replace("/landing");
         await new Promise(resolve => setTimeout(resolve, animationDuration*1.5));
       }
       SplashScreen.hide();
@@ -121,16 +120,16 @@ export default function RootLayout() {
   if (!appIsReady) return null;
 
   return (
-    <TamaguiProvider config={config} defaultTheme={colorScheme!}>
+    <TamaguiProvider config={config} defaultTheme={colorScheme ?? 'light'}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <ToastProvider swipeDirection="up" duration={5000}>
           <QueryClientProvider client={queryClient}>
             <StatusBar style={colorScheme === 'dark' ? "light" : "dark"}/>
-            <ThemedView onLayout={onLayoutRootView} darkColor={Colors.dark.background} lightColor={Colors.light.background} style={{ height: '100%', width: '100%' }}>
+            <View onLayout={onLayoutRootView} style={{ height: '100%', width: '100%' }} backgroundColor={"$background"}>
                 <CurrentToast />
                 <ToastViewport flexDirection="column-reverse" top={top} left={left} right={right} />
                 <AppStack/>
-            </ThemedView>
+            </View>
           </QueryClientProvider>
         </ToastProvider>
       </ThemeProvider>

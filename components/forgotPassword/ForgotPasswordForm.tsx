@@ -52,8 +52,8 @@ export function ForgotPasswordForm() {
   },[]);
 
   return (
-    <DismissKeyboard>
-      <KeyboardAvoidingView>
+    <KeyboardAvoidingView>
+      <DismissKeyboard>
         <Form alignItems='center' minHeight={height*0.9}>
           <YStack
             alignItems="stretch"
@@ -87,8 +87,8 @@ export function ForgotPasswordForm() {
             <SignInLink/>
           </YStack>
         </Form>
-      </KeyboardAvoidingView>
-    </DismissKeyboard>
+      </DismissKeyboard>
+    </KeyboardAvoidingView>
   )
 }
 

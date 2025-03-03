@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ScrollView, View, useTheme } from 'tamagui';
-import { RefreshControl, StyleSheet, Text } from 'react-native';
+import { RefreshControl, StyleSheet } from 'react-native';
 import { UseThemeResult } from '@tamagui/core';
 import ViewCalendar from '@/components/business/availability/ViewCalendar';
-import { formatDate } from '@/components/business/availability/utils';
 import { InputError, Picker } from '@/components/utils/form/inputs';
 import { Controller, useForm } from 'react-hook-form';
 import { useBookingStore } from '@/utils/stores/bookingStore';
@@ -90,16 +89,6 @@ export default function SelectTime() {
           control={control}
           render={({ field: { onChange } }) => (
             <View>
-              {/* Header section displaying the selected date or a prompt to select a date */}
-              <View height={80} justifyContent="center" marginTop={1} marginBottom={20}>
-                {date ? (
-                  <Text style={styles.heading}>{formatDate(date)}</Text>
-                ) : (
-                  <Text style={{ fontSize: 25, fontWeight: 700, color: theme.color.val, textAlign: 'center' }}>
-                    Select a Date
-                  </Text>
-                )}
-              </View>
               <ViewCalendar
                 date={date}
                 setDate={onChange}
@@ -128,7 +117,7 @@ export default function SelectTime() {
           />
           {errors.time && <InputError>{errors.time.message}</InputError>}
         </View>
-        <View>
+        <View marginTop={30}>
           <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting} disabled={!date || !time}>
             Continue
           </SubmitButton>

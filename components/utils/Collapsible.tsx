@@ -10,7 +10,7 @@ import { ThemedView } from '@/components/utils/ThemedView';
 import { IconSymbol } from '@/components/utils/ui/IconSymbol';
 import { Colors } from '@/constants/Colors';
 import Pressable from './Pressable';
-import { useTheme } from 'tamagui';
+import { useTheme, XStack } from 'tamagui';
 
 export function Collapsible({
   children,
@@ -61,15 +61,17 @@ export function Collapsible({
         scale={0.999}
         activeOpacity={0.8}
       >
+        <XStack width={"100%"} justifyContent={"space-between"} alignItems={"center"}>
         {header}
-        <Animated.View style={rotateAnimatedStyle}>
-          <IconSymbol
-            name="chevron.right"
-            size={18}
-            weight="medium"
-            color={scheme === 'light' ? Colors.light.icon : Colors.dark.icon}
-          />
-        </Animated.View>
+          <Animated.View style={rotateAnimatedStyle}>
+            <IconSymbol
+              name="chevron.right"
+              size={18}
+              weight="medium"
+              color={scheme === 'light' ? Colors.light.icon : Colors.dark.icon}
+            />
+          </Animated.View>
+        </XStack>
       </Pressable>
 
       {/* Animated Content */}

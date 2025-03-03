@@ -10,7 +10,7 @@ export default function EditVariantPriceModal(
 ) {
   return (
     <Modal open={open} setOpen={setOpen}>
-        <View style={{ height: "auto", width: "90%"}}>
+        <View style={{ width: "90%"}}>
             <EditVariantPriceForm
                 serviceId={serviceId} serviceOptionId={serviceOptionId} variantId={variantId} close={() => setOpen(false)} />
         </View>

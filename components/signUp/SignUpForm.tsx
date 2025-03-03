@@ -61,8 +61,8 @@ export function SignUpForm() {
   },[]);
 
   return (
-    <DismissKeyboard>
-      <KeyboardAvoidingView>
+    <KeyboardAvoidingView>
+      <DismissKeyboard>
         <Form alignItems='center' backgroundColor={theme.background.val}>
           <YStack
             alignItems="stretch"
@@ -137,8 +137,8 @@ export function SignUpForm() {
             <SignInLink />
           </YStack>
         </Form>
-      </KeyboardAvoidingView>
-    </DismissKeyboard>
+        </DismissKeyboard>
+    </KeyboardAvoidingView>
   )
 }
 

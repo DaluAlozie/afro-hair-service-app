@@ -1,9 +1,8 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { ScrollView, View, useTheme } from 'tamagui';
-import { RefreshControl, StyleSheet, Text } from 'react-native';
+import { RefreshControl, StyleSheet } from 'react-native';
 import { UseThemeResult } from '@tamagui/core';
 import ViewCalendar from '@/components/business/availability/ViewCalendar';
-import { formatDate } from '@/components/business/availability/utils';
 import { InputError, Picker } from '@/components/utils/form/inputs';
 import { Controller, useForm } from 'react-hook-form';
 import SubmitButton from '@/components/utils/form/SubmitButton';
@@ -56,7 +55,6 @@ export default function rescheduleBooking() {
   const date = watch("date")
   const time = watch("time")
 
-  
   const rescheduleAppointment = useCustomerStore(state => state.rescheduleAppointment);
   const { sendPushNotification } = usePushNotifications();
 
@@ -143,16 +141,6 @@ const onSubmit = useCallback(async (data: { date: Date, time: number }) => {
           control={control}
           render={({ field: { onChange } }) => (
             <View>
-              {/* Header section displaying the selected date or a prompt to select a date */}
-              <View height={80} justifyContent="center" marginTop={1} marginBottom={20}>
-                {date ? (
-                  <Text style={styles.heading}>{formatDate(date)}</Text>
-                ) : (
-                  <Text style={{ fontSize: 25, fontWeight: 700, color: theme.color.val, textAlign: 'center' }}>
-                    Select a Date
-                  </Text>
-                )}
-              </View>
               <ViewCalendar
                 date={date}
                 setDate={onChange}
@@ -186,7 +174,7 @@ const onSubmit = useCallback(async (data: { date: Date, time: number }) => {
             Reschedule Appointment
           </SubmitButton>
         </View>
-        <View height={200}/>
+        {/* <View height={200}/> */}
       </ScrollView>
     </View>
   );
@@ -200,7 +188,9 @@ const makeStyles = (theme: UseThemeResult) =>
       maxWidth: 600,
       backgroundColor: theme.background.val,
       paddingHorizontal: 20,
+      justifyContent: 'space-between',
       height: "auto",
+      minHeight: '90%',
       alignSelf: 'center',
     },
     heading: {

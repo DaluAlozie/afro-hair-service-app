@@ -22,7 +22,6 @@ export default function EditProfilePictureModal(
     { open: boolean, setOpen: (value: boolean) => void }
 ) {
     const theme = useTheme();
-    const inverseTheme = useTheme({ inverse: true });
     const styles = makeStyles();
     const { width } = useWindowDimensions();
     const size = normalise(width);
@@ -152,10 +151,11 @@ export default function EditProfilePictureModal(
                             <SubmitButton
                                 onPress={upload}
                                 isSubmitting={isUploading}
+                                style={{ backgroundColor: theme.white1.val }}
                             >
                                 <XStack gap={10}>
-                                    <Text color={inverseTheme.color.val} marginTop={2}>Upload</Text>
-                                    <FontAwesome6 name="upload" size={20} color={inverseTheme.color.val} />
+                                    <Text color={theme.black1.val} marginTop={2}>Upload</Text>
+                                    <FontAwesome6 name="upload" size={20} color={theme.black1.val} />
                                 </XStack>
                             </SubmitButton>
                         </View>

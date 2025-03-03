@@ -35,8 +35,9 @@ export default function AppStack() {
              : <ThemedText></ThemedText>)
         }}>
             {/* Unprotected Routes */}
-            <Stack.Screen name="login" options={{ title: 'Login' }}
-            />
+            <Stack.Screen name="landing" options={{ title: 'Landing', headerShown: false }} />
+
+            <Stack.Screen name="login" options={{ title: 'Login' }}/>
             <Stack.Screen name="signUp" options={{ title: 'Sign up', }}/>
             <Stack.Screen name="verifyEmail" options={{ title: 'Verify Email' }}/>
             <Stack.Screen name="forgotPassword" options={{ title: 'Forgot Password' }}/>

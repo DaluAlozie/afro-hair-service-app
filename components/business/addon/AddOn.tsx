@@ -67,7 +67,12 @@ export default function AddOn({ id, name, price, duration, enabled, service_id, 
       </XStack>
       <Separator />
       <XStack style={styles.section}>
-        <Text style={styles.title}>Enabled</Text>
+        <View>
+          <Text style={styles.title}>Enabled</Text>
+          <Text style={styles.enabledText}>
+            {enabled ? "Yes" : "No"}
+          </Text>
+        </View>
         <Switch
           defaultChecked={enabled}
           onCheckedChange={
@@ -80,7 +85,7 @@ export default function AddOn({ id, name, price, duration, enabled, service_id, 
         </Switch>
       </XStack>
       <Separator />
-      <View justifyContent='center' style={styles.section}>
+      <View justifyContent='center' style={styles.deleteSection}>
         <Pressable
           activeOpacity={0.85} scale={0.99} onPress={deleteAddOn} style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
           <Text color={theme.danger.val} fontSize={16}>

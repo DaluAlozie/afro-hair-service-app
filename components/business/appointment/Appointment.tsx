@@ -119,7 +119,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
           )}
         </View>
       </XStack>
-      { !appointment.cancelled && (
+      { !appointment.cancelled && !hasPast(appointment.start_time)  && (
       <XStack height={"15%"} width={"100%"} justifyContent="space-between" alignItems="flex-end" marginTop={10}>
         <BusinessRescheduleButton
           appointmentId={summary.id}
@@ -153,12 +153,17 @@ const makeStyles = (theme: UseThemeResult) =>
   StyleSheet.create({
     container: {
       width: '95%',
-      backgroundColor: theme.section.val,
+      backgroundColor: theme.background.val,
       marginBottom: 50,
       marginTop: 30,
       padding: 30,
       borderRadius: 10,
       justifyContent: 'space-between',
+      borderLeftWidth: 10,
+      borderLeftColor: theme.accent.val,
+      borderColor: theme.accent.val+"10",
+      borderTopLeftRadius: 20,
+      borderBottomLeftRadius: 20,
     },
     agenda: {
       backgroundColor: theme.background.val,
