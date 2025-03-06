@@ -38,7 +38,7 @@ const BusinessSearch = () => {
   const theme = useTheme();
   return (
     <XStack gap={10} height={60}>
-    <View width={"90%"}>
+    <View width={"93%"}>
       <SearchBar
         input={searchInput}
         setInput={(val) => {
@@ -138,6 +138,7 @@ const Results = () => {
   return (
     <View flex={1}>
       <SortByModal open={open} setOpen={setOpen}/>
+      <BusinessSearch />
       <FlashList
         data={filteredBusinesses}
         keyExtractor={(item) => item[0].id.toString()}
@@ -148,7 +149,6 @@ const Results = () => {
         ListHeaderComponent={() => (
           <View style={{ paddingTop: 10 }}>
             {/* Space below sticky search */}
-            <BusinessSearch />
             <SelectLocation />
             <SortByButton setOpen={setOpen} />
             <RNText
@@ -261,7 +261,7 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
       alignItems: 'center',
       flexDirection: 'row',
       gap: 5,
-      width: 200,
+      width: 235,
       height: 50,
       backgroundColor: theme.accent.val,
       padding: 10,

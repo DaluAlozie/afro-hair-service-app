@@ -114,7 +114,7 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
         alignItems: 'center',
     },
     tagText: {
-        color: theme.white1.val,
+        color: theme.color.val,
         justifyContent: 'center',
         alignItems: 'center',
         height: "auto",

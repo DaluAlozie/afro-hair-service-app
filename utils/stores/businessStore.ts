@@ -4,7 +4,7 @@ import {
     AddOn,
     Appointment,
     Service,
-    ServiceOption,
+    Style,
     Location,
     ServiceLocation,
     Review,
@@ -62,10 +62,10 @@ export interface BusinessStore {
     loadAvailability: () => Promise<BusinessProps>,
     loadReviews: () => Promise<BusinessProps>,
     loadServiceLocations: (serviceId: number) => Promise<BusinessProps>,
-    loadServiceOptions: (serviceId: number) => Promise<BusinessProps>,
-    loadAddOns: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
-    loadVariants: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
-    loadCustomizableOptions: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
+    loadStyles: (serviceId: number) => Promise<BusinessProps>,
+    loadAddOns: (serviceId: number, styleId: number) => Promise<BusinessProps>,
+    loadVariants: (serviceId: number, styleId: number) => Promise<BusinessProps>,
+    loadCustomizableOptions: (serviceId: number, styleId: number) => Promise<BusinessProps>,
     addService: (
         name: string,
         description: string,
@@ -84,7 +84,7 @@ export interface BusinessStore {
         longitude: number,
         latitude: number
     ) => Promise<BusinessProps>
-    addServiceOption: (
+    addStyle: (
         name: string,
         description: string,
         enabled: boolean,
@@ -99,7 +99,7 @@ export interface BusinessStore {
         price: number,
         duration: number,
         enabled: boolean,
-        serviceOptionId: number,
+        styleId: number,
         serviceId: number,
     ) => Promise<BusinessProps>,
     addVariant: (
@@ -107,7 +107,7 @@ export interface BusinessStore {
         price: number,
         duration: number,
         enabled: boolean,
-        serviceOptionId: number,
+        styleId: number,
         serviceId: number,
     ) => Promise<BusinessProps>,
     addCustomizableOption: (
@@ -115,17 +115,17 @@ export interface BusinessStore {
         type: CustomizableOptionType,
         lower_bound: number | null,
         upper_bound: number | null,
-        serviceOptionId: number,
+        styleId: number,
         serviceId: number,
     ) => Promise<BusinessProps>,
     removeService: (serviceId: number) => Promise<BusinessProps>,
     removeAvailability: (availabilityIds: number[]) => Promise<BusinessProps>,
     removeBusinessLocation: (locationId: number) => Promise<BusinessProps>,
     removeServiceLocation: (serviceId: number, locationId: number) => Promise<BusinessProps>
-    removeServiceOption: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>,
-    removeAddOn: (serviceId: number, serviceOptionId: number, addOnId: number) => Promise<BusinessProps>
-    removeVariant: (serviceId: number, serviceOptionId: number, variantId: number) => Promise<BusinessProps>
-    removeCustomizableOption: (serviceId: number, serviceOptionId: number, customizableOptionId: number) => Promise<BusinessProps>
+    removeStyle: (serviceId: number, styleId: number) => Promise<BusinessProps>,
+    removeAddOn: (serviceId: number, styleId: number, addOnId: number) => Promise<BusinessProps>
+    removeVariant: (serviceId: number, styleId: number, variantId: number) => Promise<BusinessProps>
+    removeCustomizableOption: (serviceId: number, styleId: number, customizableOptionId: number) => Promise<BusinessProps>
     rescheduleAppointment: (appointmentId: number, newStartTime: Date, newEndTime: Date) => Promise<BusinessProps>,
     cancelAppointment: (appointmentId: number) => Promise<BusinessProps>
     editBusinessName: (newName: string) => Promise<BusinessProps>
@@ -137,20 +137,20 @@ export interface BusinessStore {
     editServiceName: (serviceId: number, newName: string) => Promise<BusinessProps>
     editAvailability: (availabilityId: number, newAvailability: { from: Date, to: Date }) => Promise<BusinessProps>
     editServiceDescription: (serviceId: number, newDescription: string) => Promise<BusinessProps>
-    editVariantPrice: (serviceId: number, serviceOptionId: number, variantId: number, newCost: number) => Promise<BusinessProps>
-    editAddOnPrice: (serviceId: number, serviceOptionId: number, addOnId: number, newCost: number) => Promise<BusinessProps>
+    editVariantPrice: (serviceId: number, styleId: number, variantId: number, newCost: number) => Promise<BusinessProps>
+    editAddOnPrice: (serviceId: number, styleId: number, addOnId: number, newCost: number) => Promise<BusinessProps>
     activateBusiness: () => Promise<BusinessProps>
     deactivateBusiness: () => Promise<BusinessProps>
     enableService: (serviceId: number) => Promise<BusinessProps>
     disableService: (serviceId: number) => Promise<BusinessProps>
     enableLocation: (locationId: number) => Promise<BusinessProps>
     disableLocation: (locationId: number) => Promise<BusinessProps>
-    enableServiceOption: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>
-    disableServiceOption: (serviceId: number, serviceOptionId: number) => Promise<BusinessProps>
-    enableVariant: (serviceId: number, serviceOptionId: number, variantId: number) => Promise<BusinessProps>
-    disableVariant: (serviceId: number, serviceOptionId: number, variantId: number) => Promise<BusinessProps>
-    enableAddOn: (serviceId: number, serviceOptionId: number, addOnId: number) => Promise<BusinessProps>
-    disableAddOn: (serviceId: number, serviceOptionId: number, addOnId: number) => Promise<BusinessProps>
+    enableStyle: (serviceId: number, styleId: number) => Promise<BusinessProps>
+    disableStyle: (serviceId: number, styleId: number) => Promise<BusinessProps>
+    enableVariant: (serviceId: number, styleId: number, variantId: number) => Promise<BusinessProps>
+    disableVariant: (serviceId: number, styleId: number, variantId: number) => Promise<BusinessProps>
+    enableAddOn: (serviceId: number, styleId: number, addOnId: number) => Promise<BusinessProps>
+    disableAddOn: (serviceId: number, styleId: number, addOnId: number) => Promise<BusinessProps>
 }
 
 const initialState = {
@@ -236,16 +236,16 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
 
             await get().loadServices();
             const serviceIds = Array.from(get().services.keys());
-            // Load service options and add-ons for each service
+            // Load styles and add-ons for each service
             for (const id of serviceIds) {
                 await get().loadServiceLocations(id);
-                await get().loadServiceOptions(id);
-                const serviceOptionIds = Array.from(get().services.get(id)?.service_options.keys() as IterableIterator<number>);
-                // Load add-ons for each service option
-                for (const serviceOptionId of serviceOptionIds) {
-                    await get().loadAddOns(id, serviceOptionId);
-                    await get().loadVariants(id, serviceOptionId);
-                    await get().loadCustomizableOptions(id, serviceOptionId);
+                await get().loadStyles(id);
+                const styleIds = Array.from(get().services.get(id)?.styles.keys() as IterableIterator<number>);
+                // Load add-ons for each style
+                for (const styleId of styleIds) {
+                    await get().loadAddOns(id, styleId);
+                    await get().loadVariants(id, styleId);
+                    await get().loadCustomizableOptions(id, styleId);
                 }
             }
             set({ loadingServices: false });
@@ -467,26 +467,26 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         set({ appointments })
         return {};
     },
-    loadServiceOptions: async (serviceId: number) => {
+    loadStyles: async (serviceId: number) => {
         const supabase = await supabaseClient;
         const { data, error } = await supabase
-            .from('ServiceOption')
+            .from('Style')
             .select('*')
             .eq('service_id', serviceId)
         if (error) {
             throw { error };
         }
-        const serviceOptions = new Map<number, ServiceOption>()
-        data?.forEach((serviceOption: ServiceOption) => {
-            serviceOptions.set(
-                serviceOption.id, {...serviceOption, addOns: new Map<number, AddOn>(), variants: new Map<number, Variant>()}
+        const styles = new Map<number, Style>()
+        data?.forEach((style: Style) => {
+            styles.set(
+                style.id, {...style, addOns: new Map<number, AddOn>(), variants: new Map<number, Variant>()}
             )
         })
         if (error) {
             throw { error };
         }
         const service = get().services.get(serviceId) as Service;
-        const newService = { ...service, service_options: serviceOptions } as Service;
+        const newService = { ...service, styles: styles } as Service;
 
         set((state) => ({
             services: new Map(state.services).set(serviceId, newService)
@@ -514,12 +514,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }));
         return {};
     },
-    loadAddOns: async (serviceId: number, serviceOptionId: number) => {
+    loadAddOns: async (serviceId: number, styleId: number) => {
         const supabase = await supabaseClient;
         const { data, error } = await supabase
             .from('AddOn')
             .select('*')
-            .eq('service_option_id', serviceOptionId)
+            .eq('style_id', styleId)
         if (error) {
             throw { error };
         }
@@ -528,19 +528,19 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
             addOns.set(addOn.id, {...addOn, service_id: serviceId})
         })
         const service = get().services.get(serviceId) as Service;
-        const serviceOption = service.service_options.get(serviceOptionId) as ServiceOption;
-        serviceOption.addOns = addOns;
+        const style = service.styles.get(styleId) as Style;
+        style.addOns = addOns;
         set((state) => ({
             services: new Map(state.services).set(service.id, service)
         }));
         return {};
     },
-    loadVariants: async (serviceId: number, serviceOptionId: number) => {
+    loadVariants: async (serviceId: number, styleId: number) => {
         const supabase = await supabaseClient;
         const { data, error } = await supabase
             .from('Variant')
             .select('*')
-            .eq('service_option_id', serviceOptionId)
+            .eq('style_id', styleId)
         if (error) {
             throw { error };
         }
@@ -549,19 +549,19 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
             variants.set(variant.id, {...variant, service_id: serviceId})
         })
         const service = get().services.get(serviceId) as Service;
-        const serviceOption = service.service_options.get(serviceOptionId) as ServiceOption;
-        serviceOption.variants = variants;
+        const style = service.styles.get(styleId) as Style;
+        style.variants = variants;
         set((state) => ({
             services: new Map(state.services).set(service.id, service)
         }));
         return {};
     },
-    loadCustomizableOptions: async (serviceId: number, serviceOptionId: number) => {
+    loadCustomizableOptions: async (serviceId: number, styleId: number) => {
         const supabase = await supabaseClient;
         const { data, error } = await supabase
             .from('CustomizableOption')
             .select('*')
-            .eq('service_option_id', serviceOptionId)
+            .eq('style_id', styleId)
         if (error) {
             throw { error };
         }
@@ -570,8 +570,8 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
             customizableOptions.set(customizableOption.id, {...customizableOption, service_id: serviceId})
         })
         const service = get().services.get(serviceId) as Service;
-        const serviceOption = service.service_options.get(serviceOptionId) as ServiceOption;
-        serviceOption.customizableOptions = customizableOptions;
+        const style = service.styles.get(styleId) as Style;
+        style.customizableOptions = customizableOptions;
         set((state) => ({
             services: new Map(state.services).set(service.id, service)
         }));
@@ -596,7 +596,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
             name: data.name,
             description: data.description,
             enabled: data.enabled,
-            service_options: new Map<number, ServiceOption>(),
+            styles: new Map<number, Style>(),
             locations: new Map<number, Location>()
             ,
         } as Service
@@ -667,7 +667,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }));
         return {};
      },
-    addServiceOption: async (
+    addStyle: async (
         name: string,
         description: string,
         enabled: boolean,
@@ -675,7 +675,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
     ) => {
         const supabase = await supabaseClient;
         const { data, error } = await supabase
-            .from('ServiceOption')
+            .from('Style')
             .insert([{
                 name,
                 description,
@@ -691,7 +691,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }
         const service = get().services.get(serviceId);
         if (!service) return {};
-        service.service_options.set(data.id, {
+        service.styles.set(data.id, {
             ...data,
             addOns: new Map<number, AddOn>(),
             variants: new Map<number, Variant>(),
@@ -730,7 +730,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         price: number,
         duration: number,
         enabled: boolean,
-        serviceOptionId: number,
+        styleId: number,
         serviceId: number,
     ) => {
         const supabase = await supabaseClient;
@@ -741,7 +741,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 price,
                 duration,
                 enabled,
-                service_option_id: serviceOptionId
+                style_id: styleId
             }])
             .select()
             .limit(1)
@@ -752,7 +752,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }
         const service = get().services.get(serviceId) as Service;
         if (!service) return {};
-        service.service_options.get(serviceOptionId)?.addOns.set(data.id, {...data, service_id: serviceId});
+        service.styles.get(styleId)?.addOns.set(data.id, {...data, service_id: serviceId});
         set((state) => ({
             services: new Map(state.services).set(serviceId, service)
         }));
@@ -763,7 +763,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         price: number,
         duration: number,
         enabled: boolean,
-        serviceOptionId: number,
+        styleId: number,
         serviceId: number,
     ) => {
         const supabase = await supabaseClient;
@@ -774,7 +774,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 price,
                 duration,
                 enabled,
-                service_option_id: serviceOptionId
+                style_id: styleId
             }])
             .select()
             .limit(1)
@@ -785,7 +785,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }
         const service = get().services.get(serviceId);
         if (!service) return {};
-        service.service_options.get(serviceOptionId)?.variants.set(data.id, {...data, service_id: serviceId});
+        service.styles.get(styleId)?.variants.set(data.id, {...data, service_id: serviceId});
         return {};
     },
     addCustomizableOption: async (
@@ -793,7 +793,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         type: CustomizableOptionType,
         lower_bound: number | null,
         upper_bound: number | null,
-        serviceOptionId: number,
+        styleId: number,
         serviceId: number,
     ) => {
         const supabase = await supabaseClient;
@@ -804,7 +804,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
                 type,
                 lower_bound,
                 upper_bound,
-                service_option_id: serviceOptionId
+                style_id: styleId
             }])
             .select()
             .limit(1)
@@ -815,7 +815,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }
         const service = get().services.get(serviceId);
         if (!service) return {};
-        service.service_options.get(serviceOptionId)?.customizableOptions.set(data.id, {...data, service_id: serviceId});
+        service.styles.get(styleId)?.customizableOptions.set(data.id, {...data, service_id: serviceId});
         return {};
     },
     removeService: async (serviceId: number) => {
@@ -888,24 +888,24 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         });
         return {};
     },
-    removeServiceOption: async (serviceId: number, serviceOptionId: number) => {
+    removeStyle: async (serviceId: number, styleId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
-            .from('ServiceOption')
+            .from('Style')
             .delete()
-            .eq('id', serviceOptionId)
+            .eq('id', styleId)
         if (error) {
             return { error };
         }
         set((state) => {
             const service = state.services.get(serviceId) as Service;
-            service.service_options.delete(serviceOptionId);
+            service.styles.delete(styleId);
             const services = new Map(state.services).set(serviceId, service);
             return { services };
         });
         return {};
     },
-    removeAddOn: async (serviceId: number, serviceOptionId: number, addOnId: number) => {
+    removeAddOn: async (serviceId: number, styleId: number, addOnId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('AddOn')
@@ -917,13 +917,13 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         set((state) => {
             const service = state.services.get(serviceId);
             if (!service) return {};
-            service.service_options.get(serviceOptionId)?.addOns.delete(addOnId);
+            service.styles.get(styleId)?.addOns.delete(addOnId);
             const services = new Map(state.services).set(serviceId, service);
             return { services };
         });
         return {};
     },
-    removeVariant: async (serviceId: number, serviceOptionId: number, variantId: number) => {
+    removeVariant: async (serviceId: number, styleId: number, variantId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('Variant')
@@ -935,12 +935,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         set((state) => {
             const service = state.services.get(serviceId);
             if (!service) return {};
-            service.service_options.get(serviceOptionId)?.variants.delete(variantId);
+            service.styles.get(styleId)?.variants.delete(variantId);
             return { services: new Map(state.services).set(serviceId, service) };
         });
         return {};
     },
-    removeCustomizableOption: async (serviceId: number, serviceOptionId: number, customizableOptionId: number) => {
+    removeCustomizableOption: async (serviceId: number, styleId: number, customizableOptionId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('CustomizableOption')
@@ -952,7 +952,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         set((state) => {
             const service = state.services.get(serviceId);
             if (!service) return {};
-            service.service_options.get(serviceOptionId)?.customizableOptions.delete(customizableOptionId);
+            service.styles.get(styleId)?.customizableOptions.delete(customizableOptionId);
             return { services: new Map(state.services).set(serviceId, service) };
         });
         return {};
@@ -1119,7 +1119,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }));
         return {};
     },
-    editVariantPrice: async (serviceId: number, serviceOptionId: number, variantId: number, newPrice: number) => {
+    editVariantPrice: async (serviceId: number, styleId: number, variantId: number, newPrice: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('Variant')
@@ -1128,12 +1128,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         if (error) {
             return { error };
         }
-        const variant = get().services.get(serviceId)?.service_options.get(serviceOptionId)?.variants.get(variantId);
+        const variant = get().services.get(serviceId)?.styles.get(styleId)?.variants.get(variantId);
         if (!variant) return {};
         variant.price = newPrice;
         return {};
     },
-    editAddOnPrice: async (serviceId: number, serviceOptionId: number, addOnId: number, newPrice: number) => {
+    editAddOnPrice: async (serviceId: number, styleId: number, addOnId: number, newPrice: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('AddOn')
@@ -1144,7 +1144,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         }
         const service = get().services.get(serviceId);
         if (!service) return {};
-        const addOn = service.service_options.get(serviceOptionId)?.addOns.get(addOnId);
+        const addOn = service.styles.get(styleId)?.addOns.get(addOnId);
         if (!addOn) return {};
         addOn.price = newPrice;
         set((state) => ({
@@ -1238,35 +1238,35 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         location.enabled = false;
         return {};
     },
-    enableServiceOption: async (serviceId: number, serviceOptionId: number) => {
+    enableStyle: async (serviceId: number, styleId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
-            .from('ServiceOption')
+            .from('Style')
             .update({ enabled: true })
-            .eq('id', serviceOptionId)
+            .eq('id', styleId)
         if (error) {
             return { error };
         }
-        const serviceOption = get().services.get(serviceId)?.service_options.get(serviceOptionId);
-        if (!serviceOption) return {};
-        serviceOption.enabled = true;
+        const style = get().services.get(serviceId)?.styles.get(styleId);
+        if (!style) return {};
+        style.enabled = true;
         return {};
     },
-    disableServiceOption: async (serviceId: number, serviceOptionId: number) => {
+    disableStyle: async (serviceId: number, styleId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
-            .from('ServiceOption')
+            .from('Style')
             .update({ enabled: false })
-            .eq('id', serviceOptionId)
+            .eq('id', styleId)
         if (error) {
             return { error };
         }
-        const serviceOption = get().services.get(serviceId)?.service_options.get(serviceOptionId);
-        if (!serviceOption) return {};
-        serviceOption.enabled = false;
+        const style = get().services.get(serviceId)?.styles.get(styleId);
+        if (!style) return {};
+        style.enabled = false;
         return {};
     },
-    enableVariant: async (serviceId: number, serviceOptionId: number, variantId: number) => {
+    enableVariant: async (serviceId: number, styleId: number, variantId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('Variant')
@@ -1275,12 +1275,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         if (error) {
             return { error };
         }
-        const variant = get().services.get(serviceId)?.service_options.get(serviceOptionId)?.variants.get(variantId);
+        const variant = get().services.get(serviceId)?.styles.get(styleId)?.variants.get(variantId);
         if (!variant) return {};
         variant.enabled = true;
         return {};
     },
-    disableVariant: async (serviceId: number, serviceOptionId: number, variantId: number) => {
+    disableVariant: async (serviceId: number, styleId: number, variantId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('Variant')
@@ -1289,12 +1289,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         if (error) {
             return { error };
         }
-        const variant = get().services.get(serviceId)?.service_options.get(serviceOptionId)?.variants.get(variantId);
+        const variant = get().services.get(serviceId)?.styles.get(styleId)?.variants.get(variantId);
         if (!variant) return {};
         variant.enabled = false;
         return {};
     },
-    enableAddOn: async (serviceId: number, serviceOptionId: number, addOnId: number) => {
+    enableAddOn: async (serviceId: number, styleId: number, addOnId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('AddOn')
@@ -1303,12 +1303,12 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         if (error) {
             return { error };
         }
-        const addOn = get().services.get(serviceId)?.service_options.get(serviceOptionId)?.addOns.get(addOnId);
+        const addOn = get().services.get(serviceId)?.styles.get(styleId)?.addOns.get(addOnId);
         if (!addOn) return {};
         addOn.enabled = true;
         return {};
     },
-    disableAddOn: async (serviceId: number, serviceOptionId: number, addOnId: number) => {
+    disableAddOn: async (serviceId: number, styleId: number, addOnId: number) => {
         const supabase = await supabaseClient;
         const { error } = await supabase
             .from('AddOn')
@@ -1317,7 +1317,7 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         if (error) {
             return { error };
         }
-        const addOn = get().services.get(serviceId)?.service_options.get(serviceOptionId)?.addOns.get(addOnId);
+        const addOn = get().services.get(serviceId)?.styles.get(styleId)?.addOns.get(addOnId);
         if (!addOn) return {};
         addOn.enabled = false;
         return {};

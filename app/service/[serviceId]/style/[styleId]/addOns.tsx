@@ -11,7 +11,7 @@ import { makeContainerStyles } from '@/components/business/utils';
 import { AddButton, SectionTitle } from '../..';
 
 export default function AddOns() {
-  const { serviceId, serviceOptionId } = useLocalSearchParams();
+  const { serviceId, styleId } = useLocalSearchParams();
   const router = useRouter();
   const services = useBusinessStore((state) => state.services);
   const theme = useTheme();
@@ -22,7 +22,7 @@ export default function AddOns() {
       router.dismissTo('/(business)/services');
       return null;
     }
-    if (typeof serviceOptionId !== 'string' || isNaN(parseInt(serviceOptionId))) {
+    if (typeof styleId !== 'string' || isNaN(parseInt(styleId))) {
       router.dismissTo(`/service/${serviceId}/index`);
       return null;
     }
@@ -31,14 +31,14 @@ export default function AddOns() {
       router.dismissTo('/(business)/services');
       return null;
     }
-    const serviceOption = service.service_options.get(parseInt(serviceOptionId));
-    if (!serviceOption) {
+    const style = service.styles.get(parseInt(styleId));
+    if (!style) {
       router.dismissTo(`/service/${serviceId}/index`);
       return null;
     }
-  }, [serviceId, serviceOptionId]);
-  const serviceOption = services.get(parseInt(serviceId as string))?.service_options.get(parseInt(serviceOptionId as string));
-  const addOns = Array.from(serviceOption?.addOns.values() || []);
+  }, [serviceId, styleId]);
+  const style = services.get(parseInt(serviceId as string))?.styles.get(parseInt(styleId as string));
+  const addOns = Array.from(style?.addOns.values() || []);
     const  [open, setOpen] = useState(false);
     const  [addOnId, setAddOnId] = useState(-1);
 
@@ -48,11 +48,11 @@ export default function AddOns() {
     }
   return (
     <>
-      {serviceOption !== undefined && (
+      {style !== undefined && (
         <>
           <EditAddOnPriceModal
-            serviceId={serviceOption.service_id}
-            serviceOptionId={serviceOption.id}
+            serviceId={style.service_id}
+            styleId={style.id}
             variantId={addOnId}
             open={open}
             setOpen={setOpen}
@@ -64,9 +64,9 @@ export default function AddOns() {
             showsVerticalScrollIndicator={false}
           >
             <AddButton
-              href={`/service/${serviceId}/serviceOption/${serviceOptionId}/addAddOn`}
+              href={`/service/${serviceId}/style/${styleId}/addAddOn`}
               text="Add Add On" />
-            {serviceOption && (
+            {style && (
               <Collapsible defaultOpen={true} style={{ width: "100%" }}
               header={<SectionTitle title={"Add Ons"} />}
                 >

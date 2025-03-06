@@ -38,13 +38,13 @@ export const generateFakeData = (services: Service[]): [Appointment[], Map<numbe
       total_price: Math.floor(Math.random() * 50) + 50,
     } as Appointment);
 
-    const serviceOptions = Array.from(service.service_options?.values() || []).map((option) => option);
-    const serviceOption = serviceOptions[Math.floor(Math.random() * serviceOptions.length)];
-    // Generate a summary with random service and service option
+    const styles = Array.from(service.styles?.values() || []).map((option) => option);
+    const style = styles[Math.floor(Math.random() * styles.length)];
+    // Generate a summary with random service and style
     const summary = {
       id: id,
       service:service?.name,
-      service_option: serviceOption?.name
+      style: style?.name
     } as AppointmentSummary;
     summaries.set(id, summary);
     id++;
@@ -306,26 +306,26 @@ export const filterByService = (appointment: Appointment[], summaries: Map<numbe
 };
 
 /**
- * Filters appointments based on both service and service option.
+ * Filters appointments based on both service and style.
  *
  * @param appointment - Array of appointments.
  * @param summaries - Map of appointment summaries.
  * @param service - The service to filter by.
- * @param serviceOption - The specific service option.
+ * @param style - The specific style.
  * @returns A filtered array of appointments.
  */
-export const filterByServiceOption = (
+export const filterByStyle = (
   appointment: Appointment[],
   summaries: Map<number, AppointmentSummary>,
   service: string | undefined,
-  serviceOption: string | undefined
+  style: string | undefined
 ): Appointment[] => {
   if (!service) return appointment;
-  if (!serviceOption) return filterByService(appointment, summaries, service);
+  if (!style) return filterByService(appointment, summaries, service);
   return appointment.filter(
     (a) =>
       summaries.get(a.id)?.service === service &&
-      summaries.get(a.id)?.service_option === serviceOption
+      summaries.get(a.id)?.style === style
   );
 };
 
@@ -376,11 +376,11 @@ export const filterAppointments = (appointments: Appointment[], summaries: Map<n
     // Otherwise, filter by the range (in months)
     filteredData = filterByRange(filteredData, filter.range);
   }
-  // Filter further by service (and service option if specified)
+  // Filter further by service (and style if specified)
   if (filter.service && filter.service !== "all") {
     filteredData = filterByService(filteredData, summaries, filter.service);
-    if (filter.serviceOption && filter.serviceOption !== "all") {
-      filteredData = filterByServiceOption(filteredData, summaries, filter.service, filter.serviceOption);
+    if (filter.style && filter.style !== "all") {
+      filteredData = filterByStyle(filteredData, summaries, filter.service, filter.style);
     }
   }
   return filteredData;

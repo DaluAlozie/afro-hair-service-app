@@ -12,7 +12,7 @@ export interface AppointmentSummary {
   business: string,
   business_owner_id: string,
   service: string,
-  service_option: string,
+  style: string,
   variant: string,
   add_ons: string[],
   street_address: string,

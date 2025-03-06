@@ -237,7 +237,7 @@ const Service = (props: BusinessSummary) => {
         return null;
     }
     const services = props.services.join(', ');
-    const serviceStyles = props.service_options.join(', ');
+    const serviceStyles = props.styles.join(', ');
     return (
         <View marginTop={10} gap={10} width={"95%"}>
             <View width={"100%"}>

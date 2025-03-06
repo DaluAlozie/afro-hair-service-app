@@ -123,35 +123,35 @@ export default function AppStack() {
             <Stack.Screen name="service/[serviceId]/index" options={{
                 title: "Service",
             }} />
-            <Stack.Screen name="service/[serviceId]/addServiceOption" options={{
-                title: "Add Service Option",
+            <Stack.Screen name="service/[serviceId]/addStyle" options={{
+                title: "Add Style",
                 presentation: (Platform.OS === "ios" && Platform.isPad)? "card" : "modal",
                 gestureDirection: "vertical",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
             }} />
-            <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/variants" options={{
+            <Stack.Screen name="service/[serviceId]/style/[styleId]/variants" options={{
                 title: "Variants",
             }} />
-            <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/addVariant" options={{
+            <Stack.Screen name="service/[serviceId]/style/[styleId]/addVariant" options={{
                 title: "Add Variant",
                 presentation: (Platform.OS === "ios" && Platform.isPad)? "card": "modal",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
                 }} />
-            <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/addOns" options={{
+            <Stack.Screen name="service/[serviceId]/style/[styleId]/addOns" options={{
                 title: "Add Ons",
                 }} />
-            <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/addAddOn" options={{
+            <Stack.Screen name="service/[serviceId]/style/[styleId]/addAddOn" options={{
                 title: "Add Add On",
                 presentation: (Platform.OS === "ios" && Platform.isPad)? "card": "modal",
                 animation:"slide_from_bottom",
                 headerLeft: HeaderLeftAlt
                 }} />
-            <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/customizableOptions" options={{
+            <Stack.Screen name="service/[serviceId]/style/[styleId]/customizableOptions" options={{
                 title: "Customizations",
                 }} />
-            <Stack.Screen name="service/[serviceId]/serviceOption/[serviceOptionId]/addCustomizableOption" options={{
+            <Stack.Screen name="service/[serviceId]/style/[styleId]/addCustomizableOption" options={{
                 title: "Add Customization",
                 presentation: (Platform.OS === "ios" && Platform.isPad)? "card": "modal",
                 animation:"slide_from_bottom",

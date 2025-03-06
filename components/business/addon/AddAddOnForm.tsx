@@ -33,10 +33,10 @@ const schema = yup.object().shape({
         .required('A add on duration is required'),
     enabled: yup
         .boolean()
-        .required('Please enable or disable the service option')
+        .required('Please enable or disable the style')
 });
 
-  export function AddAddOnForm({ serviceId, serviceOptionId }: { serviceId: number, serviceOptionId: number}) {
+  export function AddAddOnForm({ serviceId, styleId }: { serviceId: number, styleId: number}) {
     const router = useRouter();
     const { control, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
       resolver: yupResolver(schema),
@@ -48,9 +48,9 @@ const schema = yup.object().shape({
         name: string, price: number, duration: number, enabled: boolean
     }) => {
       const { name, price, duration, enabled } = data;
-      const { error } = await addAddOn(name, price, duration, enabled, serviceOptionId, serviceId)
+      const { error } = await addAddOn(name, price, duration, enabled, styleId, serviceId)
       if (error) console.log(error);
-      else router.dismissTo(`/service/${serviceId}/serviceOption/${serviceOptionId}/addOns`);
+      else router.dismissTo(`/service/${serviceId}/style/${styleId}/addOns`);
       reset()
     },[]);
 

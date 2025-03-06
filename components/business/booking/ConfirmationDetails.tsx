@@ -16,7 +16,7 @@ export default function ConfirmationDetails() {
   const location = useBookingStore((state) => state.location);
   const addOns = useBookingStore((state) => state.addOns);
   const service = useBookingStore((state) => state.service);
-  const serviceOption = useBookingStore((state) => state.serviceOption);
+  const style = useBookingStore((state) => state.style);
   const variant = useBookingStore((state) => state.variant);
 
   // Calculate subtotal from variant price and add-ons
@@ -55,7 +55,7 @@ export default function ConfirmationDetails() {
           {/* Variant Price */}
           <XStack justifyContent='space-between'>
             <XStack alignItems='center'>
-              <Text style={styles.label}>{serviceOption?.name}</Text>
+              <Text style={styles.label}>{style?.name}</Text>
               <Text style={styles.label} marginRight={2}>{service?.name}</Text>
               <Text style={styles.small}> • {variant?.name}</Text>
             </XStack>

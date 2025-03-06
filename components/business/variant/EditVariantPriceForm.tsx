@@ -22,11 +22,11 @@ const schema = yup.object().shape({
 });
 
 
-export function EditVariantPriceForm({ serviceId, serviceOptionId, variantId, close }:
-  { serviceId: number, serviceOptionId: number, variantId: number, close: () => void }) {
+export function EditVariantPriceForm({ serviceId, styleId, variantId, close }:
+  { serviceId: number, styleId: number, variantId: number, close: () => void }) {
 
   const variant = useBusinessStore(
-    state => state.services.get(serviceId)?.service_options.get(serviceOptionId)?.variants.get(variantId)
+    state => state.services.get(serviceId)?.styles.get(styleId)?.variants.get(variantId)
   );
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema),
@@ -37,7 +37,7 @@ export function EditVariantPriceForm({ serviceId, serviceOptionId, variantId, cl
     confirm(
       async () => {
         const { newPrice } = data;
-        const { error } = await editVariantPrice(serviceId, serviceOptionId, variantId,  newPrice);
+        const { error } = await editVariantPrice(serviceId, styleId, variantId,  newPrice);
         if (error) console.log(error);
         else {
           notify("Price Changed", "Note that existing appointments will not be affected by this change.")
@@ -50,7 +50,7 @@ export function EditVariantPriceForm({ serviceId, serviceOptionId, variantId, cl
       "Cancel",
       "default"
     );
-    }, [editVariantPrice, serviceId, serviceOptionId, variantId, close]);
+    }, [editVariantPrice, serviceId, styleId, variantId, close]);
 
   return (
     <EditModalForm>

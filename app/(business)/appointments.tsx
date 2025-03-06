@@ -20,7 +20,7 @@ export default function Appointments() {
   } = useAppointmentSummaries(appointments.map((a) => a.id));
 
   return (
-    <BusinessWrapper loading={loadingAppointments}>
+    <BusinessWrapper loading={loadingAppointments || isFetchingAppointments}>
       <AppointmentCalendar
         summaries={summaries}
         refetchAppointments={async () => { await refetchAppointments()}}
@@ -41,7 +41,7 @@ const AvailabilityButton = () => {
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: theme.accent.val,
-        width: 130,
+        width: 140,
         height: 55,
         justifyContent: 'center',
         gap: 10,

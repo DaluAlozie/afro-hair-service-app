@@ -1,6 +1,6 @@
 import {
     AddOn,
-    ServiceOption,
+    Style,
     Variant,
     CustomizableOption,
     Service,
@@ -10,7 +10,7 @@ import {
 export type BookingInfo = {
   business: Business | undefined,
   service: Service | undefined,
-  serviceOption: ServiceOption | undefined,
+  style: Style | undefined,
   variants: Variant[],
   addOns: AddOn[],
   customizableOptions: CustomizableOption[]

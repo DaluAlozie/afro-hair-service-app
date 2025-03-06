@@ -6,16 +6,16 @@ import { useTheme, View } from 'tamagui';
 import { CartesianChart, Area, useChartPressState, Line } from 'victory-native';
 import RobotoRegular from "@/assets/fonts/Roboto-Regular.ttf";
 import RobotoBold from "@/assets/fonts/Roboto-Bold.ttf";
-import { 
-  formatMoney, 
-  groupByDate, 
-  groupByDateInMonth, 
-  groupByMonth, 
-  groupByMonthInYear, 
-  groupByYear, 
-  Month, 
-  parseXLabel, 
-  parseYLabel 
+import {
+  formatMoney,
+  groupByDate,
+  groupByDateInMonth,
+  groupByMonth,
+  groupByMonthInYear,
+  groupByYear,
+  Month,
+  parseXLabel,
+  parseYLabel
 } from './utils';
 
 export type Filter = {
@@ -23,7 +23,7 @@ export type Filter = {
   month?: Month | "all",
   range?: 1 | 3 | 6 | 12 | "all",
   service: string | "all" | undefined,
-  serviceOption: string | "all" | undefined,
+  style: string | "all" | undefined,
 }
 
 type AreaChartProps = {

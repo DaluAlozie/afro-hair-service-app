@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react'
 import { View } from 'react-native'
-import { ServiceOption as ServiceOptionProps } from '../types'
+import { Style as StyleProps } from '../types'
 import { Text, XStack, YStack, Switch, useTheme, ScrollView } from 'tamagui'
 import Pressable from '@/components/utils/Pressable'
 import Feather from '@expo/vector-icons/Feather'
@@ -9,20 +9,20 @@ import confirm from '@/components/utils/Alerts/Confirm'
 import { useRouter } from 'expo-router'
 import { makeStyles } from '../utils'
 
-export default function ServiceOption(
-  { id, name, description, enabled, service_id  }: ServiceOptionProps) {
+export default function Style(
+  { id, name, description, enabled, service_id  }: StyleProps) {
   const theme = useTheme();
   const styles = makeStyles(theme);
   const router = useRouter();
-  const removeServiceOption = useBusinessStore(state => state.removeServiceOption);
-  const enableServiceOption = useBusinessStore(state => state.enableServiceOption);
-  const disableServiceOption = useBusinessStore(state => state.disableServiceOption);
+  const removeStyle = useBusinessStore(state => state.removeStyle);
+  const enableStyle = useBusinessStore(state => state.enableStyle);
+  const disableStyle = useBusinessStore(state => state.disableStyle);
   const deleteOption = useCallback(
     async () => {
       confirm(
-        async () => await removeServiceOption(service_id, id),
-        "Remove Service Option",
-        "Are you sure you want to remove this service option?",
+        async () => await removeStyle(service_id, id),
+        "Remove Style",
+        "Are you sure you want to remove this style?",
         "Remove",
         "Cancel",
         "destructive"
@@ -52,15 +52,15 @@ export default function ServiceOption(
       <Separator/>
       <Pressable
         style={styles.section}
-        onPress={() => router.push(`/service/${service_id}/serviceOption/${id}/variants`)}
+        onPress={() => router.push(`/service/${service_id}/style/${id}/variants`)}
         activeOpacity={0.7} scale={0.99}>
-        <Text style={styles.title}>Variants</Text>
+        <Text style={styles.title}>Variations</Text>
           <Feather name="chevron-right" size={25} color={theme.gray11.val} />
       </Pressable>
       <Separator/>
       <Pressable
         style={styles.section}
-        onPress={() => router.push(`/service/${service_id}/serviceOption/${id}/addOns`)}
+        onPress={() => router.push(`/service/${service_id}/style/${id}/addOns`)}
         activeOpacity={0.7} scale={0.99}
         >
         <Text style={styles.title}>Add Ons</Text>
@@ -69,7 +69,7 @@ export default function ServiceOption(
       <Separator/>
       <Pressable
         style={styles.section}
-        onPress={() => router.push(`/service/${service_id}/serviceOption/${id}/customizableOptions`) }
+        onPress={() => router.push(`/service/${service_id}/style/${id}/customizableOptions`) }
         activeOpacity={0.7} scale={0.99}
         >
         <Text style={styles.title}>Customizations</Text>
@@ -87,8 +87,8 @@ export default function ServiceOption(
           defaultChecked={enabled} native
           onCheckedChange={
             async (checked) => checked ?
-              await enableServiceOption(service_id, id) :
-              await disableServiceOption(service_id, id)
+              await enableStyle(service_id, id) :
+              await disableStyle(service_id, id)
             }
           >
           <Switch.Thumb/>
@@ -98,7 +98,7 @@ export default function ServiceOption(
       <XStack style={styles.deleteSection}>
         <Pressable
         activeOpacity={0.6} scale={0.99} style={{ justifyContent: "center", alignItems: "center" }} onPress={deleteOption}>
-          <Text style={[styles.title, { color: theme.danger.val }]}>Remove Service Option</Text>
+          <Text style={[styles.title, { color: theme.danger.val }]}>Remove Style</Text>
         </Pressable>
       </XStack>
     </YStack>

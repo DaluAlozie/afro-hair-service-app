@@ -17,11 +17,11 @@ interface Service {
     name: string,
     description: string,
     enabled: boolean,
-    service_options: Map<number, ServiceOption>,
+    styles: Map<number, Style>,
     locations: Map<number, Location>
 }
 
-interface ServiceOption {
+interface Style {
     id: number,
     name: string,
     description: string,
@@ -39,7 +39,7 @@ interface Variant {
     price: number,
     enabled: boolean,
     duration: number,
-    service_option_id: number,
+    style_id: number,
     service_id: number
 }
 
@@ -49,7 +49,7 @@ interface AddOn {
     price: number,
     enabled: boolean,
     duration: number,
-    service_option_id: number,
+    style_id: number,
     service_id: number
 }
 type CustomizableOptionType = "text" | "boolean" | "numeric"
@@ -59,7 +59,7 @@ interface CustomizableOption {
     type: CustomizableOptionType,
     lower_bound: number,
     upper_bound: number,
-    service_option_id: number,
+    style_id: number,
     service_id: number
 }
 
@@ -129,7 +129,7 @@ type NotificationType =
 export {
     Business,
     Service,
-    ServiceOption,
+    Style,
     AddOn,
     Location,
     ServiceLocation,

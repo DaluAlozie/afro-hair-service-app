@@ -29,7 +29,7 @@ export default function TimeSlotModal({ id, open, setOpen }: { id: number, open:
         }
     }, [timeSlot])
 
-    const onSubmit = useCallback(async (data: { start: string; end: string }) => {
+    const onSubmit = useCallback(async (data: { start: Date; end: Date }) => {
         if (!timeSlot || !isEditing) return;
         const { start, end } = data;
         const currentDate = new Date(timeSlot.from);
@@ -67,7 +67,7 @@ export default function TimeSlotModal({ id, open, setOpen }: { id: number, open:
             }
             setOpen(value);
         }}>
-            <Form alignItems="center" height={300} width={"90%"} backgroundColor={theme.background.val} borderRadius={20}>
+            <Form alignItems="center" height={300} width={"90%"} maxWidth={500} backgroundColor={theme.background.val} borderRadius={20}>
                 <YStack
                     alignItems="stretch"
                     justifyContent="flex-start"

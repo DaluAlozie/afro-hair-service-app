@@ -8,7 +8,7 @@ import { Revenue } from './analytics';
 import { hasPast, isSameDay, isToday } from '@/components/home/utils';
 import { filterAppointments, generateFakeData, Month } from '@/components/business/analytics/utils';
 import { useAppointmentSummaries } from '@/hooks/business/useAppointmentSummaries';
-import { Service, ServiceOption } from '@/components/business/types';
+import { Service, Style } from '@/components/business/types';
 import Pressable from '@/components/utils/Pressable';
 import { useRouter } from 'expo-router';
 import { formatTime } from '@/components/business/booking/BookingDetails';
@@ -72,7 +72,7 @@ const RevenueComponent = () => {
   // Generate fake data based on the service list.
   const fakeService = {
     id: 122,
-    service_options: new Map<number, ServiceOption>()
+    styles: new Map<number, Style>()
   } as Service;
   const [fakeAppointments, fakeSummaries] = useMemo(() => generateFakeData([fakeService]), []);
 
@@ -81,7 +81,7 @@ const RevenueComponent = () => {
     month: "all" as "all" | Month,
     range: undefined,
     service: undefined,
-    serviceOption: undefined,
+    style: undefined,
   }
 
   // Use fake data for filtering.
@@ -116,7 +116,7 @@ const AppointmentList = () => {
 
   const router = useRouter();
   return (
-    <Pressable style={{ height: 200, width: 190 }} activeOpacity={0.7} scale={0.95} onPress={() => router.push('/(business)/appointments')}>
+    <Pressable style={{ height: 200, width: 300 }} activeOpacity={0.7} scale={0.95} onPress={() => router.push('/(business)/appointments')}>
       <BusinessWrapper loading={loadingAppointments}>
         <View flex={1} gap={30}>
           <View>
@@ -137,7 +137,7 @@ const AppointmentList = () => {
                   const summary = summaries.get(a.id);
                   return (
                     <XStack key={a.id} gap={5} flexWrap='wrap'>
-                      <Text>{summary?.service_option}: </Text>
+                      <Text>{summary?.style}: </Text>
                       <Text >{formatTime(a.start_time)} - {formatTime(a.end_time)}</Text>
                     </XStack>
                   )

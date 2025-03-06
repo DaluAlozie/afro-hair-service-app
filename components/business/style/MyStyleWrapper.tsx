@@ -3,8 +3,8 @@ import { View } from '@tamagui/core';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 
-export default function MyServiceOptionWrapper({ children }: { children: React.ReactNode }) {
-  const { serviceId, serviceOptionId } = useLocalSearchParams();
+export default function MyStyleWrapper({ children }: { children: React.ReactNode }) {
+  const { serviceId, styleId } = useLocalSearchParams();
   const router = useRouter();
   const services = useBusinessStore((state) => state.services);
 
@@ -13,7 +13,7 @@ export default function MyServiceOptionWrapper({ children }: { children: React.R
       router.dismissTo('/(business)/services');
       return null;
     }
-    if (typeof serviceOptionId !== 'string' || isNaN(parseInt(serviceOptionId))) {
+    if (typeof styleId !== 'string' || isNaN(parseInt(styleId))) {
       router.dismissTo(`/service/${serviceId}/index`);
       return null;
     }
@@ -22,12 +22,12 @@ export default function MyServiceOptionWrapper({ children }: { children: React.R
       router.dismissTo('/(business)/services');
       return null;
     }
-    const serviceOption = service.service_options.get(parseInt(serviceOptionId));
-    if (!serviceOption) {
+    const style = service.styles.get(parseInt(styleId));
+    if (!style) {
       router.dismissTo(`/service/${serviceId}/index`);
       return null;
     }
-  }, [serviceId, serviceOptionId]);
+  }, [serviceId, styleId]);
 
   return (
     <View onLayout={onLayout} flex={1}>

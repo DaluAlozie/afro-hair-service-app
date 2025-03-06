@@ -56,7 +56,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
               <View style={styles.detailsContainer}>
                 <XStack alignItems="flex-end" marginBottom={4}>
                   <XStack alignItems="flex-end">
-                    <Text numberOfLines={1} style={styles.serviceOption}>{summary.service_option} </Text>
+                    <Text numberOfLines={1} style={styles.style}>{summary.style} </Text>
                     <Text numberOfLines={1} style={styles.service}>{summary.service}</Text>
                   </XStack>
                   <XStack alignItems="flex-end">
@@ -190,7 +190,7 @@ const makeStyles = (theme: UseThemeResult) =>
       flexDirection: 'column',
       gap: 4,
     },
-    serviceOption: {
+    style: {
       fontSize: 20,
       fontWeight: '700',
       color: theme.color.val,

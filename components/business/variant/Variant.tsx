@@ -7,7 +7,7 @@ import { useBusinessStore } from '@/utils/stores/businessStore';
 import confirm from '@/components/utils/Alerts/Confirm';
 import { makeStyles } from '../utils';
 
-export default function Variant({ id, name, price, duration, enabled, service_id, service_option_id, editVariantPrice}:
+export default function Variant({ id, name, price, duration, enabled, service_id, style_id, editVariantPrice}:
     VariantProps & { editVariantPrice: (id: number) => void }) {
     const theme = useTheme();
     const styles = makeStyles(theme);
@@ -19,7 +19,7 @@ export default function Variant({ id, name, price, duration, enabled, service_id
     const deleteVariant = useCallback(
         async () => {
             confirm(
-                async () => await removeVariant(service_id, service_option_id, id),
+                async () => await removeVariant(service_id, style_id, id),
                 "Remove Variant",
                 "Are you sure you want to remove this variant?",
                 "Remove",
@@ -70,8 +70,8 @@ export default function Variant({ id, name, price, duration, enabled, service_id
           defaultChecked={enabled}
           onCheckedChange={
             (checked) => checked ?
-              enableVariant(service_id, service_option_id, id):
-              disableVariant(service_id, service_option_id, id)
+              enableVariant(service_id, style_id, id):
+              disableVariant(service_id, style_id, id)
           }
           native>
           <Switch.Thumb/>

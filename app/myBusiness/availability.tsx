@@ -49,8 +49,8 @@ export default function Availability() {
               <View
                 height={2}
                 backgroundColor={theme.secondaryAccent.val}
-                marginLeft={mode === 'remove' ? 50 : 0}
-                width={mode === 'add' ? 30 : mode === "remove" ? 60 : 40}
+                marginLeft={mode === 'remove' ? 56 : 0}
+                width={mode === 'add' ? 35 : mode === "remove" ? 65 : 45}
                 alignSelf={mode === "view" ? "flex-end" : "flex-start"}
               />
           </View>

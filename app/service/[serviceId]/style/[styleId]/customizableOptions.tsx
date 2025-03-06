@@ -5,20 +5,20 @@ import { useLocalSearchParams } from 'expo-router';
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import { Collapsible } from '@/components/utils';
 import CustomizableOption from '@/components/business/customizableOption/CustomizableOption';
-import MyServiceOptionWrapper from '@/components/business/serviceOption/MyServiceOptionWrapper';
+import MyStyleWrapper from '@/components/business/style/MyStyleWrapper';
 import { AddButton, SectionTitle } from '../..';
 import { makeContainerStyles } from '@/components/business/utils';
 
 export default function CustomizableOptions() {
-  const { serviceId, serviceOptionId } = useLocalSearchParams();
+  const { serviceId, styleId } = useLocalSearchParams();
   const services = useBusinessStore((state) => state.services);
   const theme = useTheme();
   const styles = makeContainerStyles(theme);
-  const serviceOption = services.get(parseInt(serviceId as string))?.service_options.get(parseInt(serviceOptionId as string));
-  const customizableOptions = Array.from(serviceOption?.customizableOptions.values() || []);
+  const style = services.get(parseInt(serviceId as string))?.styles.get(parseInt(styleId as string));
+  const customizableOptions = Array.from(style?.customizableOptions.values() || []);
   return (
-    <MyServiceOptionWrapper>
-      {services && serviceOption !== undefined && (
+    <MyStyleWrapper>
+      {services && style !== undefined && (
         <>
           <ScrollView
             style={{ flex: 1, backgroundColor: theme.background.val }}
@@ -26,9 +26,9 @@ export default function CustomizableOptions() {
             showsVerticalScrollIndicator={false}
           >
             <AddButton
-              href={`/service/${serviceId}/serviceOption/${serviceOptionId}/addCustomizableOption`}
+              href={`/service/${serviceId}/style/${styleId}/addCustomizableOption`}
               text="Add Customization" />
-            {serviceOption && (
+            {style && (
               <Collapsible defaultOpen={true} style={{ width: '100%', }}
               header={<SectionTitle title="Customizable Options" />}>
                 {customizableOptions.map((option) => (
@@ -39,6 +39,6 @@ export default function CustomizableOptions() {
           </ScrollView>
         </>
       )}
-    </MyServiceOptionWrapper>
+    </MyStyleWrapper>
   );
 }

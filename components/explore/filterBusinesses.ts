@@ -21,8 +21,10 @@ export const calculateDistance = (
     const dLat = lat2 - lat1;
     const dLon = lon2 - lon1;
 
-    const a = Math.sin(dLat / 2) ** 2 +
+    const a =
+        Math.sin(dLat / 2) ** 2 +
         Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
+
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 
     return EARTH_RADIUS_MILES * c;
@@ -92,16 +94,29 @@ export const filterBusiness = (businesses: BusinessSummary[], filter: Filters): 
     return filteredBusinesses.map(business => [business, calculateMinDistance(business, filter.address)]);
 }
 
-const recommendBusinesses = (businesses: BusinessSummary[], address: Address|undefined): BusinessSummary[] => {
+const recommendBusinesses = (
+    businesses: BusinessSummary[], address: Address|undefined
+): BusinessSummary[] => {
     return businesses.map(business => {
         const minDistance = calculateMinDistance(business, address);
-        const ratingScore = business.rating * 10; // Give higher weight to rating
-        const distanceScore = Math.max(0, (100 - minDistance)); // Businesses closer get a higher score
-        const popularityScore = (business.services.length * 2); // More services = better score
+
+         // Give higher weight to rating
+        const ratingScore = business.rating * 10;
+
+        // Give higher weight to businesses closer to the user
+        const distanceScore = Math.max(0, (100 - minDistance));
+
+        // Give higher weight to businesses with more services
+        const popularityScore = (business.services.length * 2);
 
         // Final score calculation (adjust weights as needed)
-        const finalScore = (ratingScore * 0.5) + (distanceScore * 0.3) + (popularityScore * 0.2);
+        const finalScore = 0
+            + (ratingScore * 0.5)
+            + (distanceScore * 0.3)
+            + (popularityScore * 0.2);
 
         return { ...business, finalScore };
-    }).sort((a, b) => b.finalScore - a.finalScore); // Sort by highest score
+        // Sort by highest score
+    }).sort((a, b) => b.finalScore - a.finalScore);
+
 };

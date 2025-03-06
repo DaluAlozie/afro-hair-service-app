@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 import { supabaseClient } from '../auth/supabase'
 import { AuthError, PostgrestError } from '@supabase/supabase-js'
-import { AddOn, Appointment, Business, Location, Service, ServiceOption, Variant } from '@/components/business/types'
+import { AddOn, Appointment, Business, Location, Service, Style, Variant } from '@/components/business/types'
 
 export interface Booking {
     business: Business | undefined,
     service: Service| undefined,
-    serviceOption: ServiceOption | undefined,
+    style: Style | undefined,
     variant: Variant| undefined,
     addOns: AddOn[],
     customizableOptions: Map<number, string>,
@@ -35,7 +35,7 @@ export interface Booking {
 export const useBookingStore = create<Booking>((set, get) => ({
     business: undefined,
     service: undefined,
-    serviceOption: undefined,
+    style: undefined,
     variant: undefined,
     addOns: [],
     customizableOptions: new Map<number, string>(),
@@ -138,7 +138,7 @@ export const useBookingStore = create<Booking>((set, get) => ({
 const initialState = {
     business: undefined,
     service: undefined,
-    serviceOption: undefined,
+    style: undefined,
     variant: undefined,
     addOns: [],
     customizableOptions: new Map<number, string>(),
