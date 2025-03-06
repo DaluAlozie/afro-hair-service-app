@@ -27,7 +27,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
     summary.street_address,
     summary.locality,
     summary.city,
-    summary.postal_code,
+    summary.postcode,
   ]
     .filter(Boolean)
     .join(', ');

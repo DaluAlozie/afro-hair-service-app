@@ -19,7 +19,7 @@ export interface AppointmentSummary {
   flat_number: string,
   city: string,
   locality: string,
-  postal_code: string,
+  postcode: string,
   country: string,
   latitude: number,
   longitude: number

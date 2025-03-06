@@ -6,4 +6,12 @@ export const formatAddress = (address: Address | null | undefined): string => {
         .join(', ');
 };
 
+export const isNotEmpty = (str: string) => {
+    return str !== "" && str !== null && str !== undefined
+}
+
+export const capitalise = (str: string) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export * from './filterBusinesses';

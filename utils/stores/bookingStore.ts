@@ -130,19 +130,7 @@ export const useBookingStore = create<Booking>((set, get) => ({
         if (error) return error;
         return data.online;
     },
-    refundBooking: async (paymentIntentId: string) => {
-        const response = await fetch(`${process.env.EXPO_PUBLIC_WEB_APP_URL}/api/refund-booking`, {
-            method: "POST",
-            body: JSON.stringify({
-              payment_intent_id: paymentIntentId,
-            }),
-            headers: new Headers({
-                "Content-Type": "application/json",
-                "API-KEY": process.env.EXPO_PUBLIC_WEB_API_KEY!,
-            }),
-        });
-        return response;
-    },
+    refundBooking: refundBooking,
     reset: () => set(initialState)
   })
 )
@@ -159,4 +147,18 @@ const initialState = {
     endTime: undefined,
     totalPrice: undefined,
     duration: undefined,
+}
+
+export const refundBooking = async (paymentIntentId: string) => {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_WEB_APP_URL}/api/refund-booking`, {
+        method: "POST",
+        body: JSON.stringify({
+          payment_intent_id: paymentIntentId,
+        }),
+        headers: new Headers({
+            "Content-Type": "application/json",
+            "API-KEY": process.env.EXPO_PUBLIC_WEB_API_KEY!,
+        }),
+    });
+    return response;
 }
