@@ -62,7 +62,7 @@ export default function AppStack() {
                 headerLeft: HeaderLeftAlt
             }} />
             <Stack.Screen name="(business)" options={{
-                title: 'Your Business',
+                title: 'My Business',
                 headerLeft: () => (
                     <Pressable onPress={() => router.dismissTo("/(tabs)")} style={[styles.headerLeft]}>
                         <MaterialIcons name="arrow-back-ios-new" size={24} color={theme.color.val} />

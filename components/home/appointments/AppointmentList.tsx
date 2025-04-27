@@ -28,7 +28,7 @@ interface AppointmentListProps {
         collapsable={true}
         collapsableChildren={true}
         contentContainerStyle={{ paddingBottom: 100 }}
-        estimatedItemSize={120}
+        estimatedItemSize={270}
         showsVerticalScrollIndicator={false}
         ListHeaderComponent={(
           <View marginTop={10}>

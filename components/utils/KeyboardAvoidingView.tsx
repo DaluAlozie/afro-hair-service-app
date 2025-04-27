@@ -3,12 +3,12 @@ import { ScrollView, Sheet } from 'tamagui'
 
 import { KeyboardAvoidingView as RNKeyboardAvoidingView, Platform } from 'react-native';
 
-export default function KeyboardAvoidingView({ children, sheet = false }: { children: React.ReactNode, sheet?: boolean }) {
+export default function KeyboardAvoidingView({ children, sheet = false, offset = 100 }: { children: React.ReactNode, sheet?: boolean, offset?: number }) {
   return (
     <RNKeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ height: '100%', width: '100%' }}
-          keyboardVerticalOffset={100}
+          keyboardVerticalOffset={offset}
         >
           {
           sheet ? (

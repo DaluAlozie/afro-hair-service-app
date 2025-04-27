@@ -12,6 +12,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import Pressable from '@/components/utils/Pressable';
 import { BottomTabBarButtonProps } from '@react-navigation/bottom-tabs';
 import HomeFill from '@/assets/icons/home_fill';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   const theme = useTheme();
@@ -57,10 +58,10 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="notifications"
+        name="chatbot"
         options={{
-          title: 'Notifications',
-          tabBarIcon: ({ color, focused }) => focused ? <Octicons name="bell-fill" size={24} color={color}/>:<Octicons name="bell" size={24} color={color}/>,
+          title: 'Chatbot',
+          tabBarIcon: ({ color, focused }) => focused ? <MaterialCommunityIcons name="robot" size={30} color={color} />:<MaterialCommunityIcons name="robot-outline" size={30} color={color} />,
         }}
       />
     </Tabs>

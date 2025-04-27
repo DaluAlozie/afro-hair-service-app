@@ -12,6 +12,7 @@ export interface CustomerStore {
     searchHistory: Address[],
     searchFilters: Filters,
     loading: boolean,
+    chatbotHistory: { sender: Sender, message: string }[],
     load: () => Promise<void>,
     loadAppointments: () => Promise<void>,
     setSearchFilters: (filters: Filters) => void,
@@ -22,6 +23,8 @@ export interface CustomerStore {
     setSearchInput: (searchInput: string) => void,
     clearSearchFilters: () => void,
     addSearchHistory: (address: Address) => void,
+    addChatbotMessage: (message: string, sender: Sender) => void,
+    addAppointmentReview: (review: string, rating: number, businessId: number, appointmentId: number) => Promise<{ error?: AuthError | PostgrestError | Error }>,
     bookAppointment: (
         businessId: number,
         variantId: number,
@@ -47,6 +50,7 @@ rescheduleAppointment: (
 export const useCustomerStore = create<CustomerStore>((set, get) => ({
     appointments: new Map<number, Appointment>(),
     notifications: new Map<number, Notification>(),
+    chatbotHistory: [],
     searchHistory: [],
     searchFilters: {
         radius: "any",
@@ -93,6 +97,26 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
         history = history.filter(a => formattedAddress !== formatAddress(a));
         const newHistory = [address, ...history].slice(0, 5)
         set({ searchHistory: newHistory })
+    },
+    addChatbotMessage: (message: string, sender: "bot" | "user") => {
+        const history = get().chatbotHistory;
+        set({ chatbotHistory: [...history, { message, sender }] });
+    },
+    addAppointmentReview: async (review: string, rating: number, businessId: number, appointmentId: number) => {
+        const supabase = await supabaseClient;
+        const { error } = await supabase
+            .from('BusinessReview')
+            .insert({
+                appointment_id: appointmentId,
+                content: review,
+                rating: rating,
+                business_id: businessId,
+            })
+        if (error) {
+            console.log(error);
+            return { error };
+        }
+        return { error: undefined };
     },
     bookAppointment: async (
         businessId: number,
@@ -199,4 +223,7 @@ const initialState = {
     loading: true,
     searchHistory: [],
     searchFilters: {...initialFilters},
+    chatbotHistory: [],
 }
+
+type Sender = "bot" | "user"

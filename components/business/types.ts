@@ -81,12 +81,19 @@ interface ServiceLocation {
     service_id: number
 }
 
-interface Review {
+interface BusinessReview {
     id: number,
     content: string,
     rating: number,
-    business_rating_id: number,
     business_id: number
+    created_at: Date
+}
+
+interface CustomerReview {
+    id: number,
+    content: string,
+    rating: number,
+    customer_id: string
     created_at: Date
 }
 interface Appointment {
@@ -133,7 +140,8 @@ export {
     AddOn,
     Location,
     ServiceLocation,
-    Review,
+    BusinessReview,
+    CustomerReview,
     Appointment,
     Notification,
     NotificationType,

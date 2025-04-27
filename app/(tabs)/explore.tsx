@@ -10,15 +10,15 @@ import React, { useEffect, useState } from "react";
 import { View, Text, useTheme, XStack, RadioGroup } from "tamagui";
 import { Platform, StyleSheet } from "react-native";
 import { capitalise, formatAddress } from "@/components/explore/utils";
-import { filterBusiness } from "@/components/explore/utils";
 import { useBusinessSummaries } from "@/hooks/useBusinessSummaries";
 import { Text as RNText } from "react-native";
 import { RadioGroupItemWithLabel } from "@/components/utils/form/inputs";
-import { SortBy } from "@/components/explore/types";
+import { BusinessSummary, SortBy } from "@/components/explore/types";
 import { FlashList } from "@shopify/flash-list";
 import { RefreshControl } from "react-native";
 import SheetModal from "@/components/utils/ui/SheetModal";
 import { Business } from "@/components/explore/business";
+import { filterBusiness } from "@/components/explore/filterBusinesses";
 
 export default function Explore() {
   const theme  = useTheme();
@@ -132,8 +132,19 @@ const Results = () => {
   const theme = useTheme();
   const { businessDetails, refetchDetails, isRefetchingDetails } = useBusinessSummaries();
   const filters = useCustomerStore(state => state.searchFilters);
-  const filteredBusinesses = filterBusiness(Array.from(businessDetails.values()), filters);
+
+  const [filteredBusinesses, setFiltererdBusiness] = useState<[BusinessSummary, number][]>([]);
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const fetchFilteredBusinesses = async () => {
+      const businesses = await filterBusiness(
+        Array.from(businessDetails.values()),
+        filters
+      );
+      setFiltererdBusiness(businesses);
+    };
+    fetchFilteredBusinesses();
+  }, [businessDetails, filters]);
 
   return (
     <View flex={1}>
@@ -142,7 +153,7 @@ const Results = () => {
       <FlashList
         data={filteredBusinesses}
         keyExtractor={(item) => item[0].id.toString()}
-        estimatedItemSize={100}
+        estimatedItemSize={260}
         refreshControl={
           <RefreshControl refreshing={isRefetchingDetails} onRefresh={refetchDetails} />
         }

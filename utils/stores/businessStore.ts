@@ -7,7 +7,7 @@ import {
     Style,
     Location,
     ServiceLocation,
-    Review,
+    BusinessReview,
     Variant,
     TimeSlot,
     CustomizableOption,
@@ -33,7 +33,7 @@ export interface BusinessStore {
     notifications: Map<string, Notification>,
     availability: Map<number, TimeSlot>,
     locations: Map<number, Location>,
-    reviews: Map<number, Review>,
+    reviews: Map<number, BusinessReview>,
     tags: string[],
     facebook: string | null,
     instagram: string | null,
@@ -151,8 +151,8 @@ export interface BusinessStore {
     disableVariant: (serviceId: number, styleId: number, variantId: number) => Promise<BusinessProps>
     enableAddOn: (serviceId: number, styleId: number, addOnId: number) => Promise<BusinessProps>
     disableAddOn: (serviceId: number, styleId: number, addOnId: number) => Promise<BusinessProps>
+    addCustomerReview: (review: string, rating: number, customerId: number, appointmentId: number) => Promise<BusinessProps>
 }
-
 const initialState = {
     id: -1,
     name: "",
@@ -165,7 +165,7 @@ const initialState = {
     appointments: new Map<number, Appointment>(),
     locations: new Map<number, Location>(),
     notifications: new Map<string, Notification>(),
-    reviews: new Map<number, Review>(),
+    reviews: new Map<number, BusinessReview>(),
     tags: [],
     facebook: "",
     instagram: "",
@@ -359,9 +359,9 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         const { data, error } = await supabase.rpc('get_business_reviews', { bid: get().id });
         if (error) {
             console.log(error);
-            return [] as Review[];
+            return [] as BusinessReview[];
         }
-        const reviews = data.map((review: Review) => ({ ...review, created_at: new Date(review.created_at) }));
+        const reviews = data.map((review: BusinessReview) => ({ ...review, created_at: new Date(review.created_at) }));
         set({ reviews });
         return {};
     },
@@ -1321,6 +1321,21 @@ export const useBusinessStore = create<BusinessStore>((set, get) => ({
         if (!addOn) return {};
         addOn.enabled = false;
         return {};
+    },
+    addCustomerReview: async (review: string, rating: number, customerId: number, appointmentId: number) => {
+        const supabase = await supabaseClient;
+        const { error } = await supabase
+            .from('CustomerReview')
+            .insert([{
+                content: review,
+                rating,
+                customer_id: customerId,
+                appointment_id: appointmentId,
+            }])
+        if (error) {
+            return { error };
+        }
+        return { error: undefined };
     }
   })
 )

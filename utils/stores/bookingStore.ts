@@ -150,15 +150,15 @@ const initialState = {
 }
 
 export const refundBooking = async (paymentIntentId: string) => {
-    const response = await fetch(`${process.env.EXPO_PUBLIC_WEB_APP_URL}/api/refund-booking`, {
+    const supabase = await supabaseClient;
+    const response = await supabase.functions.invoke("refund-booking", {
         method: "POST",
         body: JSON.stringify({
           payment_intent_id: paymentIntentId,
         }),
-        headers: new Headers({
-            "Content-Type": "application/json",
+        headers: {
             "API-KEY": process.env.EXPO_PUBLIC_WEB_API_KEY!,
-        }),
+        },
     });
-    return response;
+    return response.data;
 }

@@ -390,7 +390,7 @@ export function RadioGroupItemWithLabel(props: {
         id={id}
         size={props.size}
         width={"100%"}
-        height={60}
+        height={50}
         borderRadius={10}
         justifyContent="flex-start"
         alignItems="flex-start"

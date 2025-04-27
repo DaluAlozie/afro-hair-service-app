@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useCallback } from 'react'
+import { supabaseClient } from '@/utils/auth/supabase';
 
 export type PaymentSheetParams = {
   paymentIntentId: string;
@@ -24,19 +25,20 @@ export default function usePaymentSheetParams(customerId: string | undefined, to
       }
       // Here you would fetch the payment sheet parameters
       // from your server
-      const response = await fetch(`${process.env.EXPO_PUBLIC_WEB_APP_URL}/api/create-payment-intent`, {
-        method: "POST",
+      const supabase = await supabaseClient;
+      const response = await supabase.functions.invoke("create-payment-intent", {
         body: JSON.stringify({
           customer_id: customerId,
           amount: totalPrice * 100,
           currency: "gbp",
         }),
-        headers: new Headers({
-          "Content-Type": "application/json",
+        headers: {
           "API-KEY": process.env.EXPO_PUBLIC_WEB_API_KEY!,
-        }),
+        },
       });
-      const data = await response.json();
+      console.log(response);
+      
+      const data = response.data;
       return data as PaymentSheetParams;
     }, [customerId, totalPrice]
   );

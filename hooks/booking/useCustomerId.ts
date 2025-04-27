@@ -8,20 +8,23 @@ export function useCustomerId() {
     const email = useAuthStore((state) => state.user?.email);
 
     const createStripeCustomer = useCallback(async () => {
-        const response = await fetch(`${process.env.EXPO_PUBLIC_WEB_APP_URL}/api/create-stripe-customer`, {
-            method: "POST",
+        const supabase = await supabaseClient;
+        const { data, error } = await supabase.functions.invoke("create-stripe-customer", {
             body: JSON.stringify({
                 record: {
                     id: userId,
                     email,
                 }
             }),
-            headers: new Headers({
-                "Content-Type": "application/json",
+            headers: {
                 "API-KEY": process.env.EXPO_PUBLIC_WEB_API_KEY!,
-            }),
+            },
         });
-        return response;
+        if (error) {
+            console.log(error);
+            return "";
+        }
+        return data;
     }, [userId, email]);
 
     const fetchCustomer = useCallback(async (): Promise<string> => {

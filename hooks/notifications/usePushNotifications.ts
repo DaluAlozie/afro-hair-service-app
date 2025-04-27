@@ -69,20 +69,19 @@ async function registerForPushNotificationsAsync(saveToken: (token: string) => P
 }
 
 async function sendPushNotification(title: string, message: string, extraData: ExtraNotificationData, recipientId: string) {
-  const response = await fetch(`${process.env.EXPO_PUBLIC_WEB_APP_URL}/api/send-push-notification`, {
-    method: "POST",
+  const supabase = await supabaseClient;
+  const response = await supabase.functions.invoke("send-push-notification", {
     body: JSON.stringify({
       title,
       message,
       extra_data: extraData,
       recipient_id: recipientId
     }),
-    headers: new Headers({
-        "Content-Type": "application/json",
+    headers: {
         "API-KEY": process.env.EXPO_PUBLIC_WEB_API_KEY!,
-    }),
+    },
   });
-  return response;
+  return response.data;
 }
 
 async function savePushNotificationToken(token: string) {

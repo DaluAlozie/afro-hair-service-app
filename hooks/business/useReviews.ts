@@ -1,4 +1,4 @@
-import { Review } from "@/components/business/types";
+import { BusinessReview } from "@/components/business/types";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { supabaseClient } from "@/utils/auth/supabase";
@@ -6,18 +6,22 @@ import { supabaseClient } from "@/utils/auth/supabase";
 export function useReviews(businessId: number | undefined) {
     const fetchReviews = useCallback(async (
         { queryKey }: { queryKey: [string, { businessId: number | undefined }] }
-    ): Promise<Review[]> => {
+    ): Promise<BusinessReview[]> => {
         const [, { businessId }] = queryKey;
         if (!businessId) {
-            return [] as Review[];
+            return [] as BusinessReview[];
         }
         const supabase = await supabaseClient;
-        const { data, error } = await supabase.rpc('get_business_reviews', { bid: businessId });
+        const { data, error } = await supabase
+          .from('BusinessReview')
+          .select('*')
+          .eq('business_id', businessId)
+          .order('created_at', { ascending: false });
         if (error) {
             console.log(error);
-            return [] as Review[];
+            return [] as BusinessReview[];
         }
-        const reviews = data.map((review: Review) => ({ ...review, created_at: new Date(review.created_at) }));
+        const reviews = data.map((review: BusinessReview) => ({ ...review, created_at: new Date(review.created_at) }));
         return reviews;
     }, [businessId]);
     const {
@@ -28,7 +32,7 @@ export function useReviews(businessId: number | undefined) {
     } = useQuery({
       queryKey: ['reviews', { businessId }],
       queryFn: fetchReviews,
-      initialData: [] as Review[],
+      initialData: [] as BusinessReview[],
       enabled: !!businessId,
     });
 
