@@ -6,6 +6,7 @@ import { Address } from '@/components/business/businessLocation/types'
 import { Filters, Radius, Rating, SortBy } from '@/components/explore/types'
 import { formatAddress } from '@/components/explore/utils'
 import { refundBooking } from './bookingStore'
+
 export interface CustomerStore {
     appointments: Map<number, Appointment>,
     notifications: Map<number, Notification>,
@@ -13,6 +14,7 @@ export interface CustomerStore {
     searchFilters: Filters,
     loading: boolean,
     chatbotHistory: { sender: Sender, message: string }[],
+    chatbotFilters: ChatbotFilters,
     load: () => Promise<void>,
     loadAppointments: () => Promise<void>,
     setSearchFilters: (filters: Filters) => void,
@@ -24,6 +26,7 @@ export interface CustomerStore {
     clearSearchFilters: () => void,
     addSearchHistory: (address: Address) => void,
     addChatbotMessage: (message: string, sender: Sender) => void,
+    setChatbotFilters: (filters: ChatbotFilters) => void,
     addAppointmentReview: (review: string, rating: number, businessId: number, appointmentId: number) => Promise<{ error?: AuthError | PostgrestError | Error }>,
     bookAppointment: (
         businessId: number,
@@ -51,6 +54,12 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
     appointments: new Map<number, Appointment>(),
     notifications: new Map<number, Notification>(),
     chatbotHistory: [],
+    chatbotFilters: {
+        service: undefined,
+        Style: undefined,
+        location: undefined,
+        minRating: undefined,
+    },
     searchHistory: [],
     searchFilters: {
         radius: "any",
@@ -101,6 +110,10 @@ export const useCustomerStore = create<CustomerStore>((set, get) => ({
     addChatbotMessage: (message: string, sender: "bot" | "user") => {
         const history = get().chatbotHistory;
         set({ chatbotHistory: [...history, { message, sender }] });
+    },
+    setChatbotFilters: (filters: ChatbotFilters) => {
+        const currentFilters = get().chatbotFilters;
+        set({ chatbotFilters: { ...currentFilters, ...filters } });
     },
     addAppointmentReview: async (review: string, rating: number, businessId: number, appointmentId: number) => {
         const supabase = await supabaseClient;
@@ -224,6 +237,13 @@ const initialState = {
     searchHistory: [],
     searchFilters: {...initialFilters},
     chatbotHistory: [],
+}
+
+type ChatbotFilters = {
+    service: string | undefined,
+    Style: string | undefined,
+    location: string | undefined,
+    minRating: number | undefined,
 }
 
 type Sender = "bot" | "user"

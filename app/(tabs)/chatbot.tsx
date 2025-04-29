@@ -1,9 +1,11 @@
 import AuthWrapper from '@/components/auth/AuthWrapper'
 import DismissKeyboard from '@/components/utils/DismissKeyboard'
 import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView'
+import Pressable from '@/components/utils/Pressable'
+import SheetModal from '@/components/utils/ui/SheetModal'
 import useToast from '@/hooks/useToast'
 import { useCustomerStore } from '@/utils/stores/customerStore'
-import { MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons, Octicons } from '@expo/vector-icons'
 import React, { useState, useEffect, useRef } from 'react'
 import { TouchableOpacity, Text, StyleSheet } from 'react-native'
 import { useTheme, View, Input, XStack, ScrollView } from 'tamagui';
@@ -14,8 +16,10 @@ interface ChatMessage {
 }
 
 const ChatScreen: React.FC = () => {
+  const [filterModalOpen, setFilterModalOpen] = useState(false)
   const chatbotHistory = useCustomerStore((state) => state.chatbotHistory)
   const addChatbotMessage = useCustomerStore((state) => state.addChatbotMessage)
+  const chatBotFilters = useCustomerStore((state) => state.chatbotFilters)
   const [input, setInput] = useState('')
   const listRef = useRef<ScrollView>(null)
   const toast = useToast()
@@ -40,11 +44,8 @@ const ChatScreen: React.FC = () => {
         },
         body: JSON.stringify({
            query: userMessage,
-           filters: [],
-           conversation_history: chatbotHistory.map((msg) => ({
-              sender: msg.sender,
-              message: msg.message,
-            })),
+           filters: chatBotFilters,
+           conversation_history: chatbotHistory,
           }),
       })
       if (!res.ok) throw new Error(`Server error ${res.status}`)
@@ -60,6 +61,10 @@ const ChatScreen: React.FC = () => {
       <KeyboardAvoidingView offset={20}>
         <DismissKeyboard>
           <>
+            <FilterModal visible={filterModalOpen} setOpen={setFilterModalOpen} />
+            <Pressable style={{ position: 'absolute', top: 10, left: -10, zIndex: 10, width: 100, height: 100 }} onPress={() => setFilterModalOpen(true)}>
+              <Octicons name="filter" size={24} color="black" />
+            </Pressable>
             <ScrollView
               ref={listRef}
               style={{ flex: 1, backgroundColor: theme.background.val, paddingTop: 50 }}
@@ -128,7 +133,64 @@ const renderItem = ({ item }: { item: ChatMessage }) => {
     </View>
   )
 }
+
+const FilterModal = ({ visible, setOpen }: { visible: boolean; setOpen: (open: boolean) => void }) => {
+  const chatbotFilters = useCustomerStore((state) => state.chatbotFilters)
+  const setChatbotFilters = useCustomerStore((state) => state.setChatbotFilters)
+  const theme = useTheme()
+  return (
+    <SheetModal open={visible} setOpen={setOpen} snapPoints={[50]}>
+      <View height={"100%"} gap={10} width={"100%"} padding={20}>
+        <View height={50}>
+          <Input 
+            value={chatbotFilters.service}
+            onChangeText={(text) => setChatbotFilters({ ...chatbotFilters, service: text })}
+            placeholder="Service"
+            placeholderTextColor={theme.color.val+"80"}
+            style={[styles.filterInput]}
+          ></Input>
+        </View>
+        <View height={50}>
+          <Input 
+            value={chatbotFilters.Style}
+            onChangeText={(text) => setChatbotFilters({ ...chatbotFilters, Style: text })}
+            placeholder="Style"
+            placeholderTextColor={theme.color.val+"80"}
+            style={[styles.filterInput]}
+          ></Input>
+        </View>
+        <View height={50}>
+          <Input 
+            value={chatbotFilters.location}
+            onChangeText={(text) => setChatbotFilters({ ...chatbotFilters, location: text })}
+            placeholder="Location"
+            placeholderTextColor={theme.color.val+"80"}
+            style={[styles.filterInput]}
+          ></Input>
+        </View>
+        <View height={50}>
+          <Input 
+            value={chatbotFilters.minRating ? chatbotFilters.minRating.toString() : undefined}
+
+            onChangeText={(text) => {
+              if (isNaN(parseInt(text))) return
+              if (parseInt(text) <= 0  || parseInt(text) > 5) return
+              setChatbotFilters({ ...chatbotFilters, minRating: parseFloat(text) })}
+
+            }
+            placeholder="Min Rating"
+            placeholderTextColor={theme.color.val+"80"}
+            keyboardType='numeric'
+            style={[styles.filterInput]}
+          ></Input>
+        </View>
+
+      </View>
+    </SheetModal>
+  )
+}
 export default ChatScreen
+
 
 const styles = StyleSheet.create({
   container: {
@@ -187,5 +249,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     textAlign: "center",
     
+  },
+  filterInput: {
+    height: "100%",
+    width: "100%",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 10,
+    borderRadius:  100,
+    borderColor: "red",
+    fontSize: 16,
   },
 })
