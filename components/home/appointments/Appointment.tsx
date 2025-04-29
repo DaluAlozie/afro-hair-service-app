@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { Appointment } from "@/components/business/types";
 import { AppointmentSummary } from "@/hooks/business/useAppointmentSummaries";
-import { useTheme, useWindowDimensions, View, XStack } from "tamagui";
+import { useTheme, View, XStack } from "tamagui";
 import { Text, StyleSheet, Platform } from "react-native";
 import { formatDateDifference, hasPast, isToday, isTomorrow } from "../utils";
 import Status from "@/assets/icons/status";
@@ -27,7 +27,6 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
     }
     const theme = useTheme();
     const styles = makeStyles(theme);
-    const { height } = useWindowDimensions();
 
     const profilePicture = `${process.env.EXPO_PUBLIC_BUSINESS_PROFILE_BASE_URL}/${summary.business_owner_id}/profilePicture.png`;
     const location = [
@@ -61,9 +60,9 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
     return (
       <View
         style={styles.container}
-        height={height * 0.7}
+        height={"auto"}
         opacity={hasPast(appointment.start_time) || summary.cancelled ? 0.5 : 1}>
-        <XStack justifyContent="space-between" alignItems="flex-start" height={appointment.cancelled ? "100%" : "95%"}>
+        <XStack justifyContent="space-between" alignItems="flex-start" height={appointment.cancelled ? "100%" : "90%"}>
           {/* Left */}
           <View height={"100%"} justifyContent="space-between">
               <View>
@@ -78,7 +77,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
                   <View style={styles.detailsContainer}>
                   <XStack alignItems="flex-end" marginBottom={4}>
                       <XStack alignItems="flex-end">
-                      <Text style={styles.serviceOption}>{summary.service_option} </Text>
+                      <Text style={styles.style}>{summary.style} </Text>
                       <Text style={styles.service}>{summary.service}</Text>
                       </XStack>
                       <XStack alignItems="flex-end">
@@ -102,9 +101,9 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
               </View>
 
               {/* Total Price */}
-              <XStack alignItems="center" gap={10}>
-              <Text style={{ color: theme.color.val, fontSize: 20, opacity: 0.9, fontWeight: "bold" }}>Total:</Text>
-              <Text style={styles.price}>£{appointment.total_price.toFixed(2)}</Text>
+              <XStack alignItems="flex-end" gap={10} height={50}>
+                <Text style={{ color: theme.color.val, fontSize: 20, opacity: 0.9, fontWeight: "bold" }}>Total:</Text>
+                <Text style={styles.price}>£{appointment.total_price.toFixed(2)}</Text>
               </XStack>
           </View>
 
@@ -152,7 +151,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
           </View>
         </XStack>
         { !appointment.cancelled && !hasPast(appointment.start_time)  && (
-        <XStack height={"5%"} width={"100%"} justifyContent="space-between" alignItems="flex-end" marginTop={10}>
+        <XStack height={"10%"} width={"100%"} justifyContent="space-between" alignItems="flex-end" marginTop={10}>
           <CustomerRescheduleButton
               appointmentId={summary.id}
               businessId={appointment.business_id}
@@ -177,7 +176,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
       backgroundColor: theme.background.val,
       paddingVertical: 12,
       paddingHorizontal: 16,
-      marginBottom: 10,
+      marginBottom: 50,
       borderRadius: 8,
       borderWidth: 1,
       borderLeftWidth: 10,
@@ -192,6 +191,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
       elevation: 2,
       justifyContent: 'space-between',
       paddingBottom: 20,
+      minHeight: 250,
     },
     date: {
       fontSize: 23,
@@ -204,7 +204,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
       flexDirection: 'column',
       gap: 4,
     },
-    serviceOption: {
+    style: {
       fontSize: 20,
       fontWeight: '700',
       color: theme.color.val,
@@ -254,7 +254,6 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
       fontSize: 20,
       fontWeight: "bold",
       color: theme.color.val,
-      alignSelf: 'flex-end',
     },
     addOnTitle: {
       fontSize: 16,
@@ -269,4 +268,3 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
       marginLeft: 5,
     },
   });
-  

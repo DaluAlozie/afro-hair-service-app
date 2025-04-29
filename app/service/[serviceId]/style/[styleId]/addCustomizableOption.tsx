@@ -4,26 +4,26 @@ import React, { useCallback, useState } from 'react'
 import { View } from 'tamagui'
 
 export default function AddVariant() {
-    const { serviceId, serviceOptionId } = useLocalSearchParams();
+    const { serviceId, styleId } = useLocalSearchParams();
     const [validParams, setValidParams] = useState(true);
     const router = useRouter();
     const onLayout = useCallback(() => {
         if (typeof serviceId !== "string" || isNaN(parseInt(serviceId))) {
-            router.dismissTo(`/service/${serviceId}/serviceOption/${serviceOptionId}/variants`);
+            router.dismissTo(`/service/${serviceId}/style/${styleId}/variants`);
             setValidParams(false);
             return null
         }
-        if (typeof serviceOptionId !== "string" || isNaN(parseInt(serviceOptionId))) {
-            router.dismissTo(`/service/${serviceId}/serviceOption/${serviceOptionId}/variants`);
+        if (typeof styleId !== "string" || isNaN(parseInt(styleId))) {
+            router.dismissTo(`/service/${serviceId}/style/${styleId}/variants`);
             setValidParams(false);
             return null
         }
-    }, [serviceId, serviceOptionId])
+    }, [serviceId, styleId])
     return (
         <View onLayout={onLayout}>
             {
                 validParams &&
-                <AddCustomizableOptionForm serviceId={parseInt(serviceId as string)} serviceOptionId={parseInt(serviceOptionId as string)}/>
+                <AddCustomizableOptionForm serviceId={parseInt(serviceId as string)} styleId={parseInt(styleId as string)}/>
             }
         </View>
     )

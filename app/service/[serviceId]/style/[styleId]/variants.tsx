@@ -10,26 +10,26 @@ import { AddButton, SectionTitle } from '../..';
 import { makeContainerStyles } from '@/components/business/utils';
 
 export default function Variants() {
-  const { serviceId, serviceOptionId } = useLocalSearchParams();
+  const { serviceId, styleId } = useLocalSearchParams();
   const parsedServiceId = parseInt(serviceId as string);
-  const parsedServiceOptionId = parseInt(serviceOptionId as string);
+  const parsedStyleId = parseInt(styleId as string);
   const services = useBusinessStore((state) => state.services);
-  const serviceOption = services.get(parsedServiceId)?.service_options.get(parsedServiceOptionId);
+  const style = services.get(parsedServiceId)?.styles.get(parsedStyleId);
 
   const theme = useTheme();
   const styles = makeContainerStyles(theme);
   const navigation = useNavigation();
 
   useEffect(() => {
-    if (!serviceOption) {
+    if (!style) {
       return;
     }
-    const title = serviceOption.name;
+    const title = style.name;
     navigation.setOptions({
-      title: title.length < 20 ? title + " Variants" : "Variants",
+      title: title.length < 20 ? title + " Variations" : "Variations",
     });
-  }, [serviceOption]);
-  const variants = Array.from(serviceOption?.variants.values() || []);
+  }, [style]);
+  const variants = Array.from(style?.variants.values() || []);
     const  [open, setOpen] = useState(false);
     const  [variantId, setVariantId] = useState(-1);
 
@@ -39,11 +39,11 @@ export default function Variants() {
     }
   return (
     <>
-      {serviceOption !== undefined && (
+      {style !== undefined && (
         <>
           <EditVariantPriceModal
-            serviceId={serviceOption.service_id}
-            serviceOptionId={serviceOption.id}
+            serviceId={style.service_id}
+            styleId={style.id}
             variantId={variantId}
             open={open}
             setOpen={setOpen}
@@ -58,12 +58,12 @@ export default function Variants() {
             showsVerticalScrollIndicator={false}
           >
             <AddButton
-                href={`/service/${serviceId}/serviceOption/${serviceOptionId}/addVariant`}
-                text={"Add Variant"}
+                href={`/service/${serviceId}/style/${styleId}/addVariant`}
+                text={"Add Variation"}
             />
-            {serviceOption && (
+            {style && (
               <Collapsible defaultOpen={true} style={{ width: '100%' }}
-              header={<SectionTitle title="Variants" />}>
+              header={<SectionTitle title="Variations" />}>
                 {useMemo(() => variants.map((variant) => (
                   <Variant key={variant.id} {...variant} editVariantPrice={openEditVariantPriceModal} />
                 )), [variants])}

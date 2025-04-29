@@ -20,14 +20,14 @@ const convertType = (type: string) => {
       return 'Unknown';
   }
 }
-export default function CustomizableOption({  id, name, type, lower_bound, upper_bound, service_option_id, service_id }: CustomizableOptionType) {
+export default function CustomizableOption({  id, name, type, lower_bound, upper_bound, style_id, service_id }: CustomizableOptionType) {
   const theme = useTheme();
   const styles = makeStyles(theme);
   const removeCustomizableOption = useBusinessStore(state => state.removeCustomizableOption);
   const deleteCustomizableOption = useCallback(async () => {
     confirm(
       async () => {
-        const { error } = await removeCustomizableOption(service_id, service_option_id, id);
+        const { error } = await removeCustomizableOption(service_id, style_id, id);
         if (error) console.log(error);
         else return;
       },

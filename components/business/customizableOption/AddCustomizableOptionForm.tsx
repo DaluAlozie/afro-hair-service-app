@@ -20,7 +20,7 @@ import {
   const schema = yup.object().shape({
     name: yup
       .string()
-      .required('The service option name is required')
+      .required('The style\'s name is required')
       .max(50, "The name exceeds the character limit of 50."),
     type: yup
       .string()
@@ -40,7 +40,7 @@ import {
       .notRequired(),
   });
 
-  export function AddCustomizableOptionForm({ serviceId, serviceOptionId }: { serviceId: number, serviceOptionId: number }) {
+  export function AddCustomizableOptionForm({ serviceId, styleId }: { serviceId: number, styleId: number }) {
     const router = useRouter();
     const { control, handleSubmit, formState: { errors, isSubmitting }, reset, watch } = useForm({
       resolver: yupResolver(schema),
@@ -63,13 +63,13 @@ import {
         type as CustomizableOptionType,
         type === 'numeric' ? lowerBound ?? null : null,
         type === 'numeric' ? upperBound ?? null : null,
-        serviceOptionId,
+        styleId,
         serviceId
       );
       if (error) console.log(error);
-      else router.dismissTo(`/service/${serviceId}/serviceOption/${serviceOptionId}/customizableOptions`);
+      else router.dismissTo(`/service/${serviceId}/style/${styleId}/customizableOptions`);
       reset();
-    }, [addCustomizableOption, reset, router, serviceId, serviceOptionId]);
+    }, [addCustomizableOption, reset, router, serviceId, styleId]);
 
     return (
       <KeyboardAvoidingView>

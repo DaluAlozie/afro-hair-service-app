@@ -19,11 +19,11 @@ const schema = yup.object().shape({
       .required('An add on price is required'),
 });
 
-export function EditAddOnPriceForm({ serviceId, serviceOptionId, addOnId, close }:
-  { serviceId: number, serviceOptionId: number, addOnId: number, close: () => void }) {
+export function EditAddOnPriceForm({ serviceId, styleId, addOnId, close }:
+  { serviceId: number, styleId: number, addOnId: number, close: () => void }) {
 
   const addOn = useBusinessStore(
-    state => state.services.get(serviceId)?.service_options.get(serviceOptionId)?.addOns.get(addOnId)
+    state => state.services.get(serviceId)?.styles.get(styleId)?.addOns.get(addOnId)
   );
   const { control, handleSubmit, formState: { errors, isSubmitting } } = useForm({
     resolver: yupResolver(schema),
@@ -34,7 +34,7 @@ export function EditAddOnPriceForm({ serviceId, serviceOptionId, addOnId, close 
     confirm(
       async () => {
         const { newPrice } = data;
-        const { error } = await editAddOnPrice(serviceId, serviceOptionId, addOnId,  newPrice);
+        const { error } = await editAddOnPrice(serviceId, styleId, addOnId,  newPrice);
         if (error) console.log(error);
         else {
           notify("Price Changed", "Note that existing appointments will not be affected by this change.");

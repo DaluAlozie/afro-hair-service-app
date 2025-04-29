@@ -7,7 +7,7 @@ import { UseThemeResult } from '@tamagui/web';
 import { RefreshControl, StyleSheet } from 'react-native'
 import { useBusinessStore } from '@/utils/stores/businessStore';
 import Review from '@/components/business/review/Review';
-import { Review as ReviewProps } from '@/components/business/types';
+import { BusinessReview as ReviewProps } from '@/components/business/types';
 import { FlashList } from '@shopify/flash-list';
 
 export default function Reviews() {
@@ -37,7 +37,7 @@ export default function Reviews() {
               <Review {...item} key={item.id} />
             )}
             refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-            estimatedItemSize={100}
+            estimatedItemSize={130}
           />
         )}
       </View>

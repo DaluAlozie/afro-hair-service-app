@@ -1,5 +1,5 @@
-import ServiceOption from '@/components/business/serviceOption/ServiceOption';
-import { Service as ServiceProp, ServiceOption as ServiceOptionProps } from '@/components/business/types';
+import Style from '@/components/business/style/Style';
+import { Service as ServiceProp, Style as StyleOptionProps } from '@/components/business/types';
 import { Collapsible } from '@/components/utils';
 import Pressable from '@/components/utils/Pressable';
 import { useBusinessStore } from '@/utils/stores/businessStore';
@@ -36,7 +36,7 @@ export default function ServicePage() {
     }
     return (
         <ScrollView backgroundColor={"$background"} padding={20}>
-            <ServiceOptions serviceId={parsedId} serviceOptions={service.service_options ?? new Map()}/>
+            <Styles serviceId={parsedId} styles={service.styles ?? new Map()}/>
             <General service={service}/>
         </ScrollView>
   )
@@ -58,16 +58,16 @@ export function SectionTitle({ title }: { title: string }) {
     )
 }
 
-function ServiceOptions({ serviceId, serviceOptions }: { serviceId: number, serviceOptions: Map<number, ServiceOptionProps> }) {
-    const items =Array.from(serviceOptions.values());
+function Styles({ serviceId, styles }: { serviceId: number, styles: Map<number, StyleOptionProps> }) {
+    const items =Array.from(styles.values());
     return (
         <>
         <View>
-            <AddButton href={`/service/${serviceId}/addServiceOption`} text={"Add Service Option"}/>
+            <AddButton href={`/service/${serviceId}/addStyle`} text={"Add Style"}/>
             <Collapsible defaultOpen={true}
-            header={<SectionTitle title={"Service Options"}/>}>
+            header={<SectionTitle title={"Styles"}/>}>
                 {useMemo(() => items.map((item) => (
-                    <ServiceOption key={item.id} {...item}/>
+                    <Style key={item.id} {...item}/>
                 )),[items])}
             </Collapsible>
         </View>

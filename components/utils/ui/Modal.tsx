@@ -14,16 +14,17 @@ interface ModalProps {
   children: React.ReactNode;
   open: boolean;
   setOpen: (value: boolean) => void;
+  onclose?: () => void;
 }
 
-export const Modal: React.FC<ModalProps> = ({ children, open, setOpen }) => {
+export const Modal: React.FC<ModalProps> = ({ children, open, setOpen, onclose = () =>{} }) => {
   const theme = useTheme();
   const styles = makeStyles(theme);
 
   return (
     <>
     { Platform.OS === "android" ?
-    <CustomModal visible={open} onRequestClose={() => setOpen(false)}>
+    <CustomModal visible={open} onRequestClose={() => setOpen(false) }>
       {children}
     </CustomModal>
     :
@@ -31,7 +32,7 @@ export const Modal: React.FC<ModalProps> = ({ children, open, setOpen }) => {
       transparent={true}
       visible={open}
       animationType="fade"
-      onRequestClose={() => setOpen(false)}
+      onRequestClose={() => { onclose(); setOpen(false);  }}
       style={{
         flex: 1,
         justifyContent: 'center',

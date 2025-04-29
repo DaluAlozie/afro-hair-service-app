@@ -1,5 +1,5 @@
 import { formatLocation } from '@/components/business/businessLocation/utils';
-import { calculateDistance } from '@/components/explore/utils';
+import { haversineDistance } from '@/components/explore/utils';
 import SubmitButton from '@/components/utils/form/SubmitButton';
 import { useLocations } from '@/hooks/business/useLocations';
 import { useCurrentLocation } from '@/hooks/useCurrentLocation';
@@ -24,8 +24,8 @@ export default function SelectLocation() {
 
   // Sort locations by distance
   useMemo(() => locations.sort((a, b) =>
-    calculateDistance(latitude, longitude, a.latitude, a.longitude) -
-    calculateDistance(latitude, longitude, b.latitude, b.longitude)
+    haversineDistance(latitude, longitude, a.latitude, a.longitude) -
+    haversineDistance(latitude, longitude, b.latitude, b.longitude)
   ), [locations]);
 
   useEffect(() => {

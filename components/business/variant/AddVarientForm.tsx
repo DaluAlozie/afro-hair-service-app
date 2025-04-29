@@ -19,7 +19,7 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
     const schema = yup.object().shape({
         name: yup
         .string()
-        .required('The service option name is required')
+        .required('The style\'s name is required')
         .max(50, "The name exceeds the character limit of 50."),
         price: yup
             .number()
@@ -33,10 +33,10 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
             .required('A variant duration is required'),
         enabled: yup
             .boolean()
-            .required('Please enable or disable the service option')
+            .required('Please enable or disable the style')
     });
 
-  export function AddVariantForm({ serviceId, serviceOptionId }: { serviceId: number, serviceOptionId: number}) {
+  export function AddVariantForm({ serviceId, styleId }: { serviceId: number, styleId: number}) {
     const router = useRouter();
     const { control, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
       resolver: yupResolver(schema),
@@ -48,9 +48,9 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
         name: string, price: number, duration: number, enabled: boolean
     }) => {
       const { name, price, duration, enabled } = data;
-      const { error } = await addVariant(name, price, duration, enabled, serviceOptionId, serviceId)
+      const { error } = await addVariant(name, price, duration, enabled, styleId, serviceId)
       if (error) console.log(error);
-      else router.dismissTo(`/service/${serviceId}/serviceOption/${serviceOptionId}/variants`);
+      else router.dismissTo(`/service/${serviceId}/style/${styleId}/variants`);
       reset()
     },[]);
 

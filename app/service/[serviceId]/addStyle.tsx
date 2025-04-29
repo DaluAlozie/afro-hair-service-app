@@ -1,9 +1,9 @@
-import { AddServiceOptionForm } from '@/components/business/serviceOption/AddServiceOptionForm';
+import { AddStyleForm } from '@/components/business/style/AddStyleForm';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback } from 'react'
 import { View } from 'tamagui'
 
-export default function AddServiceOption() {
+export default function AddStyle() {
     const router = useRouter();
     const { serviceId } = useLocalSearchParams();
     const onLayout = useCallback(() => {
@@ -14,7 +14,7 @@ export default function AddServiceOption() {
     }, [serviceId])
   return (
     <View onLayout={onLayout}>
-        <AddServiceOptionForm serviceId={parseInt(serviceId as string)}/>
+        <AddStyleForm serviceId={parseInt(serviceId as string)}/>
     </View>
   )
 }

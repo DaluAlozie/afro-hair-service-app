@@ -36,7 +36,7 @@ export default function Analytics() {
     month: "all",
     range: undefined,
     service: "all",
-    serviceOption: "all",
+    style: "all",
   });
 
   // Use fake data for filtering.
@@ -134,8 +134,8 @@ const TimeFilterHeader = ({ appointments, filter, setFilters }: TimeFilterHeader
           setVal={(year: string) =>
             setFilters({ ...filter, year: parseInt(year), range: undefined })
           }
-          width={90}
-          height={50}
+          width={100}
+          height={60}
         />
         <Select
           label="Month"
@@ -159,8 +159,8 @@ const TimeFilterHeader = ({ appointments, filter, setFilters }: TimeFilterHeader
           setVal={(month: Month | "all") =>
             setFilters({ ...filter, month, range: undefined })
           }
-          width={130}
-          height={50}
+          width={140}
+          height={60}
         />
       </XStack>
       <XStack height={50} gap="$4" justifyContent="flex-start">
@@ -182,8 +182,8 @@ const TimeFilterHeader = ({ appointments, filter, setFilters }: TimeFilterHeader
               range: range === "all" ? "all" : parseInt(range) as 1 | 3 | 6 | 12,
             })
           }
-          height={50}
-          width={150}
+          width={175}
+          height={60}
         />
       </XStack>
     </View>
@@ -207,15 +207,15 @@ const ServiceFiltersHeader = ({ filter, setFilters }: ServiceFiltersProps) => {
     () => serviceList.find((s) => s.name === filter.service),
     [serviceList, filter.service]
   );
-  const serviceOptions = selectedService?.service_options;
-  const serviceOptionItems = useMemo(() => {
-    const items = Array.from(serviceOptions?.values() || []).map((option) => ({
+  const styles = selectedService?.styles;
+  const styleItems = useMemo(() => {
+    const items = Array.from(styles?.values() || []).map((option) => ({
       label: option.name,
       value: option.name,
     }));
     items.unshift({ label: "All", value: "all" });
     return items;
-  }, [serviceOptions]);
+  }, [styles]);
 
   return (
     <View
@@ -233,19 +233,19 @@ const ServiceFiltersHeader = ({ filter, setFilters }: ServiceFiltersProps) => {
           items={serviceItems}
           val={filter.service}
           setVal={(service: string) =>
-            setFilters({ ...filter, service, serviceOption: undefined })
+            setFilters({ ...filter, service, style: undefined })
           }
           width={140}
-          height={50}
+          height={60}
         />
         <Select
           disabled={filter.service === "all"}
-          label="Service Option"
-          items={serviceOptionItems}
-          val={filter.serviceOption}
-          setVal={(option: string) => setFilters({ ...filter, serviceOption: option })}
+          label="Style"
+          items={styleItems}
+          val={filter.style}
+          setVal={(option: string) => setFilters({ ...filter, style: option })}
           width={150}
-          height={50}
+          height={60}
         />
       </XStack>
     </View>

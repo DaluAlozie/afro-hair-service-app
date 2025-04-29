@@ -1,43 +1,21 @@
 import { Address } from "../business/businessLocation/types";
+import { recommendBusinesses } from "./recommend";
+import { searchBusinesses } from "./search";
 import { BusinessSummary, Filters, SortBy } from "./types";
+import { haversineDistance } from "./utils";
 
-const EARTH_RADIUS_MILES = 3958.8; // Earth's radius in miles
 
-const toRadians = (degrees: number): number => {
-    return degrees * (Math.PI / 180);
-};
-
-export const calculateDistance = (
-    latitude1: number,
-    longitude1: number,
-    latitude2: number,
-    longitude2: number
-): number => {
-    const lat1 = toRadians(latitude1);
-    const lon1 = toRadians(longitude1);
-    const lat2 = toRadians(latitude2);
-    const lon2 = toRadians(longitude2);
-
-    const dLat = lat2 - lat1;
-    const dLon = lon2 - lon1;
-
-    const a = Math.sin(dLat / 2) ** 2 +
-        Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLon / 2) ** 2;
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return EARTH_RADIUS_MILES * c;
-};
 
 // Calculate the minimum distance between a business and an address
 const calculateMinDistance = (business: BusinessSummary, address: Address|undefined): number => {
-    return Math.min(...business.locations.map(loc => calculateDistance(
+    return Math.min(...business.locations.map(loc => haversineDistance(
         loc.latitude, loc.longitude, (address || loc).latitude, (address || loc).longitude
     )));
 };
 
 const filterByRadius = (business: BusinessSummary, address: Address, radius: string): boolean => {
     if (radius === 'any') return true;
-    return business.locations.some(location => calculateDistance(
+    return business.locations.some(location => haversineDistance(
         location.latitude, location.longitude, address.latitude, address.longitude
     ) <= parseInt(radius));
 };
@@ -47,19 +25,8 @@ const filterByRating = (business: BusinessSummary, rating: string): boolean => {
     return business.rating >= parseInt(rating);
 };
 
-const matchBusiness = (business: BusinessSummary, search: string): number => {
-    if (!search) return 1; // Default score if no search input is provided
-    const searchLower = search.toLowerCase();
-    let score = 0;
 
-    if (business.name.toLowerCase().includes(searchLower)) score += 5;
-    if (business.description.toLowerCase().includes(searchLower)) score += 3;
-    if (business.tags.some(tag => tag.toLowerCase().includes(searchLower))) score += 2;
-
-    return score;
-};
-
-const sortBusinesses = (businesses: BusinessSummary[], sortBy: SortBy, address: Address|undefined): BusinessSummary[] => {
+const sortBusinesses = async (businesses: BusinessSummary[], sortBy: SortBy, address: Address|undefined): Promise<BusinessSummary[]> => {
     switch (sortBy) {
         case 'distance':
             return businesses.sort((a, b) => {
@@ -70,38 +37,28 @@ const sortBusinesses = (businesses: BusinessSummary[], sortBy: SortBy, address: 
         case 'rating':
             return businesses.sort((a, b) => b.rating - a.rating);
         case 'recommended':
-            return recommendBusinesses(businesses, address);
+            return await recommendBusinesses(businesses, address);
         default:
             return businesses;
     }
 };
 
-export const filterBusiness = (businesses: BusinessSummary[], filter: Filters): [BusinessSummary, number][] => {
+export const filterBusiness = async (businesses: BusinessSummary[], filter: Filters): Promise<[BusinessSummary, number][]> => {
     const scores = new Map<number, number>();
-    for (const business of businesses) {
-        scores.set(business.id, matchBusiness(business, filter.searchInput));
-    }
 
-    let filteredBusinesses = businesses.filter(business =>
+    const matchingBusinesses = searchBusinesses(
+        filter.searchInput,
+        filter.address || { latitude: 55.3781, longitude: 3.4360 } as Address,
+        businesses,
+        { alpha: 0.5, beta: 0.1, gamma: 10, cutoff: 1.7 },
+    );
+
+    let filteredBusinesses = matchingBusinesses.filter(business =>
         filterByRadius(business, filter.address!, filter.radius) && filterByRating(business, filter.rating)
     );
 
-    filteredBusinesses = sortBusinesses(filteredBusinesses, filter.sortBy, filter.address);
+    filteredBusinesses = await sortBusinesses(filteredBusinesses, filter.sortBy, filter.address);
     filteredBusinesses = filteredBusinesses.filter(business => scores.get(business.id)! > 0);
 
     return filteredBusinesses.map(business => [business, calculateMinDistance(business, filter.address)]);
 }
-
-const recommendBusinesses = (businesses: BusinessSummary[], address: Address|undefined): BusinessSummary[] => {
-    return businesses.map(business => {
-        const minDistance = calculateMinDistance(business, address);
-        const ratingScore = business.rating * 10; // Give higher weight to rating
-        const distanceScore = Math.max(0, (100 - minDistance)); // Businesses closer get a higher score
-        const popularityScore = (business.services.length * 2); // More services = better score
-
-        // Final score calculation (adjust weights as needed)
-        const finalScore = (ratingScore * 0.5) + (distanceScore * 0.3) + (popularityScore * 0.2);
-
-        return { ...business, finalScore };
-    }).sort((a, b) => b.finalScore - a.finalScore); // Sort by highest score
-};

@@ -10,15 +10,15 @@ import React, { useEffect, useState } from "react";
 import { View, Text, useTheme, XStack, RadioGroup } from "tamagui";
 import { Platform, StyleSheet } from "react-native";
 import { capitalise, formatAddress } from "@/components/explore/utils";
-import { filterBusiness } from "@/components/explore/utils";
 import { useBusinessSummaries } from "@/hooks/useBusinessSummaries";
 import { Text as RNText } from "react-native";
 import { RadioGroupItemWithLabel } from "@/components/utils/form/inputs";
-import { SortBy } from "@/components/explore/types";
+import { BusinessSummary, SortBy } from "@/components/explore/types";
 import { FlashList } from "@shopify/flash-list";
 import { RefreshControl } from "react-native";
 import SheetModal from "@/components/utils/ui/SheetModal";
 import { Business } from "@/components/explore/business";
+import { filterBusiness } from "@/components/explore/filterBusinesses";
 
 export default function Explore() {
   const theme  = useTheme();
@@ -38,7 +38,7 @@ const BusinessSearch = () => {
   const theme = useTheme();
   return (
     <XStack gap={10} height={60}>
-    <View width={"90%"}>
+    <View width={"93%"}>
       <SearchBar
         input={searchInput}
         setInput={(val) => {
@@ -132,23 +132,34 @@ const Results = () => {
   const theme = useTheme();
   const { businessDetails, refetchDetails, isRefetchingDetails } = useBusinessSummaries();
   const filters = useCustomerStore(state => state.searchFilters);
-  const filteredBusinesses = filterBusiness(Array.from(businessDetails.values()), filters);
+
+  const [filteredBusinesses, setFiltererdBusiness] = useState<[BusinessSummary, number][]>([]);
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    const fetchFilteredBusinesses = async () => {
+      const businesses = await filterBusiness(
+        Array.from(businessDetails.values()),
+        filters
+      );
+      setFiltererdBusiness(businesses);
+    };
+    fetchFilteredBusinesses();
+  }, [businessDetails, filters]);
 
   return (
     <View flex={1}>
       <SortByModal open={open} setOpen={setOpen}/>
+      <BusinessSearch />
       <FlashList
         data={filteredBusinesses}
         keyExtractor={(item) => item[0].id.toString()}
-        estimatedItemSize={100}
+        estimatedItemSize={260}
         refreshControl={
           <RefreshControl refreshing={isRefetchingDetails} onRefresh={refetchDetails} />
         }
         ListHeaderComponent={() => (
           <View style={{ paddingTop: 10 }}>
             {/* Space below sticky search */}
-            <BusinessSearch />
             <SelectLocation />
             <SortByButton setOpen={setOpen} />
             <RNText
@@ -261,7 +272,7 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
       alignItems: 'center',
       flexDirection: 'row',
       gap: 5,
-      width: 200,
+      width: 235,
       height: 50,
       backgroundColor: theme.accent.val,
       padding: 10,

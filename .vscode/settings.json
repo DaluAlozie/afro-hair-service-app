@@ -1,18 +1,41 @@
 {
-    "cSpell.words": [
-        "afrohairservice",
-        "capitalise",
-        "dalu",
-        "datetimepicker",
-        "Entypo",
-        "MMKV",
-        "Normalise",
-        "normalised",
-        "Postgrest",
-        "Pressable",
-        "Subview",
-        "supabase",
-        "Tamagui",
-        "unformat"
-    ]
+  "[typescript]": {
+    "editor.defaultFormatter": "denoland.vscode-deno"
+  },
+  "cSpell.words": [
+    "afrohairservice",
+    "capitalise",
+    "dalu",
+    "datetimepicker",
+    "Entypo",
+    "MMKV",
+    "Normalise",
+    "normalised",
+    "Postgrest",
+    "Pressable",
+    "Subview",
+    "supabase",
+    "Tamagui",
+    "unformat"
+  ],
+  "deno.enable": true,
+  "deno.enablePaths": ["./supabase/functions"],
+  "deno.envFile": ".env",
+  "deno.lint": true,
+  "deno.path": "C://Users/dalua/.deno/bin/deno.exe",
+  "deno.unstable": [
+    "bare-node-builtins",
+    "byonm",
+    "sloppy-imports",
+    "unsafe-proto",
+    "webgpu",
+    "broadcast-channel",
+    "worker-options",
+    "cron",
+    "kv",
+    "ffi",
+    "fs",
+    "http",
+    "net"
+  ]
 }

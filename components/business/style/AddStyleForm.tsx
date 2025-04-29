@@ -19,30 +19,30 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
   const schema = yup.object().shape({
     name: yup
       .string()
-      .required('The service option name is required')
+      .required('The style\'s name is required')
       .max(50, "The name exceeds the character limit of 50."),
     description: yup
       .string()
-      .required('A description of the service option is required')
+      .required('A description of the style is required')
       .max(50, "The description exceeds the character limit of 50."),
     enabled: yup
         .boolean()
-        .required('Please enable or disable the service option')
+        .required('Please enable or disable the style')
   });
 
-  export function AddServiceOptionForm({serviceId}: {serviceId: number}) {
+  export function AddStyleForm({serviceId}: {serviceId: number}) {
     const router = useRouter();
     const { control, handleSubmit, formState: { errors, isSubmitting }, reset } = useForm({
       resolver: yupResolver(schema),
     });
 
     const theme = useTheme();
-    const addServiceOption = useBusinessStore((state) => state.addServiceOption)
+    const addStyle = useBusinessStore((state) => state.addStyle)
     const onSubmit = useCallback(async (data: {
         name: string, description: string, enabled: boolean
     }) => {
       const { name, description, enabled } = data;
-      const { error } = await addServiceOption(name, description, enabled, serviceId)
+      const { error } = await addStyle(name, description, enabled, serviceId)
       if (error) console.log(error);
       else router.dismissTo(`/service/${serviceId}`);
       reset()
@@ -68,7 +68,7 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
                     <YStack gap="$2">
                         <Input
                         control={control}
-                        label="Service Option Name"
+                        label="Style Name"
                         name="name"
                         placeholder='Service Name'
                         textContentType='organizationName'/>
@@ -79,7 +79,7 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
                             control={control}
                             label=" Description"
                             name="description"
-                            placeholder='Description of the service option'
+                            placeholder='Description of the style'
                             textContentType="organizationName"
                             />
                         {errors.description && <InputError>{errors.description.message?.toString()}</InputError>}
@@ -95,7 +95,7 @@ import KeyboardAvoidingView from '@/components/utils/KeyboardAvoidingView';
                     </YStack>
                 </YStack>
                 <SubmitButton onPress={handleSubmit(onSubmit)} isSubmitting={isSubmitting}>
-                    Add Service Option
+                    Add Style
                 </SubmitButton>
               </YStack>
             </Form>

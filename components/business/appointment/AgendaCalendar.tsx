@@ -109,6 +109,7 @@ export default function AppointmentCalendar({
     setRefreshing(true);
     await Promise.all([refetchAppointments(), loadAppointments()]);
     setRefreshing(false);
+  agendaRef.current?.forceUpdate();
   }, [refetchAppointments, loadAppointments]);
 
   // For iPad, fix height issues after appointments are fetched.

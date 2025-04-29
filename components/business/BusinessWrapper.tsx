@@ -11,6 +11,7 @@ import { Text } from 'react-native';
 import Link from '../utils/Link';
 import { useColorScheme } from '@/hooks/useColorScheme.web';
 import PageSpinner from '../utils/loading/PageSpinner';
+import CustomerReview from '../review/CustomerReview';
 
 type BusinessWrapperProps = {
   children: React.ReactNode,
@@ -29,6 +30,7 @@ export default function BusinessWrapper({
     const scheme = useColorScheme();
     return (
       <AuthWrapper>
+        <CustomerReview />
         <ThemedView style={styles.container}>
             {
               loading ? ( suspense || <PageSpinner /> ) :

@@ -36,7 +36,7 @@ const schema = yup.object().shape({
 });
 
   export function BookingForm(
-    { business, service, serviceOption, variants, addOns, close }: BookingInfo & { close : () => void }) {
+    { business, service, style, variants, addOns, close }: BookingInfo & { close : () => void }) {
     const { control, handleSubmit, formState: { errors, isSubmitting }, watch, reset} = useForm({
       resolver: yupResolver(schema),
       defaultValues: {
@@ -46,7 +46,7 @@ const schema = yup.object().shape({
 
     useEffect(() => {
         reset({ variant: `${variants[0]?.id ?? ""}` });
-    }, [serviceOption, variants, addOns]);
+    }, [style, variants, addOns]);
 
     const variantId = watch('variant');
     const variant = variants.find(v => v.id === parseInt(variantId))
@@ -74,7 +74,7 @@ const schema = yup.object().shape({
     const onSubmit = useCallback(async () => {
         useBookingStore.setState({ business });
         useBookingStore.setState({ service });
-        useBookingStore.setState({ serviceOption });
+        useBookingStore.setState({ style });
         useBookingStore.setState({ variant });
         useBookingStore.setState({ addOns: addOns.filter(a => selectedAddOns.includes(a.id)) });
         useBookingStore.setState({ totalPrice: totalCost });
@@ -101,7 +101,7 @@ const schema = yup.object().shape({
                         >
                             <YStack gap="$7" width={"100%"} height={"100%"} alignItems='flex-start'>
                                 <YStack gap="$5" width={"100%"}>
-                                    <Text style={{ fontSize: 24, fontWeight: "800", color: theme.color.val }}>{serviceOption?.name}</Text>
+                                    <Text style={{ fontSize: 24, fontWeight: "800", color: theme.color.val }}>{style?.name}</Text>
                                     <VariantInputs variants={variants} control={control} />
                                     {errors.variant && <InputError>{errors.variant.message}</InputError>}
                                 </YStack>

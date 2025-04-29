@@ -26,6 +26,7 @@ export default function Services() {
           </>
           ) : (
             <FlashList
+            showsVerticalScrollIndicator={false}
               ListHeaderComponent={() => <HeaderComponent /> }
               data={items}
               renderItem={ ({ item: { id, name, description} }) => <ServiceCover id={id} name={name} description={description} key={id}/>}

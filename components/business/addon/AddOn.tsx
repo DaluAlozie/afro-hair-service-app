@@ -8,7 +8,7 @@ import confirm from '@/components/utils/Alerts/Confirm';
 import notify from '@/components/utils/Alerts/Notify';
 import { makeStyles } from '../utils';
 
-export default function AddOn({ id, name, price, duration, enabled, service_id, service_option_id, editAddOnPrice}:
+export default function AddOn({ id, name, price, duration, enabled, service_id, style_id, editAddOnPrice}:
     AddOnProps & { editAddOnPrice: (id: number) => void }) {
     const theme = useTheme();
     const styles = makeStyles(theme);
@@ -21,7 +21,7 @@ export default function AddOn({ id, name, price, duration, enabled, service_id, 
         async () => {
             confirm(
                 async () => {
-                  const { error } = await removeAddOn(service_id, service_option_id, id)
+                  const { error } = await removeAddOn(service_id, style_id, id)
                   if (error) console.log(error);
                   else {
                     notify("Add on removed", "Note that existing appointments will not be affected",);
@@ -77,8 +77,8 @@ export default function AddOn({ id, name, price, duration, enabled, service_id, 
           defaultChecked={enabled}
           onCheckedChange={
             (checked) => checked ?
-              enableAddOn(service_id, service_option_id, id):
-              disableAddOn(service_id, service_option_id, id)
+              enableAddOn(service_id, style_id, id):
+              disableAddOn(service_id, style_id, id)
           }
           native>
           <Switch.Thumb/>

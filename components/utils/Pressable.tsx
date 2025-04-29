@@ -35,12 +35,12 @@ export default function Pressable({
 
   const onPressIn = () => {
     setIsPressed(true);
-    scaleValue.value = withTiming(scale ?? 0.94, { duration: 100 });
+    scaleValue.value = withTiming(scale ?? 0.94, { duration: 50 });
   };
 
   const onPressOut = () => {
     setIsPressed(false);
-    scaleValue.value = withTiming(1, { duration: 100 });
+    scaleValue.value = withTiming(1, { duration: 50 });
   };
 
   return (

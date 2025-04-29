@@ -1,7 +1,7 @@
 import {
   AddOn as AddOnType,
   Service as ServiceType,
-  ServiceOption as ServiceOptionType,
+  Style as StyleType,
   Variant as VariantType,
   Location as LocationType,
   Business as BusinessType,
@@ -20,7 +20,7 @@ import Pressable from "@/components/utils/Pressable";
 import { BookingInfo } from "@/components/business/booking/types";
 import { BookingForm } from "@/components/business/booking/BookingForm";
 import { useServices } from "@/hooks/business/useServices";
-import { useServiceOptions } from "@/hooks/business/useServiceOptions";
+import { useStyles } from "@/hooks/business/useStyles";
 import { useVariants } from "@/hooks/business/useVariants";
 import { useAddOns } from "@/hooks/business/useAddOns";
 import { useCustomizations } from "@/hooks/business/useCustomizations";
@@ -40,16 +40,16 @@ export default function BusinessPage() {
 
   const { business, profilePictureUrl, refetchBusiness, isRefetchingBusiness } = useBusiness(parsedId);
   const { services } = useServices(parsedId);
-  const { serviceOptions } = useServiceOptions(services.map(service => service.id));
-  const serviceOptionIds = useMemo(() => Array.from(serviceOptions.values()).flat().map(option => option.id), [serviceOptions]);
-  const { variants } = useVariants(serviceOptionIds);
-  const { addOns } = useAddOns(serviceOptionIds);
-  const { customizableOptions } = useCustomizations(serviceOptionIds);
+  const { styles } = useStyles(services.map(service => service.id));
+  const styleIds = useMemo(() => Array.from(styles.values()).flat().map(option => option.id), [styles]);
+  const { variants } = useVariants(styleIds);
+  const { addOns } = useAddOns(styleIds);
+  const { customizableOptions } = useCustomizations(styleIds);
 
   const [optionInfo, setOptionInfo] = useState<BookingInfo>({
     business: business,
     service: undefined,
-    serviceOption: undefined,
+    style: undefined,
     variants: [],
     addOns: [],
     customizableOptions: []
@@ -66,11 +66,11 @@ export default function BusinessPage() {
   }, [businessName]);
 
 
-  const openBookingModal = useCallback((option: ServiceOptionType) => {
+  const openBookingModal = useCallback((option: StyleType) => {
     setOptionInfo({
       business: business,
       service: services.find(service => service.id === option.service_id),
-      serviceOption: option,
+      style: option,
       variants: variants.get(option.id) || [],
       addOns: addOns.get(option.id) || [],
       customizableOptions: customizableOptions.get(option.id) || []
@@ -93,7 +93,7 @@ export default function BusinessPage() {
                   <Service
                     key={service.id}
                     service={service}
-                    serviceOptions={serviceOptions.get(service.id) || []}
+                    styles={styles.get(service.id) || []}
                     addOns={addOns}
                     variants={variants}
                     book={openBookingModal}
@@ -102,7 +102,7 @@ export default function BusinessPage() {
               </ScrollTabs.Section>
             ))}
           </ScrollTabs>
-        ), [services, serviceOptions, addOns, variants])
+        ), [services, styles, addOns, variants])
       }
       </View>
     </AuthWrapper>
@@ -169,7 +169,7 @@ const Header  = ({ business, profilePictureUrl }: { business: BusinessType, prof
           <XStack alignItems="center" gap={10} marginBottom={10}>
             <Text style={styles.sectionTitle}>About Us</Text>
             <View>
-              <Pressable onPress={() => setOpenReviewModal(true)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Pressable onPress={() => setOpenReviewModal(true)} style={{ flexDirection: 'row', alignItems: 'center' }} activeOpacity={0.8}>
                 <Text style={{ color: theme.color.val, fontSize: 12, opacity: 0.7, textDecorationLine: 'underline' }}>
                   Reviews
                 </Text>
@@ -203,13 +203,13 @@ const Header  = ({ business, profilePictureUrl }: { business: BusinessType, prof
 
 type ServiceProps = {
   service: ServiceType,
-  serviceOptions: ServiceOptionType[],
+  styles: StyleType[],
   addOns: Map<number, AddOnType[]>,
   variants: Map<number, VariantType[]>,
-  book: (option: ServiceOptionType) => void
+  book: (option: StyleType) => void
 }
 
-const Service = ({ service, serviceOptions, addOns, variants, book }: ServiceProps) => {
+const Service = ({ service, styles: styleOptions,   addOns, variants, book }: ServiceProps) => {
   const theme = useTheme();
   const styles = makeStyles(theme);
   return (
@@ -218,13 +218,13 @@ const Service = ({ service, serviceOptions, addOns, variants, book }: ServicePro
         <Text style={styles.serviceName}>{service.name}</Text>
         <Text style={styles.serviceDescription}>{service.description}</Text>
       </View>
-      <View style={styles.serviceOptionList}>
-        {serviceOptions.map(serviceOption => (
-          <ServiceOption
-            key={serviceOption.id}
-            serviceOption={serviceOption}
-            addOns={addOns.get(serviceOption.id) || []}
-            variants={variants.get(serviceOption.id) || []}
+      <View style={styles.styleList}>
+        {styleOptions.map(style => (
+          <Style
+            key={style.id}
+            style={style}
+            addOns={addOns.get(style.id) || []}
+            variants={variants.get(style.id) || []}
             book={book}
           />
         ))}
@@ -233,22 +233,22 @@ const Service = ({ service, serviceOptions, addOns, variants, book }: ServicePro
   )
 }
 
-type ServiceOptionProps = {
-  serviceOption: ServiceOptionType,
+type StyleProps = {
+  style: StyleType,
   addOns: AddOnType[],
   variants: VariantType[],
-  book: (option: ServiceOptionType) => void
+  book: (option: StyleType) => void
 }
 
-const ServiceOption = ({ serviceOption, variants, book }: ServiceOptionProps) => {
+const Style = ({ style, variants, book }: StyleProps) => {
   const theme = useTheme();
   const styles = makeStyles(theme);
   variants.sort((a, b) => a.price - b.price);
   return (
-    <View style={styles.serviceOptionContainer}>
-      <View style={styles.serviceOptionHeader}>
-        <Text style={styles.serviceOptionName}>{serviceOption.name}</Text>
-        <Text style={styles.serviceOptionDescription}>{serviceOption.description}</Text>
+    <View style={styles.styleContainer}>
+      <View style={styles.styleHeader}>
+        <Text style={styles.styleName}>{style.name}</Text>
+        <Text style={styles.styleDescription}>{style.description}</Text>
       </View>
       <View style={styles.variantList}>
       {/* <Text style={{ fontWeight: 600, marginBottom: 10 }}>Options</Text> */}
@@ -264,7 +264,7 @@ const ServiceOption = ({ serviceOption, variants, book }: ServiceOptionProps) =>
       </View> */}
       <View>
         <Pressable
-          onPress={() => book(serviceOption)}
+          onPress={() => book(style)}
           style={styles.bookButton}
           scale={0.98}
           pressedStyle={{ backgroundColor: theme.accent.val, opacity: 0.8 }}
@@ -408,11 +408,11 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     lineHeight: 24,
     opacity: 0.7,
   },
-  serviceOptionList: {
+  styleList: {
     marginTop: 10,
     width: "100%",
   },
-  serviceOptionContainer: {
+  styleContainer: {
     width: "100%",
     padding: 15,
     backgroundColor: theme.background.val,
@@ -421,16 +421,16 @@ const makeStyles = (theme: UseThemeResult) => StyleSheet.create({
     borderWidth: 1,
     borderColor: theme.borderColor.val,
   },
-  serviceOptionHeader: {
+  styleHeader: {
     marginBottom: 10,
   },
-  serviceOptionName: {
+  styleName: {
     fontSize: 18,
     fontWeight: '600',
     color: theme.color.val,
     marginBottom: 5,
   },
-  serviceOptionDescription: {
+  styleDescription: {
     fontSize: 14,
     color: theme.color.val,
     lineHeight: 20,

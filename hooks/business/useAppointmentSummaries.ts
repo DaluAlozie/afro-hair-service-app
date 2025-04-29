@@ -12,7 +12,7 @@ export interface AppointmentSummary {
   business: string,
   business_owner_id: string,
   service: string,
-  service_option: string,
+  style: string,
   variant: string,
   add_ons: string[],
   street_address: string,
@@ -34,9 +34,9 @@ export function useAppointmentSummaries(appointment_ids: number[]) {
         }
         const supabase = await supabaseClient;
         const { data, error } = await supabase
-            .rpc('get_appointment_summaries', {
-              appointment_ids: appointment_ids
-            })
+            .from('appointment_summaries')
+            .select('*')
+            .in('id', appointment_ids);
         if (error) {
             return new Map<number, AppointmentSummary>();
         }

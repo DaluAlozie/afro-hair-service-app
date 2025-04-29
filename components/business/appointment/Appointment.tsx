@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme, View, XStack } from "tamagui";
 import { Text, StyleSheet } from "react-native";
 import { Appointment } from "@/components/business/types";
@@ -9,9 +9,10 @@ import { formatTime } from "../booking/BookingDetails";
 import { formatDateDifference, hasPast, isToday, isTomorrow } from "@/components/home/utils";
 import Status from "@/assets/icons/status";
 import Pulse from "@/components/utils/ui/Pulse";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, FontAwesome } from "@expo/vector-icons";
 import BusinessRescheduleButton from "./RescheduleButton";
 import BusinessCancelButton from "./CancelButton";
+import { supabaseClient } from "@/utils/auth/supabase";
 interface AppointmentItemProps {
   appointment: Appointment;
   summary: AppointmentSummary | undefined
@@ -22,6 +23,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
   }
   const theme = useTheme();
   const styles = makeStyles(theme);
+  const [customerRating, setCustomerRating] = useState<number>(0);
   const location = [
     summary.flat_number ? "Flat " + summary.flat_number : undefined,
     summary.street_address,
@@ -32,10 +34,35 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
     .filter(Boolean)
     .join(', ');
 
+
+  const getCustomerRating = async () => {
+    const supabase = await supabaseClient;
+    const { data, error } = await supabase
+      .from('customerreview')
+      .select('rating.avg(), customer_id')
+      .eq('customer_id', appointment.customer_id);
+    
+    if (error) {
+      console.error("Error fetching customer rating:", error);
+      return 0; // Default to 0 if there's an error
+    }
+    if (data && data.length > 0) {
+      const rating = data[0].avg;
+      setCustomerRating(rating);
+    } else {
+      setCustomerRating(2.5);
+    }
+  }
+
+  useEffect(() => {
+    getCustomerRating();
+  }, [appointment.customer_id]);
+
   // Extract add-ons from the appointment
   const addOns = Array.from(summary.add_ons.values() || []);
   const l = addOns.length;
   const addedHeight = l < 3 ? l < 2 ? l < 1 ? 0 : 60 : 80 : 100;
+  
 
   return (
     <>
@@ -44,10 +71,26 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
       style={styles.container}
       height={230+addedHeight}
       opacity={hasPast(appointment.start_time) || summary.cancelled ? 0.5 : 1}>
+      
       <XStack justifyContent="space-between" alignItems="flex-start" height={summary.cancelled ? "100%": "85%"}>
         {/* Left */}
-        <View height={"100%"} justifyContent="space-between">
-          <View>
+        <View height={"100%"} justifyContent="space-between" position="relative">
+          <View position="absolute" top={-20} left={0} right={0} zIndex={1} width={150}>
+            <XStack gap={5} alignItems="center" justifyContent="space-between" marginBottom={-10}>
+              <Text style={{ opacity: 0.6, }} >Customer Rating:</Text>
+              <View>
+                <View alignSelf='flex-end' marginRight={-6} marginBottom={-3}>
+                    <FontAwesome name="star" size={10} color="#FFD43B" />
+                </View>
+                <Text numberOfLines={1} style={{ marginBottom: 5 }}>
+                    {customerRating ? `${customerRating.toFixed(1)}` : "4.5"}
+                </Text>
+              </View>
+
+            </XStack>
+
+          </View>
+          <View marginTop={10}>
             <Text style={styles.time}>{formatTime(appointment.start_time)} - {formatTime(appointment.end_time)}</Text>
             <Text style={styles.location} numberOfLines={1}>{location}</Text>
 
@@ -56,7 +99,7 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
               <View style={styles.detailsContainer}>
                 <XStack alignItems="flex-end" marginBottom={4}>
                   <XStack alignItems="flex-end">
-                    <Text numberOfLines={1} style={styles.serviceOption}>{summary.service_option} </Text>
+                    <Text numberOfLines={1} style={styles.style}>{summary.style} </Text>
                     <Text numberOfLines={1} style={styles.service}>{summary.service}</Text>
                   </XStack>
                   <XStack alignItems="flex-end">
@@ -92,10 +135,10 @@ export const AppointmentItem = ({ appointment, summary }: AppointmentItemProps) 
         </View>
 
         {/* Right */}
-        <View alignItems="center" gap={10} paddingTop={10} height={"90%"} justifyContent="space-between">
+        <View alignItems="center" gap={10} paddingTop={20} height={"90%"} justifyContent="space-between" marginLeft={-150}>
           {isToday(appointment.start_time) && !hasPast(appointment.start_time) && !summary.cancelled && (
             <Pulse>
-              <XStack gap={4} alignItems="center">
+              <XStack gap={4} alignItems="center" marginLeft={-200}>
                 <Status size={15} color={theme.orangeRed.val} />
                 <Text style={styles.timeAway}>{formatDateDifference(appointment.start_time)}</Text>
               </XStack>
@@ -190,7 +233,7 @@ const makeStyles = (theme: UseThemeResult) =>
       flexDirection: 'column',
       gap: 4,
     },
-    serviceOption: {
+    style: {
       fontSize: 20,
       fontWeight: '700',
       color: theme.color.val,

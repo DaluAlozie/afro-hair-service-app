@@ -13,7 +13,7 @@ export const useBusinessSummaries = () => {
     const fetchBusinessSummaries = useCallback(async (): Promise<Map<number, BusinessSummary>> => {
 
         const supabase = await supabaseClient;
-        const { data, error } = await supabase.rpc('get_business_summaries');
+        const { data, error } = await supabase.from('business_summaries').select('*');
 
         if (error) {
             console.log(error);
@@ -25,8 +25,8 @@ export const useBusinessSummaries = () => {
             // Filter out empty strings or null/undefined values
             summary.services = summary.services.filter(isNotEmpty);
             summary.service_descriptions = summary.service_descriptions.filter(isNotEmpty);
-            summary.service_options = summary.service_options.filter(isNotEmpty);
-            summary.service_option_descriptions = summary.service_option_descriptions.filter(isNotEmpty);
+            summary.styles = summary.styles.filter(isNotEmpty);
+            summary.style_descriptions = summary.style_descriptions.filter(isNotEmpty);
             summary.add_ons = summary.add_ons.filter(isNotEmpty);
             summary.variants = summary.variants.filter(isNotEmpty);
             summary.tags = summary.tags.filter(isNotEmpty);

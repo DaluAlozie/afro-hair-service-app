@@ -2,6 +2,7 @@ import { useAuthStore } from '@/utils/stores/authStore'
 import React, { useEffect } from 'react'
 import { useNavigationContainerRef, useRootNavigationState, useRouter } from 'expo-router';
 import { useTheme, View } from 'tamagui';
+import BusinessReview from '../review/BusinessReview';
 
 export default function AuthWrapper({ children } : { children: React.ReactNode }) {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -15,6 +16,7 @@ export default function AuthWrapper({ children } : { children: React.ReactNode }
     },[rootNavigationState?.key])
     return (
         <View flex={1} backgroundColor={theme.background.val}>
+            <BusinessReview />
             { children }
         </View>
     )
