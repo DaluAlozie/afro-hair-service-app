@@ -31,7 +31,7 @@ This project uses a **modern mobile stack** commonly used in production apps:
 - **React Native** – cross-platform mobile development
 - **Expo** – streamlined development, testing, and deployment
 - **TypeScript** – type safety and maintainability
-- **Tailwind (NativeWind / Tamagui)** – utility-first, consistent styling
+- **Tamagui** – utility-first, consistent styling
 - **expo-router** – file-based navigation built on React Navigation
 
 ### State Management
