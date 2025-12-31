@@ -1,50 +1,75 @@
-# Welcome to your Expo app 👋
+# Crown Space 💇🏽‍♀️📱
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Crown Space is a cross-platform mobile application built with **React Native** that helps users discover, book, and manage Afro-textured haircare services. The app connects customers with specialist stylists and salons through location-based discovery, secure bookings, and modern mobile UX patterns.
 
-## Get started
+This project was built as a full-stack prototype, focusing on real-world mobile architecture, scalable backend services, and production-ready tooling.
 
-1. Install dependencies
+---
 
-   ```bash
-   npm install
-   ```
+## ✨ Features
 
-2. Start the app
+### Customer Features
+- Discover Afro haircare businesses near you using **map-based search**
+- Filter services by style, price, rating, and location
+- View detailed business and service profiles
+- Book appointments with integrated payments
+- Persistent user sessions across app restarts
 
-   ```bash
-    npx expo start
-   ```
+### Business Features
+- Create and manage service listings
+- Define availability and appointment schedules
+- Manage bookings and cancellations
+- View customer feedback and ratings
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 🧱 Tech Stack
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+This project uses a **modern mobile stack** commonly used in production apps:
 
-## Get a fresh project
+### Frontend
+- **React Native** – cross-platform mobile development
+- **Expo** – streamlined development, testing, and deployment
+- **TypeScript** – type safety and maintainability
+- **Tailwind (NativeWind / Tamagui)** – utility-first, consistent styling
+- **expo-router** – file-based navigation built on React Navigation
 
-When you're ready, run:
+### State Management
+- **Zustand** – lightweight global state management
+- Persistent state for user sessions and bookings
 
-```bash
-npm run reset-project
-```
+### Backend & Services
+- **Supabase** – serverless backend (PostgreSQL, Auth, Storage)
+- **Supabase Edge Functions** – serverless business logic
+- **Stripe (test mode)** – secure, PCI-compliant payment handling
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Maps & Native Integrations
+- **Apple Maps** (iOS) and **Google Maps** (Android)
+- Location-based discovery using latitude / longitude
+- Native device permissions handled via Expo APIs
 
-## Learn more
+---
 
-To learn more about developing your project with Expo, look at the following resources:
+## 🗺️ Maps & Location Integration
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Crown Space integrates native mapping services to enable location-based discovery:
 
-## Join the community
+- **Apple Maps** on iOS
+- **Google Maps** on Android
 
-Join our community of developers creating universal apps.
+Businesses store geo-coordinates in the backend, allowing users to:
+- Browse nearby salons
+- View business locations directly on the map
+- Filter results by distance
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+All map functionality works in both **development builds** and production builds.
+
+---
+
+## 🧪 Local Development & Testing
+
+### Prerequisites
+- Node.js
+- Expo CLI  
+  ```bash
+  npm install -g expo-cli
